@@ -1,0 +1,3 @@
+# Generado por openapi-typescript desde ../backend/schema.yml (módulos 66 y 80): no se formatea a mano;
+# si prettier lo reescribe, la comprobación "tipos sincronizados" de la CI falla siempre
+src/app/core/api/esquema.ts

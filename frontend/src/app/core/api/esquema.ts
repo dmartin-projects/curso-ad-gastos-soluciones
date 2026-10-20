@@ -4,2403 +4,1262 @@
  */
 
 export interface paths {
-  '/api/v1/auth/cambiar-password/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['auth_cambiar_password_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/auth/login/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Base para login/refresh/registro: no autentica la petición, pero responde 401 (no 403). */
-    post: operations['auth_login_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/auth/logout/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Base para login/refresh/registro: no autentica la petición, pero responde 401 (no 403). */
-    post: operations['auth_logout_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/auth/me/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['auth_me_retrieve'];
-    put: operations['auth_me_update'];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch: operations['auth_me_partial_update'];
-    trace?: never;
-  };
-  '/api/v1/auth/recuperar-password/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Base para login/refresh/registro: no autentica la petición, pero responde 401 (no 403). */
-    post: operations['auth_recuperar_password_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/auth/recuperar-password/confirmar/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Base para login/refresh/registro: no autentica la petición, pero responde 401 (no 403). */
-    post: operations['auth_recuperar_password_confirmar_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/auth/refresh/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Base para login/refresh/registro: no autentica la petición, pero responde 401 (no 403). */
-    post: operations['auth_refresh_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/auth/registro/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['auth_registro_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/auth/verificar-email/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Base para login/refresh/registro: no autentica la petición, pero responde 401 (no 403). */
-    post: operations['auth_verificar_email_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/backoffice/auditoria/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Solo lectura, también para el superusuario: una auditoría que se puede editar no sirve. */
-    get: operations['backoffice_auditoria_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/backoffice/auditoria/{id}/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Solo lectura, también para el superusuario: una auditoría que se puede editar no sirve. */
-    get: operations['backoffice_auditoria_retrieve'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/backoffice/hogares/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['backoffice_hogares_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/backoffice/hogares/{id}/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['backoffice_hogares_retrieve'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/backoffice/importaciones/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['backoffice_importaciones_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/backoffice/importaciones/{id}/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['backoffice_importaciones_retrieve'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/backoffice/importaciones/{id}/deshacer/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['backoffice_importaciones_deshacer_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/backoffice/movimientos/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['backoffice_movimientos_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/backoffice/movimientos/{id}/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['backoffice_movimientos_retrieve'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/backoffice/movimientos/recategorizar/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['backoffice_movimientos_recategorizar_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/backoffice/resumen/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description La primera pantalla de soporte: ¿va todo bien? */
-    get: operations['backoffice_resumen_retrieve'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/backoffice/tareas/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Las tareas de Celery Beat (DatabaseScheduler): verlas y pausarlas/reanudarlas. */
-    get: operations['backoffice_tareas_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/backoffice/tareas/{id}/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Las tareas de Celery Beat (DatabaseScheduler): verlas y pausarlas/reanudarlas. */
-    get: operations['backoffice_tareas_retrieve'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /** @description Las tareas de Celery Beat (DatabaseScheduler): verlas y pausarlas/reanudarlas. */
-    patch: operations['backoffice_tareas_partial_update'];
-    trace?: never;
-  };
-  '/api/v1/backoffice/tickets/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['backoffice_tickets_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/backoffice/tickets/{id}/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['backoffice_tickets_retrieve'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/backoffice/tickets/reprocesar/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Reprocesa varios tickets (los que no estén en error o en revisión se omiten). */
-    post: operations['backoffice_tickets_reprocesar_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/backoffice/usuarios/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Ver usuarios; activar o desactivar (solo quien tenga usuarios.change_usuario, no el grupo Soporte). */
-    get: operations['backoffice_usuarios_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/backoffice/usuarios/{id}/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Ver usuarios; activar o desactivar (solo quien tenga usuarios.change_usuario, no el grupo Soporte). */
-    get: operations['backoffice_usuarios_retrieve'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /** @description Ver usuarios; activar o desactivar (solo quien tenga usuarios.change_usuario, no el grupo Soporte). */
-    patch: operations['backoffice_usuarios_partial_update'];
-    trace?: never;
-  };
-  '/api/v1/comercios/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Autocompletado de comercios (global): /comercios/?search=merca */
-    get: operations['comercios_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Mis hogares. Crear lo puede cualquiera; editar y borrar, solo administradores. */
-    get: operations['hogares_list'];
-    put?: never;
-    /** @description Mis hogares. Crear lo puede cualquiera; editar y borrar, solo administradores. */
-    post: operations['hogares_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/categorias/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    get: operations['hogares_categorias_list'];
-    put?: never;
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    post: operations['hogares_categorias_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/categorias/{id}/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    get: operations['hogares_categorias_retrieve'];
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    put: operations['hogares_categorias_update'];
-    post?: never;
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    delete: operations['hogares_categorias_destroy'];
-    options?: never;
-    head?: never;
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    patch: operations['hogares_categorias_partial_update'];
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/categorias/reordenar/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    post: operations['hogares_categorias_reordenar_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/cuentas/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    get: operations['hogares_cuentas_list'];
-    put?: never;
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    post: operations['hogares_cuentas_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/cuentas/{id}/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    get: operations['hogares_cuentas_retrieve'];
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    put: operations['hogares_cuentas_update'];
-    post?: never;
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    delete: operations['hogares_cuentas_destroy'];
-    options?: never;
-    head?: never;
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    patch: operations['hogares_cuentas_partial_update'];
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/dashboard/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Resumen del mes. Cacheado por hogar y versión; responde 304 si el cliente ya tiene la versión actual. */
-    get: operations['hogares_dashboard_retrieve'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/importaciones/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Extractos bancarios: subir (202) → vista previa → confirmar (202) → progreso → completada. */
-    get: operations['hogares_importaciones_list'];
-    put?: never;
-    /** @description Extractos bancarios: subir (202) → vista previa → confirmar (202) → progreso → completada. */
-    post: operations['hogares_importaciones_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/importaciones/{id}/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Extractos bancarios: subir (202) → vista previa → confirmar (202) → progreso → completada. */
-    get: operations['hogares_importaciones_retrieve'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/importaciones/{id}/confirmar/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Extractos bancarios: subir (202) → vista previa → confirmar (202) → progreso → completada. */
-    post: operations['hogares_importaciones_confirmar_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/importaciones/{id}/deshacer/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Extractos bancarios: subir (202) → vista previa → confirmar (202) → progreso → completada. */
-    post: operations['hogares_importaciones_deshacer_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/importaciones/{id}/filas/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description La vista previa: cada fila con lo que se hará con ella (?accion=crear|duplicada|conciliar). */
-    get: operations['hogares_importaciones_filas_retrieve'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/informes/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Informes mensuales en PDF: /informes/ · /informes/2026-10/ · /informes/2026-10/pdf/ */
-    get: operations['hogares_informes_list'];
-    put?: never;
-    /** @description Genera (o regenera) un informe bajo demanda, en segundo plano. */
-    post: operations['hogares_informes_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/informes/{mes}/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Informes mensuales en PDF: /informes/ · /informes/2026-10/ · /informes/2026-10/pdf/ */
-    get: operations['hogares_informes_retrieve'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/informes/{mes}/pdf/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Informes mensuales en PDF: /informes/ · /informes/2026-10/ · /informes/2026-10/pdf/ */
-    get: operations['hogares_informes_pdf_retrieve'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/miembros/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description /hogares/{h}/miembros/: ver (todos), cambiar rol y expulsar (admin). */
-    get: operations['hogares_miembros_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/miembros/{id}/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    /** @description /hogares/{h}/miembros/: ver (todos), cambiar rol y expulsar (admin). */
-    put: operations['hogares_miembros_update'];
-    post?: never;
-    /** @description /hogares/{h}/miembros/: ver (todos), cambiar rol y expulsar (admin). */
-    delete: operations['hogares_miembros_destroy'];
-    options?: never;
-    head?: never;
-    /** @description /hogares/{h}/miembros/: ver (todos), cambiar rol y expulsar (admin). */
-    patch: operations['hogares_miembros_partial_update'];
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/miembros/invitar/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description /hogares/{h}/miembros/: ver (todos), cambiar rol y expulsar (admin). */
-    post: operations['hogares_miembros_invitar_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/movimientos/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    get: operations['hogares_movimientos_list'];
-    put?: never;
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    post: operations['hogares_movimientos_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/movimientos/{id}/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    get: operations['hogares_movimientos_retrieve'];
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    put: operations['hogares_movimientos_update'];
-    post?: never;
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    delete: operations['hogares_movimientos_destroy'];
-    options?: never;
-    head?: never;
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    patch: operations['hogares_movimientos_partial_update'];
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/movimientos/exportar/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    get: operations['hogares_movimientos_exportar_retrieve'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/movimientos/recategorizar/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    post: operations['hogares_movimientos_recategorizar_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/presupuestos/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    get: operations['hogares_presupuestos_list'];
-    put?: never;
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    post: operations['hogares_presupuestos_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/presupuestos/{id}/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    get: operations['hogares_presupuestos_retrieve'];
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    put: operations['hogares_presupuestos_update'];
-    post?: never;
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    delete: operations['hogares_presupuestos_destroy'];
-    options?: never;
-    head?: never;
-    /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
-    patch: operations['hogares_presupuestos_partial_update'];
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/tickets/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Tickets del hogar. Subir responde 202: el procesado (OCR + IA) ocurre en segundo plano. */
-    get: operations['hogares_tickets_list'];
-    put?: never;
-    /** @description Tickets del hogar. Subir responde 202: el procesado (OCR + IA) ocurre en segundo plano. */
-    post: operations['hogares_tickets_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/tickets/{id}/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Tickets del hogar. Subir responde 202: el procesado (OCR + IA) ocurre en segundo plano. */
-    get: operations['hogares_tickets_retrieve'];
-    put?: never;
-    post?: never;
-    /** @description Tickets del hogar. Subir responde 202: el procesado (OCR + IA) ocurre en segundo plano. */
-    delete: operations['hogares_tickets_destroy'];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/tickets/{id}/archivo/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description URL temporal del archivo (firmada en S3/R2: caduca sola). Un <img> no puede enviar el JWT. */
-    get: operations['hogares_tickets_archivo_retrieve'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/tickets/{id}/confirmar/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Tickets del hogar. Subir responde 202: el procesado (OCR + IA) ocurre en segundo plano. */
-    post: operations['hogares_tickets_confirmar_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{hogar_pk}/tickets/{id}/reprocesar/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Tickets del hogar. Subir responde 202: el procesado (OCR + IA) ocurre en segundo plano. */
-    post: operations['hogares_tickets_reprocesar_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/hogares/{id}/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Mis hogares. Crear lo puede cualquiera; editar y borrar, solo administradores. */
-    get: operations['hogares_retrieve'];
-    /** @description Mis hogares. Crear lo puede cualquiera; editar y borrar, solo administradores. */
-    put: operations['hogares_update'];
-    post?: never;
-    /** @description Mis hogares. Crear lo puede cualquiera; editar y borrar, solo administradores. */
-    delete: operations['hogares_destroy'];
-    options?: never;
-    head?: never;
-    /** @description Mis hogares. Crear lo puede cualquiera; editar y borrar, solo administradores. */
-    patch: operations['hogares_partial_update'];
-    trace?: never;
-  };
-  '/api/v1/invitaciones/{token}/aceptar/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['invitaciones_aceptar_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/notificaciones/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Las notificaciones del usuario autenticado (de todos sus hogares). ?leida=false para las pendientes. */
-    get: operations['notificaciones_list'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/notificaciones/{id}/leer/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Las notificaciones del usuario autenticado (de todos sus hogares). ?leida=false para las pendientes. */
-    post: operations['notificaciones_leer_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/notificaciones/leer-todas/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Sin `ids`, marca todas; con `ids`, solo esas. */
-    post: operations['notificaciones_leer_todas_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/notificaciones/no-leidas/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Las notificaciones del usuario autenticado (de todos sus hogares). ?leida=false para las pendientes. */
-    get: operations['notificaciones_no_leidas_retrieve'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/notificaciones/ws-ticket/': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** @description Ticket de un solo uso para abrir el WebSocket: el JWT nunca viaja en la URL. */
-    post: operations['notificaciones_ws_ticket_create'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
+    "/api/v1/auth/cambiar-password/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["auth_cambiar_password_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/login/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Base para login/refresh/registro: no autentica la petición, pero responde 401 (no 403). */
+        post: operations["auth_login_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/logout/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Base para login/refresh/registro: no autentica la petición, pero responde 401 (no 403). */
+        post: operations["auth_logout_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/me/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["auth_me_retrieve"];
+        put: operations["auth_me_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["auth_me_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/auth/recuperar-password/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Base para login/refresh/registro: no autentica la petición, pero responde 401 (no 403). */
+        post: operations["auth_recuperar_password_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/recuperar-password/confirmar/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Base para login/refresh/registro: no autentica la petición, pero responde 401 (no 403). */
+        post: operations["auth_recuperar_password_confirmar_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/refresh/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Base para login/refresh/registro: no autentica la petición, pero responde 401 (no 403). */
+        post: operations["auth_refresh_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/registro/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["auth_registro_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/verificar-email/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Base para login/refresh/registro: no autentica la petición, pero responde 401 (no 403). */
+        post: operations["auth_verificar_email_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/backoffice/auditoria/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Solo lectura, también para el superusuario: una auditoría que se puede editar no sirve. */
+        get: operations["backoffice_auditoria_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/backoffice/auditoria/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Solo lectura, también para el superusuario: una auditoría que se puede editar no sirve. */
+        get: operations["backoffice_auditoria_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/backoffice/hogares/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["backoffice_hogares_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/backoffice/hogares/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["backoffice_hogares_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/backoffice/importaciones/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["backoffice_importaciones_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/backoffice/importaciones/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["backoffice_importaciones_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/backoffice/importaciones/{id}/deshacer/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["backoffice_importaciones_deshacer_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/backoffice/movimientos/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["backoffice_movimientos_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/backoffice/movimientos/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["backoffice_movimientos_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/backoffice/movimientos/recategorizar/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["backoffice_movimientos_recategorizar_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/backoffice/resumen/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description La primera pantalla de soporte: ¿va todo bien? */
+        get: operations["backoffice_resumen_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/backoffice/tareas/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Las tareas de Celery Beat (DatabaseScheduler): verlas y pausarlas/reanudarlas. */
+        get: operations["backoffice_tareas_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/backoffice/tareas/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Las tareas de Celery Beat (DatabaseScheduler): verlas y pausarlas/reanudarlas. */
+        get: operations["backoffice_tareas_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description Las tareas de Celery Beat (DatabaseScheduler): verlas y pausarlas/reanudarlas. */
+        patch: operations["backoffice_tareas_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/backoffice/tickets/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["backoffice_tickets_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/backoffice/tickets/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["backoffice_tickets_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/backoffice/tickets/reprocesar/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Reprocesa varios tickets (los que no estén en error o en revisión se omiten). */
+        post: operations["backoffice_tickets_reprocesar_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/backoffice/usuarios/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Ver usuarios; activar o desactivar (solo quien tenga usuarios.change_usuario, no el grupo Soporte). */
+        get: operations["backoffice_usuarios_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/backoffice/usuarios/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Ver usuarios; activar o desactivar (solo quien tenga usuarios.change_usuario, no el grupo Soporte). */
+        get: operations["backoffice_usuarios_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description Ver usuarios; activar o desactivar (solo quien tenga usuarios.change_usuario, no el grupo Soporte). */
+        patch: operations["backoffice_usuarios_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/comercios/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Autocompletado de comercios (global): /comercios/?search=merca */
+        get: operations["comercios_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Mis hogares. Crear lo puede cualquiera; editar y borrar, solo administradores. */
+        get: operations["hogares_list"];
+        put?: never;
+        /** @description Mis hogares. Crear lo puede cualquiera; editar y borrar, solo administradores. */
+        post: operations["hogares_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/categorias/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        get: operations["hogares_categorias_list"];
+        put?: never;
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        post: operations["hogares_categorias_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/categorias/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        get: operations["hogares_categorias_retrieve"];
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        put: operations["hogares_categorias_update"];
+        post?: never;
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        delete: operations["hogares_categorias_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        patch: operations["hogares_categorias_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/categorias/reordenar/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        post: operations["hogares_categorias_reordenar_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/cuentas/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        get: operations["hogares_cuentas_list"];
+        put?: never;
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        post: operations["hogares_cuentas_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/cuentas/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        get: operations["hogares_cuentas_retrieve"];
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        put: operations["hogares_cuentas_update"];
+        post?: never;
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        delete: operations["hogares_cuentas_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        patch: operations["hogares_cuentas_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/dashboard/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Resumen del mes. Cacheado por hogar y versión; responde 304 si el cliente ya tiene la versión actual. */
+        get: operations["hogares_dashboard_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/importaciones/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Extractos bancarios: subir (202) → vista previa → confirmar (202) → progreso → completada. */
+        get: operations["hogares_importaciones_list"];
+        put?: never;
+        /** @description Extractos bancarios: subir (202) → vista previa → confirmar (202) → progreso → completada. */
+        post: operations["hogares_importaciones_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/importaciones/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Extractos bancarios: subir (202) → vista previa → confirmar (202) → progreso → completada. */
+        get: operations["hogares_importaciones_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/importaciones/{id}/confirmar/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Extractos bancarios: subir (202) → vista previa → confirmar (202) → progreso → completada. */
+        post: operations["hogares_importaciones_confirmar_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/importaciones/{id}/deshacer/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Extractos bancarios: subir (202) → vista previa → confirmar (202) → progreso → completada. */
+        post: operations["hogares_importaciones_deshacer_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/importaciones/{id}/filas/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description La vista previa: cada fila con lo que se hará con ella (?accion=crear|duplicada|conciliar). */
+        get: operations["hogares_importaciones_filas_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/informes/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Informes mensuales en PDF: /informes/ · /informes/2026-10/ · /informes/2026-10/pdf/ */
+        get: operations["hogares_informes_list"];
+        put?: never;
+        /** @description Genera (o regenera) un informe bajo demanda, en segundo plano. */
+        post: operations["hogares_informes_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/informes/{mes}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Informes mensuales en PDF: /informes/ · /informes/2026-10/ · /informes/2026-10/pdf/ */
+        get: operations["hogares_informes_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/informes/{mes}/pdf/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Informes mensuales en PDF: /informes/ · /informes/2026-10/ · /informes/2026-10/pdf/ */
+        get: operations["hogares_informes_pdf_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/miembros/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description /hogares/{h}/miembros/: ver (todos), cambiar rol y expulsar (admin). */
+        get: operations["hogares_miembros_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/miembros/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** @description /hogares/{h}/miembros/: ver (todos), cambiar rol y expulsar (admin). */
+        put: operations["hogares_miembros_update"];
+        post?: never;
+        /** @description /hogares/{h}/miembros/: ver (todos), cambiar rol y expulsar (admin). */
+        delete: operations["hogares_miembros_destroy"];
+        options?: never;
+        head?: never;
+        /** @description /hogares/{h}/miembros/: ver (todos), cambiar rol y expulsar (admin). */
+        patch: operations["hogares_miembros_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/miembros/invitar/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description /hogares/{h}/miembros/: ver (todos), cambiar rol y expulsar (admin). */
+        post: operations["hogares_miembros_invitar_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/movimientos/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        get: operations["hogares_movimientos_list"];
+        put?: never;
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        post: operations["hogares_movimientos_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/movimientos/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        get: operations["hogares_movimientos_retrieve"];
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        put: operations["hogares_movimientos_update"];
+        post?: never;
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        delete: operations["hogares_movimientos_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        patch: operations["hogares_movimientos_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/movimientos/exportar/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        get: operations["hogares_movimientos_exportar_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/movimientos/recategorizar/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        post: operations["hogares_movimientos_recategorizar_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/presupuestos/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        get: operations["hogares_presupuestos_list"];
+        put?: never;
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        post: operations["hogares_presupuestos_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/presupuestos/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        get: operations["hogares_presupuestos_retrieve"];
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        put: operations["hogares_presupuestos_update"];
+        post?: never;
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        delete: operations["hogares_presupuestos_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        patch: operations["hogares_presupuestos_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/tickets/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Tickets del hogar. Subir responde 202: el procesado (OCR + IA) ocurre en segundo plano. */
+        get: operations["hogares_tickets_list"];
+        put?: never;
+        /** @description Tickets del hogar. Subir responde 202: el procesado (OCR + IA) ocurre en segundo plano. */
+        post: operations["hogares_tickets_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/tickets/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Tickets del hogar. Subir responde 202: el procesado (OCR + IA) ocurre en segundo plano. */
+        get: operations["hogares_tickets_retrieve"];
+        put?: never;
+        post?: never;
+        /** @description Tickets del hogar. Subir responde 202: el procesado (OCR + IA) ocurre en segundo plano. */
+        delete: operations["hogares_tickets_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/tickets/{id}/archivo/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description URL temporal del archivo (firmada en S3/R2: caduca sola). Un <img> no puede enviar el JWT. */
+        get: operations["hogares_tickets_archivo_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/tickets/{id}/confirmar/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Tickets del hogar. Subir responde 202: el procesado (OCR + IA) ocurre en segundo plano. */
+        post: operations["hogares_tickets_confirmar_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/tickets/{id}/reprocesar/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Tickets del hogar. Subir responde 202: el procesado (OCR + IA) ocurre en segundo plano. */
+        post: operations["hogares_tickets_reprocesar_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Mis hogares. Crear lo puede cualquiera; editar y borrar, solo administradores. */
+        get: operations["hogares_retrieve"];
+        /** @description Mis hogares. Crear lo puede cualquiera; editar y borrar, solo administradores. */
+        put: operations["hogares_update"];
+        post?: never;
+        /** @description Mis hogares. Crear lo puede cualquiera; editar y borrar, solo administradores. */
+        delete: operations["hogares_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Mis hogares. Crear lo puede cualquiera; editar y borrar, solo administradores. */
+        patch: operations["hogares_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/invitaciones/{token}/aceptar/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["invitaciones_aceptar_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notificaciones/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Las notificaciones del usuario autenticado (de todos sus hogares). ?leida=false para las pendientes. */
+        get: operations["notificaciones_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notificaciones/{id}/leer/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Las notificaciones del usuario autenticado (de todos sus hogares). ?leida=false para las pendientes. */
+        post: operations["notificaciones_leer_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notificaciones/leer-todas/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Sin `ids`, marca todas; con `ids`, solo esas. */
+        post: operations["notificaciones_leer_todas_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notificaciones/no-leidas/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Las notificaciones del usuario autenticado (de todos sus hogares). ?leida=false para las pendientes. */
+        get: operations["notificaciones_no_leidas_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notificaciones/ws-ticket/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Ticket de un solo uso para abrir el WebSocket: el JWT nunca viaja en la URL. */
+        post: operations["notificaciones_ws_ticket_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    Access: {
-      access: string;
-    };
-    Actualizadas: {
-      actualizadas: number;
-    };
-    Auditoria: {
-      readonly id: number;
-      /** Format: date-time */
-      readonly fecha: string;
-      /** Format: email */
-      readonly usuario: string;
-      readonly accion: components['schemas']['AuditoriaAccionEnum'];
-      readonly modelo: string;
-      readonly object_id: string;
-      readonly representacion: string;
-      readonly cambios: unknown;
-    };
-    /**
-     * @description * `crear` - Crear
-     *     * `modificar` - Modificar
-     *     * `borrar` - Borrar
-     * @enum {string}
-     */
-    AuditoriaAccionEnum: 'crear' | 'modificar' | 'borrar';
-    CambiarPasswordRequest: {
-      actual: string;
-      nueva: string;
-    };
-    /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
-    Categoria: {
-      readonly id: number;
-      nombre: string;
-      padre?: number | null;
-      color?: string;
-      icono?: string;
-      orden?: number;
-      /** Es de ingresos */
-      es_ingreso?: boolean;
-    };
-    CategoriaDashboard: {
-      categoria: number | null;
-      nombre: string;
-      color: string;
-      /** Format: decimal */
-      total: string;
-      /** Format: decimal */
-      porcentaje: string;
-    };
-    /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
-    CategoriaRequest: {
-      nombre: string;
-      padre?: number | null;
-      color?: string;
-      icono?: string;
-      orden?: number;
-      /** Es de ingresos */
-      es_ingreso?: boolean;
-    };
-    Comercio: {
-      readonly id: number;
-      nombre: string;
-    };
-    ComercioDashboard: {
-      comercio: number;
-      nombre: string;
-      /** Format: decimal */
-      total: string;
-      veces: number;
-    };
-    ComercioRequest: {
-      nombre: string;
-    };
-    ConfirmarImportacionRequest: {
-      separar?: number[];
-    };
-    /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
-    ConfirmarTicketRequest: {
-      /** Format: date */
-      fecha: string;
-      /** Format: decimal */
-      total: string;
-      concepto: string;
-      categoria?: number | null;
-    };
-    Contador: {
-      no_leidas: number;
-    };
-    Cuenta: {
-      readonly id: number;
-      nombre: string;
-      tipo?: components['schemas']['CuentaTipoEnum'];
-      iban?: string;
-      activa?: boolean;
-      /** Format: decimal */
-      readonly saldo: string;
-    };
-    CuentaRequest: {
-      nombre: string;
-      tipo?: components['schemas']['CuentaTipoEnum'];
-      iban?: string;
-      activa?: boolean;
-    };
-    /**
-     * @description * `banco` - Cuenta bancaria
-     *     * `tarjeta` - Tarjeta
-     *     * `efectivo` - Efectivo
-     * @enum {string}
-     */
-    CuentaTipoEnum: 'banco' | 'tarjeta' | 'efectivo';
-    Dashboard: {
-      /** Format: date */
-      mes: string;
-      /** Format: decimal */
-      gastos: string;
-      /** Format: decimal */
-      ingresos: string;
-      /** Format: decimal */
-      balance: string;
-      num_movimientos: number;
-      /** Format: decimal */
-      gastos_mes_anterior: string;
-      /** Format: decimal */
-      variacion: string | null;
-      por_categoria: components['schemas']['CategoriaDashboard'][];
-      acumulado: components['schemas']['DiaDashboard'][];
-      evolucion: components['schemas']['MesDashboard'][];
-      top_comercios: components['schemas']['ComercioDashboard'][];
-      presupuestos: components['schemas']['PresupuestoDashboard'][];
-      pendientes_revision: number;
-    };
-    Detalle: {
-      detail: string;
-    };
-    DiaDashboard: {
-      /** Format: date */
-      fecha: string;
-      /** Format: decimal */
-      gasto: string;
-      /** Format: decimal */
-      acumulado: string;
-    };
-    EmailRequest: {
-      /** Format: email */
-      email: string;
-    };
-    EnlaceTokenRequest: {
-      uid: string;
-      token: string;
-    };
-    /**
-     * @description * `pendiente` - Pendiente
-     *     * `analizando` - Analizando
-     *     * `vista_previa` - Vista previa
-     *     * `importando` - Importando
-     *     * `completada` - Completada
-     *     * `error` - Error
-     *     * `deshecha` - Deshecha
-     * @enum {string}
-     */
-    EstadoImportacionEnum:
-      | 'pendiente'
-      | 'analizando'
-      | 'vista_previa'
-      | 'importando'
-      | 'completada'
-      | 'error'
-      | 'deshecha';
-    /**
-     * @description * `pendiente` - Pendiente
-     *     * `procesando` - Procesando
-     *     * `revisar` - Pendiente de revisión
-     *     * `procesado` - Procesado
-     *     * `error` - Error
-     * @enum {string}
-     */
-    EstadoTicketEnum: 'pendiente' | 'procesando' | 'revisar' | 'procesado' | 'error';
-    FilaImportacion: {
-      readonly id: number;
-      readonly numero: number;
-      /** Format: date */
-      readonly fecha: string;
-      readonly concepto: string;
-      /** Format: decimal */
-      readonly importe: string;
-      readonly accion: components['schemas']['FilaImportacionAccionEnum'];
-      readonly coincide_con: number | null;
-      readonly coincide_con_concepto: string;
-      readonly movimiento: number | null;
-    };
-    /**
-     * @description * `crear` - Crear
-     *     * `duplicada` - Ya existe
-     *     * `conciliar` - Coincide con un gasto existente
-     * @enum {string}
-     */
-    FilaImportacionAccionEnum: 'crear' | 'duplicada' | 'conciliar';
-    /**
-     * @description * `csv` - CSV
-     *     * `pdf` - PDF
-     * @enum {string}
-     */
-    FormatoEnum: 'csv' | 'pdf';
-    GenerarInformeRequest: {
-      /**
-       * Format: date
-       * @description AAAA-MM
-       */
-      mes: string;
-      /**
-       * @description Enviarlo también por email a los miembros
-       * @default false
-       */
-      enviar: boolean;
-    };
-    Hogar: {
-      readonly id: number;
-      nombre: string;
-      moneda?: string;
-      zona_horaria?: string;
-      readonly mi_rol: string;
-      readonly num_miembros: number;
-      /** Format: date-time */
-      readonly creado: string;
-    };
-    HogarDetalleSoporte: {
-      readonly id: number;
-      readonly nombre: string;
-      readonly zona_horaria: string;
-      readonly num_miembros: number;
-      readonly num_movimientos: number;
-      /** Format: date-time */
-      readonly creado: string;
-      readonly miembros: components['schemas']['MiembroSoporte'][];
-    };
-    HogarRequest: {
-      nombre: string;
-      moneda?: string;
-      zona_horaria?: string;
-    };
-    HogarSoporte: {
-      readonly id: number;
-      readonly nombre: string;
-      readonly zona_horaria: string;
-      readonly num_miembros: number;
-      readonly num_movimientos: number;
-      /** Format: date-time */
-      readonly creado: string;
-    };
-    IdsRequest: {
-      ids: number[];
-    };
-    Importacion: {
-      readonly id: number;
-      readonly estado: components['schemas']['EstadoImportacionEnum'];
-      readonly cuenta: number;
-      readonly nombre_original: string;
-      readonly formato: components['schemas']['FormatoEnum'];
-      readonly total_filas: number;
-      readonly procesadas: number;
-      readonly progreso: number;
-      readonly creados: number;
-      readonly conciliados: number;
-      readonly duplicados: number;
-      readonly resumen: unknown;
-      readonly avisos: unknown;
-      readonly error: string;
-      /** Format: date-time */
-      readonly creado: string;
-      /** Format: date-time */
-      readonly terminado_en: string | null;
-    };
-    ImportacionSoporte: {
-      readonly id: number;
-      readonly hogar: number;
-      readonly hogar_nombre: string;
-      readonly nombre_original: string;
-      readonly estado: components['schemas']['EstadoImportacionEnum'];
-      readonly progreso: number;
-      readonly total_filas: number;
-      readonly creados: number;
-      readonly conciliados: number;
-      readonly duplicados: number;
-      readonly error: string;
-      /** Format: date-time */
-      readonly creado: string;
-    };
-    Informe: {
-      readonly id: number;
-      /** Format: date */
-      readonly mes: string;
-      readonly tamano: number;
-      readonly automatico: boolean;
-      /** Format: date-time */
-      readonly creado: string;
-      /** Format: date-time */
-      readonly actualizado: string;
-    };
-    InformeEncolado: {
-      mes: string;
-      estado: string;
-    };
-    Invitacion: {
-      readonly id: number;
-      /** Format: email */
-      email: string;
-      rol?: components['schemas']['RolEnum'];
-      /** Format: date-time */
-      caduca?: string;
-      /** Format: date-time */
-      aceptada?: string | null;
-    };
-    InvitarRequest: {
-      /** Format: email */
-      email: string;
-      /** @default miembro */
-      rol: components['schemas']['RolEnum'];
-    };
-    LeerRequest: {
-      ids?: number[];
-    };
-    LineaTicket: {
-      orden: number;
-      descripcion: string;
-      /** Format: decimal */
-      cantidad?: string;
-      /** Format: decimal */
-      precio_unitario: string;
-      /** Format: decimal */
-      readonly importe: string;
-    };
-    MesDashboard: {
-      /** Format: date */
-      mes: string;
-      /** Format: decimal */
-      gastos: string;
-      /** Format: decimal */
-      ingresos: string;
-    };
-    Miembro: {
-      readonly id: number;
-      /** Format: email */
-      readonly email: string;
-      readonly nombre: string;
-      rol?: components['schemas']['RolEnum'];
-      /** Format: date-time */
-      readonly creado: string;
-    };
-    MiembroRequest: {
-      rol?: components['schemas']['RolEnum'];
-    };
-    MiembroSoporte: {
-      usuario: number;
-      /** Format: email */
-      email: string;
-      rol: string;
-    };
-    /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
-    Movimiento: {
-      readonly id: number;
-      /** Format: date */
-      fecha: string;
-      /** Format: decimal */
-      importe: string;
-      concepto: string;
-      cuenta: number;
-      readonly cuenta_nombre: string;
-      categoria?: number | null;
-      readonly categoria_nombre: string;
-      readonly categoria_color: string;
-      readonly comercio: components['schemas']['Comercio'];
-      etiquetas?: string[];
-      notas?: string;
-      readonly origen: components['schemas']['OrigenEnum'];
-      revisado?: boolean;
-      /** @default 0 */
-      readonly num_adjuntos: number;
-      /** Format: date-time */
-      readonly creado: string;
-    };
-    MovimientoDeTicket: {
-      readonly id: number;
-      /** Format: date */
-      fecha: string;
-      /** Format: decimal */
-      importe: string;
-      concepto: string;
-      categoria?: number | null;
-      revisado?: boolean;
-    };
-    /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
-    MovimientoRequest: {
-      /** Format: date */
-      fecha: string;
-      /** Format: decimal */
-      importe: string;
-      concepto: string;
-      cuenta: number;
-      categoria?: number | null;
-      etiquetas?: string[];
-      notas?: string;
-      revisado?: boolean;
-    };
-    MovimientoSoporte: {
-      readonly id: number;
-      readonly hogar: number;
-      /** Format: date */
-      readonly fecha: string;
-      /** Format: decimal */
-      readonly importe: string;
-      readonly concepto: string;
-      readonly categoria: number | null;
-      readonly categoria_nombre: string;
-      readonly origen: components['schemas']['OrigenEnum'];
-      readonly revisado: boolean;
-    };
-    Notificacion: {
-      readonly id: number;
-      readonly tipo: components['schemas']['NotificacionTipoEnum'];
-      readonly titulo: string;
-      readonly mensaje: string;
-      readonly enlace: string;
-      readonly hogar: number | null;
-      readonly datos: unknown;
-      readonly leida: boolean;
-      /** Format: date-time */
-      readonly creado: string;
-    };
-    /**
-     * @description * `ticket_procesado` - Ticket procesado
-     *     * `ticket_revisar` - Ticket pendiente de revisión
-     *     * `ticket_error` - Error al procesar un ticket
-     *     * `importacion_lista` - Importación lista para revisar
-     *     * `importacion_completada` - Importación completada
-     *     * `importacion_error` - Error en una importación
-     *     * `presupuesto_superado` - Presupuesto superado
-     *     * `informe_listo` - Informe mensual disponible
-     * @enum {string}
-     */
-    NotificacionTipoEnum:
-      | 'ticket_procesado'
-      | 'ticket_revisar'
-      | 'ticket_error'
-      | 'importacion_lista'
-      | 'importacion_completada'
-      | 'importacion_error'
-      | 'presupuesto_superado'
-      | 'informe_listo';
-    NuevaPasswordRequest: {
-      uid: string;
-      token: string;
-      password: string;
-    };
-    /**
-     * @description * `manual` - Manual
-     *     * `ticket` - Ticket
-     *     * `extracto` - Extracto bancario
-     * @enum {string}
-     */
-    OrigenEnum: 'manual' | 'ticket' | 'extracto';
-    PaginatedAuditoriaList: {
-      /** @example 123 */
-      count: number;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=4
-       */
-      next?: string | null;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=2
-       */
-      previous?: string | null;
-      results: components['schemas']['Auditoria'][];
-      total_pages?: number;
-      page?: number;
-      page_size?: number;
-    };
-    PaginatedComercioList: {
-      /** @example 123 */
-      count: number;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=4
-       */
-      next?: string | null;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=2
-       */
-      previous?: string | null;
-      results: components['schemas']['Comercio'][];
-      total_pages?: number;
-      page?: number;
-      page_size?: number;
-    };
-    PaginatedHogarList: {
-      /** @example 123 */
-      count: number;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=4
-       */
-      next?: string | null;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=2
-       */
-      previous?: string | null;
-      results: components['schemas']['Hogar'][];
-      total_pages?: number;
-      page?: number;
-      page_size?: number;
-    };
-    PaginatedHogarSoporteList: {
-      /** @example 123 */
-      count: number;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=4
-       */
-      next?: string | null;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=2
-       */
-      previous?: string | null;
-      results: components['schemas']['HogarSoporte'][];
-      total_pages?: number;
-      page?: number;
-      page_size?: number;
-    };
-    PaginatedImportacionList: {
-      /** @example 123 */
-      count: number;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=4
-       */
-      next?: string | null;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=2
-       */
-      previous?: string | null;
-      results: components['schemas']['Importacion'][];
-      total_pages?: number;
-      page?: number;
-      page_size?: number;
-    };
-    PaginatedImportacionSoporteList: {
-      /** @example 123 */
-      count: number;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=4
-       */
-      next?: string | null;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=2
-       */
-      previous?: string | null;
-      results: components['schemas']['ImportacionSoporte'][];
-      total_pages?: number;
-      page?: number;
-      page_size?: number;
-    };
-    PaginatedMovimientoList: {
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?cursor=cD00ODY%3D"
-       */
-      next?: string | null;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?cursor=cj0xJnA9NDg3
-       */
-      previous?: string | null;
-      results: components['schemas']['Movimiento'][];
-    };
-    PaginatedMovimientoSoporteList: {
-      /** @example 123 */
-      count: number;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=4
-       */
-      next?: string | null;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=2
-       */
-      previous?: string | null;
-      results: components['schemas']['MovimientoSoporte'][];
-      total_pages?: number;
-      page?: number;
-      page_size?: number;
-    };
-    PaginatedNotificacionList: {
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?cursor=cD00ODY%3D"
-       */
-      next?: string | null;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?cursor=cj0xJnA9NDg3
-       */
-      previous?: string | null;
-      results: components['schemas']['Notificacion'][];
-    };
-    PaginatedTicketList: {
-      /** @example 123 */
-      count: number;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=4
-       */
-      next?: string | null;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=2
-       */
-      previous?: string | null;
-      results: components['schemas']['Ticket'][];
-      total_pages?: number;
-      page?: number;
-      page_size?: number;
-    };
-    PaginatedTicketSoporteList: {
-      /** @example 123 */
-      count: number;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=4
-       */
-      next?: string | null;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=2
-       */
-      previous?: string | null;
-      results: components['schemas']['TicketSoporte'][];
-      total_pages?: number;
-      page?: number;
-      page_size?: number;
-    };
-    PaginatedUsuarioSoporteList: {
-      /** @example 123 */
-      count: number;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=4
-       */
-      next?: string | null;
-      /**
-       * Format: uri
-       * @example http://api.example.org/accounts/?page=2
-       */
-      previous?: string | null;
-      results: components['schemas']['UsuarioSoporte'][];
-      total_pages?: number;
-      page?: number;
-      page_size?: number;
-    };
-    /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
-    PatchedCategoriaRequest: {
-      nombre?: string;
-      padre?: number | null;
-      color?: string;
-      icono?: string;
-      orden?: number;
-      /** Es de ingresos */
-      es_ingreso?: boolean;
-    };
-    PatchedCuentaRequest: {
-      nombre?: string;
-      tipo?: components['schemas']['CuentaTipoEnum'];
-      iban?: string;
-      activa?: boolean;
-    };
-    PatchedHogarRequest: {
-      nombre?: string;
-      moneda?: string;
-      zona_horaria?: string;
-    };
-    PatchedMiembroRequest: {
-      rol?: components['schemas']['RolEnum'];
-    };
-    /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
-    PatchedMovimientoRequest: {
-      /** Format: date */
-      fecha?: string;
-      /** Format: decimal */
-      importe?: string;
-      concepto?: string;
-      cuenta?: number;
-      categoria?: number | null;
-      etiquetas?: string[];
-      notas?: string;
-      revisado?: boolean;
-    };
-    /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
-    PatchedPresupuestoRequest: {
-      categoria?: number;
-      /** Format: date */
-      mes?: string;
-      /** Format: decimal */
-      importe?: string;
-    };
-    PatchedTareaProgramadaRequest: {
-      /**
-       * Habilitado
-       * @description Establece a Falso para deshabilitar la programación
-       */
-      enabled?: boolean;
-    };
-    PatchedUsuarioRequest: {
-      nombre?: string;
-      apellidos?: string;
-    };
-    PatchedUsuarioSoporteRequest: {
-      is_active?: boolean;
-    };
-    PorEstado: {
-      clave: string;
-      total: number;
-    };
-    /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
-    Presupuesto: {
-      readonly id: number;
-      categoria: number;
-      /** Format: date */
-      mes: string;
-      /** Format: decimal */
-      importe: string;
-      /** Format: decimal */
-      readonly gastado: string;
-      readonly porcentaje: number | null;
-    };
-    PresupuestoDashboard: {
-      categoria: string;
-      /** Format: decimal */
-      importe: string;
-      /** Format: decimal */
-      gastado: string;
-      porcentaje: number;
-    };
-    /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
-    PresupuestoRequest: {
-      categoria: number;
-      /** Format: date */
-      mes: string;
-      /** Format: decimal */
-      importe: string;
-    };
-    /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
-    RecategorizarRequest: {
-      ids: number[];
-      categoria: number;
-    };
-    RecategorizarSoporteRequest: {
-      ids: number[];
-      categoria: number;
-    };
-    Registro: {
-      /** Format: email */
-      email: string;
-      nombre?: string;
-      apellidos?: string;
-    };
-    RegistroRequest: {
-      /** Format: email */
-      email: string;
-      nombre?: string;
-      apellidos?: string;
-      password: string;
-    };
-    ReordenarRequest: {
-      ids: number[];
-    };
-    ReprocesarTicketRequest: {
-      /** @default false */
-      repetir_ocr: boolean;
-    };
-    ResultadoLote: {
-      hechos: number;
-      omitidos: number;
-    };
-    Resumen: {
-      tickets_24h: components['schemas']['PorEstado'][];
-      tickets_atascados: number;
-      importaciones_en_curso: number;
-      importaciones_con_error_7d: number;
-      hogares: number;
-      usuarios_activos: number;
-    };
-    /**
-     * @description * `admin` - Administrador
-     *     * `miembro` - Miembro
-     *     * `lector` - Solo lectura
-     * @enum {string}
-     */
-    RolEnum: 'admin' | 'miembro' | 'lector';
-    /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
-    SubirImportacionRequest: {
-      /** Format: binary */
-      archivo: string;
-      cuenta: number;
-    };
-    /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
-    SubirTicketRequest: {
-      /** Format: binary */
-      archivo: string;
-      cuenta: number;
-    };
-    TareaProgramada: {
-      readonly id: number;
-      /**
-       * Nombre
-       * @description Descripción corta para esta tarea
-       */
-      readonly name: string;
-      /**
-       * Task Name
-       * @description Nombre de la tarea Celery que debe ser ejecutada. (Ejemplo: "proj.tasks.import_contacts")
-       */
-      readonly task: string;
-      readonly horario: string;
-      /**
-       * Habilitado
-       * @description Establece a Falso para deshabilitar la programación
-       */
-      enabled?: boolean;
-      /**
-       * Fecha de última ejecución
-       * Format: date-time
-       * @description Fecha en la cual la programación ejecutó la tarea por última vez. Reinicializa a None si enabled está establecido como falso.
-       */
-      readonly last_run_at: string | null;
-      /**
-       * Contador de ejecuciones totales
-       * @description Contador de cuentas veces ha sido ejecutada la tarea
-       */
-      readonly total_run_count: number;
-    };
-    Ticket: {
-      readonly id: number;
-      readonly estado: components['schemas']['EstadoTicketEnum'];
-      readonly cuenta: number;
-      readonly nombre_original: string;
-      readonly tipo: string;
-      /** Format: decimal */
-      readonly confianza: string | null;
-      readonly error: string;
-      readonly datos_ia: unknown;
-      readonly intentos: number;
-      readonly lineas: components['schemas']['LineaTicket'][];
-      readonly movimiento: components['schemas']['MovimientoDeTicket'];
-      /** Format: date-time */
-      readonly creado: string;
-      /** Format: date-time */
-      readonly procesado_en: string | null;
-    };
-    TicketSoporte: {
-      readonly id: number;
-      readonly hogar: number;
-      readonly hogar_nombre: string;
-      /** Format: email */
-      readonly subido_por: string;
-      readonly estado: components['schemas']['EstadoTicketEnum'];
-      readonly intentos: number;
-      /** Format: decimal */
-      readonly confianza: string | null;
-      readonly error: string;
-      readonly nombre_original: string;
-      /** Format: date-time */
-      readonly creado: string;
-      /** Format: date-time */
-      readonly actualizado: string;
-    };
-    TicketWs: {
-      ticket: string;
-      /** @description Segundos */
-      caduca_en: number;
-    };
-    TokenObtainPairRequest: {
-      email: string;
-      password: string;
-    };
-    UrlArchivo: {
-      /** Format: uri */
-      url: string;
-    };
-    Usuario: {
-      readonly id: number;
-      /** Format: email */
-      readonly email: string;
-      nombre?: string;
-      apellidos?: string;
-      /** Format: date-time */
-      readonly fecha_alta: string;
-      readonly es_personal: boolean;
-    };
-    UsuarioRequest: {
-      nombre?: string;
-      apellidos?: string;
-    };
-    UsuarioSoporte: {
-      readonly id: number;
-      /** Format: email */
-      readonly email: string;
-      readonly nombre: string;
-      readonly apellidos: string;
-      is_active?: boolean;
-      readonly is_staff: boolean;
-      /** Format: date-time */
-      readonly fecha_alta: string;
-      /**
-       * Último inicio de sesión
-       * Format: date-time
-       */
-      readonly last_login: string | null;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
-}
-export type $defs = Record<string, never>;
-export interface operations {
-  auth_cambiar_password_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CambiarPasswordRequest'];
-        'multipart/form-data': components['schemas']['CambiarPasswordRequest'];
-      };
-    };
-    responses: {
-      /** @description No response body */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    schemas: {
+        Access: {
+            access: string;
         };
-        content?: never;
-      };
-    };
-  };
-  auth_login_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['TokenObtainPairRequest'];
-        'multipart/form-data': components['schemas']['TokenObtainPairRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        Actualizadas: {
+            actualizadas: number;
         };
-        content: {
-          'application/json': components['schemas']['Access'];
+        Auditoria: {
+            readonly id: number;
+            /** Format: date-time */
+            readonly fecha: string;
+            /** Format: email */
+            readonly usuario: string;
+            readonly accion: components["schemas"]["AuditoriaAccionEnum"];
+            readonly modelo: string;
+            readonly object_id: string;
+            readonly representacion: string;
+            readonly cambios: unknown;
         };
-      };
-    };
-  };
-  auth_logout_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  auth_me_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Usuario'];
-        };
-      };
-    };
-  };
-  auth_me_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        'application/json': components['schemas']['UsuarioRequest'];
-        'multipart/form-data': components['schemas']['UsuarioRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Usuario'];
-        };
-      };
-    };
-  };
-  auth_me_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        'application/json': components['schemas']['PatchedUsuarioRequest'];
-        'multipart/form-data': components['schemas']['PatchedUsuarioRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Usuario'];
-        };
-      };
-    };
-  };
-  auth_recuperar_password_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['EmailRequest'];
-        'multipart/form-data': components['schemas']['EmailRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Detalle'];
-        };
-      };
-    };
-  };
-  auth_recuperar_password_confirmar_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['NuevaPasswordRequest'];
-        'multipart/form-data': components['schemas']['NuevaPasswordRequest'];
-      };
-    };
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  auth_refresh_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Access'];
-        };
-      };
-    };
-  };
-  auth_registro_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['RegistroRequest'];
-        'multipart/form-data': components['schemas']['RegistroRequest'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Registro'];
-        };
-      };
-    };
-  };
-  auth_verificar_email_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['EnlaceTokenRequest'];
-        'multipart/form-data': components['schemas']['EnlaceTokenRequest'];
-      };
-    };
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  backoffice_auditoria_list: {
-    parameters: {
-      query?: {
         /**
          * @description * `crear` - Crear
          *     * `modificar` - Modificar
          *     * `borrar` - Borrar
+         * @enum {string}
          */
-        accion?: 'borrar' | 'crear' | 'modificar';
-        /** @description app.modelo, p. ej. finanzas.movimiento */
-        modelo?: string;
-        object_id?: string;
-        /** @description Qué campo usar para ordenar los resultados. */
-        ordering?: string;
-        /** @description Un número de página dentro del conjunto de resultados paginado. */
-        page?: number;
-        /** @description Número de resultados a devolver por página. */
-        page_size?: number;
-        /** @description Un término de búsqueda. */
-        search?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        AuditoriaAccionEnum: "crear" | "modificar" | "borrar";
+        CambiarPasswordRequest: {
+            actual: string;
+            nueva: string;
         };
-        content: {
-          'application/json': components['schemas']['PaginatedAuditoriaList'];
+        /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
+        Categoria: {
+            readonly id: number;
+            nombre: string;
+            padre?: number | null;
+            color?: string;
+            icono?: string;
+            orden?: number;
+            /** Es de ingresos */
+            es_ingreso?: boolean;
         };
-      };
-    };
-  };
-  backoffice_auditoria_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Un valor de entero único que identifique este registro auditoria. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        CategoriaDashboard: {
+            categoria: number | null;
+            nombre: string;
+            color: string;
+            /** Format: decimal */
+            total: string;
+            /** Format: decimal */
+            porcentaje: string;
         };
-        content: {
-          'application/json': components['schemas']['Auditoria'];
+        /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
+        CategoriaRequest: {
+            nombre: string;
+            padre?: number | null;
+            color?: string;
+            icono?: string;
+            orden?: number;
+            /** Es de ingresos */
+            es_ingreso?: boolean;
         };
-      };
-    };
-  };
-  backoffice_hogares_list: {
-    parameters: {
-      query?: {
-        /** @description Qué campo usar para ordenar los resultados. */
-        ordering?: string;
-        /** @description Un número de página dentro del conjunto de resultados paginado. */
-        page?: number;
-        /** @description Número de resultados a devolver por página. */
-        page_size?: number;
-        /** @description Un término de búsqueda. */
-        search?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        Comercio: {
+            readonly id: number;
+            nombre: string;
         };
-        content: {
-          'application/json': components['schemas']['PaginatedHogarSoporteList'];
+        ComercioDashboard: {
+            comercio: number;
+            nombre: string;
+            /** Format: decimal */
+            total: string;
+            veces: number;
         };
-      };
-    };
-  };
-  backoffice_hogares_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Un valor de entero único que identifique este hogar. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        ComercioRequest: {
+            nombre: string;
         };
-        content: {
-          'application/json': components['schemas']['HogarDetalleSoporte'];
+        ConfirmarImportacionRequest: {
+            separar?: number[];
         };
-      };
-    };
-  };
-  backoffice_importaciones_list: {
-    parameters: {
-      query?: {
+        /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
+        ConfirmarTicketRequest: {
+            /** Format: date */
+            fecha: string;
+            /** Format: decimal */
+            total: string;
+            concepto: string;
+            categoria?: number | null;
+        };
+        Contador: {
+            no_leidas: number;
+        };
+        Cuenta: {
+            readonly id: number;
+            nombre: string;
+            tipo?: components["schemas"]["CuentaTipoEnum"];
+            iban?: string;
+            activa?: boolean;
+            /** Format: decimal */
+            readonly saldo: string;
+        };
+        CuentaRequest: {
+            nombre: string;
+            tipo?: components["schemas"]["CuentaTipoEnum"];
+            iban?: string;
+            activa?: boolean;
+        };
+        /**
+         * @description * `banco` - Cuenta bancaria
+         *     * `tarjeta` - Tarjeta
+         *     * `efectivo` - Efectivo
+         * @enum {string}
+         */
+        CuentaTipoEnum: "banco" | "tarjeta" | "efectivo";
+        Dashboard: {
+            /** Format: date */
+            mes: string;
+            /** Format: decimal */
+            gastos: string;
+            /** Format: decimal */
+            ingresos: string;
+            /** Format: decimal */
+            balance: string;
+            num_movimientos: number;
+            /** Format: decimal */
+            gastos_mes_anterior: string;
+            /** Format: decimal */
+            variacion: string | null;
+            por_categoria: components["schemas"]["CategoriaDashboard"][];
+            acumulado: components["schemas"]["DiaDashboard"][];
+            evolucion: components["schemas"]["MesDashboard"][];
+            top_comercios: components["schemas"]["ComercioDashboard"][];
+            presupuestos: components["schemas"]["PresupuestoDashboard"][];
+            pendientes_revision: number;
+        };
+        Detalle: {
+            detail: string;
+        };
+        DiaDashboard: {
+            /** Format: date */
+            fecha: string;
+            /** Format: decimal */
+            gasto: string;
+            /** Format: decimal */
+            acumulado: string;
+        };
+        EmailRequest: {
+            /** Format: email */
+            email: string;
+        };
+        EnlaceTokenRequest: {
+            uid: string;
+            token: string;
+        };
         /**
          * @description * `pendiente` - Pendiente
          *     * `analizando` - Analizando
@@ -2409,1959 +1268,269 @@ export interface operations {
          *     * `completada` - Completada
          *     * `error` - Error
          *     * `deshecha` - Deshecha
+         * @enum {string}
          */
-        estado?:
-          | 'analizando'
-          | 'completada'
-          | 'deshecha'
-          | 'error'
-          | 'importando'
-          | 'pendiente'
-          | 'vista_previa';
-        hogar?: number;
-        /** @description Qué campo usar para ordenar los resultados. */
-        ordering?: string;
-        /** @description Un número de página dentro del conjunto de resultados paginado. */
-        page?: number;
-        /** @description Número de resultados a devolver por página. */
-        page_size?: number;
-        /** @description Un término de búsqueda. */
-        search?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['PaginatedImportacionSoporteList'];
-        };
-      };
-    };
-  };
-  backoffice_importaciones_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Un valor de entero único que identifique este importación. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['ImportacionSoporte'];
-        };
-      };
-    };
-  };
-  backoffice_importaciones_deshacer_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Un valor de entero único que identifique este importación. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['ImportacionSoporte'];
-        };
-      };
-    };
-  };
-  backoffice_movimientos_list: {
-    parameters: {
-      query?: {
-        categoria?: number;
-        hogar?: number;
-        /** @description Qué campo usar para ordenar los resultados. */
-        ordering?: string;
-        /**
-         * @description * `manual` - Manual
-         *     * `ticket` - Ticket
-         *     * `extracto` - Extracto bancario
-         */
-        origen?: 'extracto' | 'manual' | 'ticket';
-        /** @description Un número de página dentro del conjunto de resultados paginado. */
-        page?: number;
-        /** @description Número de resultados a devolver por página. */
-        page_size?: number;
-        revisado?: boolean;
-        /** @description Un término de búsqueda. */
-        search?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['PaginatedMovimientoSoporteList'];
-        };
-      };
-    };
-  };
-  backoffice_movimientos_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Un valor de entero único que identifique este movimiento. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['MovimientoSoporte'];
-        };
-      };
-    };
-  };
-  backoffice_movimientos_recategorizar_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['RecategorizarSoporteRequest'];
-        'multipart/form-data': components['schemas']['RecategorizarSoporteRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['ResultadoLote'];
-        };
-      };
-    };
-  };
-  backoffice_resumen_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Resumen'];
-        };
-      };
-    };
-  };
-  backoffice_tareas_list: {
-    parameters: {
-      query?: {
-        /** @description Qué campo usar para ordenar los resultados. */
-        ordering?: string;
-        /** @description Un término de búsqueda. */
-        search?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['TareaProgramada'][];
-        };
-      };
-    };
-  };
-  backoffice_tareas_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Un valor de entero único que identifique este tarea periódica. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['TareaProgramada'];
-        };
-      };
-    };
-  };
-  backoffice_tareas_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Un valor de entero único que identifique este tarea periódica. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        'application/json': components['schemas']['PatchedTareaProgramadaRequest'];
-        'multipart/form-data': components['schemas']['PatchedTareaProgramadaRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['TareaProgramada'];
-        };
-      };
-    };
-  };
-  backoffice_tickets_list: {
-    parameters: {
-      query?: {
-        /** @description Más de 15 min sin terminar */
-        atascado?: boolean;
+        EstadoImportacionEnum: "pendiente" | "analizando" | "vista_previa" | "importando" | "completada" | "error" | "deshecha";
         /**
          * @description * `pendiente` - Pendiente
          *     * `procesando` - Procesando
          *     * `revisar` - Pendiente de revisión
          *     * `procesado` - Procesado
          *     * `error` - Error
+         * @enum {string}
          */
-        estado?: 'error' | 'pendiente' | 'procesado' | 'procesando' | 'revisar';
-        hogar?: number;
-        /** @description Qué campo usar para ordenar los resultados. */
-        ordering?: string;
-        /** @description Un número de página dentro del conjunto de resultados paginado. */
-        page?: number;
-        /** @description Número de resultados a devolver por página. */
-        page_size?: number;
-        /** @description Un término de búsqueda. */
-        search?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        EstadoTicketEnum: "pendiente" | "procesando" | "revisar" | "procesado" | "error";
+        FilaImportacion: {
+            readonly id: number;
+            readonly numero: number;
+            /** Format: date */
+            readonly fecha: string;
+            readonly concepto: string;
+            /** Format: decimal */
+            readonly importe: string;
+            readonly accion: components["schemas"]["FilaImportacionAccionEnum"];
+            readonly coincide_con: number | null;
+            readonly coincide_con_concepto: string;
+            readonly movimiento: number | null;
         };
-        content: {
-          'application/json': components['schemas']['PaginatedTicketSoporteList'];
-        };
-      };
-    };
-  };
-  backoffice_tickets_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Un valor de entero único que identifique este ticket. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['TicketSoporte'];
-        };
-      };
-    };
-  };
-  backoffice_tickets_reprocesar_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['IdsRequest'];
-        'multipart/form-data': components['schemas']['IdsRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['ResultadoLote'];
-        };
-      };
-    };
-  };
-  backoffice_usuarios_list: {
-    parameters: {
-      query?: {
-        is_active?: boolean;
-        is_staff?: boolean;
-        /** @description Qué campo usar para ordenar los resultados. */
-        ordering?: string;
-        /** @description Un número de página dentro del conjunto de resultados paginado. */
-        page?: number;
-        /** @description Número de resultados a devolver por página. */
-        page_size?: number;
-        /** @description Un término de búsqueda. */
-        search?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['PaginatedUsuarioSoporteList'];
-        };
-      };
-    };
-  };
-  backoffice_usuarios_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Un valor de entero único que identifique este usuario. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['UsuarioSoporte'];
-        };
-      };
-    };
-  };
-  backoffice_usuarios_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Un valor de entero único que identifique este usuario. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        'application/json': components['schemas']['PatchedUsuarioSoporteRequest'];
-        'multipart/form-data': components['schemas']['PatchedUsuarioSoporteRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['UsuarioSoporte'];
-        };
-      };
-    };
-  };
-  comercios_list: {
-    parameters: {
-      query?: {
-        /** @description Un número de página dentro del conjunto de resultados paginado. */
-        page?: number;
-        /** @description Número de resultados a devolver por página. */
-        page_size?: number;
-        /** @description Un término de búsqueda. */
-        search?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['PaginatedComercioList'];
-        };
-      };
-    };
-  };
-  hogares_list: {
-    parameters: {
-      query?: {
-        /** @description Qué campo usar para ordenar los resultados. */
-        ordering?: string;
-        /** @description Un número de página dentro del conjunto de resultados paginado. */
-        page?: number;
-        /** @description Número de resultados a devolver por página. */
-        page_size?: number;
-        /** @description Un término de búsqueda. */
-        search?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['PaginatedHogarList'];
-        };
-      };
-    };
-  };
-  hogares_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['HogarRequest'];
-        'multipart/form-data': components['schemas']['HogarRequest'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Hogar'];
-        };
-      };
-    };
-  };
-  hogares_categorias_list: {
-    parameters: {
-      query?: {
-        /** @description Qué campo usar para ordenar los resultados. */
-        ordering?: string;
-        /** @description Un término de búsqueda. */
-        search?: string;
-      };
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Categoria'][];
-        };
-      };
-    };
-  };
-  hogares_categorias_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CategoriaRequest'];
-        'multipart/form-data': components['schemas']['CategoriaRequest'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Categoria'];
-        };
-      };
-    };
-  };
-  hogares_categorias_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este categoría. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Categoria'];
-        };
-      };
-    };
-  };
-  hogares_categorias_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este categoría. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CategoriaRequest'];
-        'multipart/form-data': components['schemas']['CategoriaRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Categoria'];
-        };
-      };
-    };
-  };
-  hogares_categorias_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este categoría. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  hogares_categorias_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este categoría. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        'application/json': components['schemas']['PatchedCategoriaRequest'];
-        'multipart/form-data': components['schemas']['PatchedCategoriaRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Categoria'];
-        };
-      };
-    };
-  };
-  hogares_categorias_reordenar_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['ReordenarRequest'];
-        'multipart/form-data': components['schemas']['ReordenarRequest'];
-      };
-    };
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  hogares_cuentas_list: {
-    parameters: {
-      query?: {
-        /** @description Qué campo usar para ordenar los resultados. */
-        ordering?: string;
-        /** @description Un término de búsqueda. */
-        search?: string;
-      };
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Cuenta'][];
-        };
-      };
-    };
-  };
-  hogares_cuentas_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CuentaRequest'];
-        'multipart/form-data': components['schemas']['CuentaRequest'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Cuenta'];
-        };
-      };
-    };
-  };
-  hogares_cuentas_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este cuenta. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Cuenta'];
-        };
-      };
-    };
-  };
-  hogares_cuentas_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este cuenta. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CuentaRequest'];
-        'multipart/form-data': components['schemas']['CuentaRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Cuenta'];
-        };
-      };
-    };
-  };
-  hogares_cuentas_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este cuenta. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  hogares_cuentas_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este cuenta. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        'application/json': components['schemas']['PatchedCuentaRequest'];
-        'multipart/form-data': components['schemas']['PatchedCuentaRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Cuenta'];
-        };
-      };
-    };
-  };
-  hogares_dashboard_retrieve: {
-    parameters: {
-      query?: {
-        /** @description AAAA-MM (por defecto, el actual) */
-        mes?: string;
-      };
-      header?: never;
-      path: {
-        hogar_pk: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Dashboard'];
-        };
-      };
-      /** @description No response body */
-      304: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  hogares_importaciones_list: {
-    parameters: {
-      query?: {
-        cuenta?: number;
         /**
-         * @description * `pendiente` - Pendiente
-         *     * `analizando` - Analizando
-         *     * `vista_previa` - Vista previa
-         *     * `importando` - Importando
-         *     * `completada` - Completada
-         *     * `error` - Error
-         *     * `deshecha` - Deshecha
+         * @description * `crear` - Crear
+         *     * `duplicada` - Ya existe
+         *     * `conciliar` - Coincide con un gasto existente
+         * @enum {string}
          */
-        estado?:
-          | 'analizando'
-          | 'completada'
-          | 'deshecha'
-          | 'error'
-          | 'importando'
-          | 'pendiente'
-          | 'vista_previa';
-        /** @description Qué campo usar para ordenar los resultados. */
-        ordering?: string;
-        /** @description Un número de página dentro del conjunto de resultados paginado. */
-        page?: number;
-        /** @description Número de resultados a devolver por página. */
-        page_size?: number;
-        /** @description Un término de búsqueda. */
-        search?: string;
-      };
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['PaginatedImportacionList'];
-        };
-      };
-    };
-  };
-  hogares_importaciones_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['SubirImportacionRequest'];
-        'multipart/form-data': components['schemas']['SubirImportacionRequest'];
-      };
-    };
-    responses: {
-      202: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Importacion'];
-        };
-      };
-    };
-  };
-  hogares_importaciones_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este importación. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Importacion'];
-        };
-      };
-    };
-  };
-  hogares_importaciones_confirmar_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este importación. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        'application/json': components['schemas']['ConfirmarImportacionRequest'];
-        'multipart/form-data': components['schemas']['ConfirmarImportacionRequest'];
-      };
-    };
-    responses: {
-      202: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Importacion'];
-        };
-      };
-    };
-  };
-  hogares_importaciones_deshacer_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este importación. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Importacion'];
-        };
-      };
-    };
-  };
-  hogares_importaciones_filas_retrieve: {
-    parameters: {
-      query?: {
-        accion?: 'conciliar' | 'crear' | 'duplicada';
-      };
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este importación. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['FilaImportacion'];
-        };
-      };
-    };
-  };
-  hogares_informes_list: {
-    parameters: {
-      query?: {
-        /** @description Qué campo usar para ordenar los resultados. */
-        ordering?: string;
-        /** @description Un término de búsqueda. */
-        search?: string;
-      };
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Informe'][];
-        };
-      };
-    };
-  };
-  hogares_informes_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['GenerarInformeRequest'];
-        'multipart/form-data': components['schemas']['GenerarInformeRequest'];
-      };
-    };
-    responses: {
-      202: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['InformeEncolado'];
-        };
-      };
-    };
-  };
-  hogares_informes_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        mes: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Informe'];
-        };
-      };
-    };
-  };
-  hogares_informes_pdf_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        mes: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description El PDF */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  hogares_miembros_list: {
-    parameters: {
-      query?: {
-        /** @description Qué campo usar para ordenar los resultados. */
-        ordering?: string;
-        /** @description Un término de búsqueda. */
-        search?: string;
-      };
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Miembro'][];
-        };
-      };
-    };
-  };
-  hogares_miembros_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este membresía. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        'application/json': components['schemas']['MiembroRequest'];
-        'multipart/form-data': components['schemas']['MiembroRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Miembro'];
-        };
-      };
-    };
-  };
-  hogares_miembros_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este membresía. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  hogares_miembros_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este membresía. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        'application/json': components['schemas']['PatchedMiembroRequest'];
-        'multipart/form-data': components['schemas']['PatchedMiembroRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Miembro'];
-        };
-      };
-    };
-  };
-  hogares_miembros_invitar_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['InvitarRequest'];
-        'multipart/form-data': components['schemas']['InvitarRequest'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Invitacion'];
-        };
-      };
-    };
-  };
-  hogares_movimientos_list: {
-    parameters: {
-      query?: {
-        categoria?: number[];
-        cuenta?: number[];
-        /** @description El valor del cursor de paginación. */
-        cursor?: string;
-        etiqueta?: string;
-        fecha_after?: string;
-        fecha_before?: string;
-        importe_max?: number;
-        importe_min?: number;
-        /** @description Qué campo usar para ordenar los resultados. */
-        ordering?: string;
+        FilaImportacionAccionEnum: "crear" | "duplicada" | "conciliar";
         /**
-         * @description * `manual` - Manual
-         *     * `ticket` - Ticket
-         *     * `extracto` - Extracto bancario
+         * @description * `csv` - CSV
+         *     * `pdf` - PDF
+         * @enum {string}
          */
-        origen?: 'extracto' | 'manual' | 'ticket';
-        revisado?: boolean;
-        /** @description Un término de búsqueda. */
-        search?: string;
-        sin_categoria?: boolean;
-        /**
-         * @description * `gasto` - Gastos
-         *     * `ingreso` - Ingresos
-         */
-        tipo?: 'gasto' | 'ingreso';
-      };
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        FormatoEnum: "csv" | "pdf";
+        GenerarInformeRequest: {
+            /**
+             * Format: date
+             * @description AAAA-MM
+             */
+            mes: string;
+            /**
+             * @description Enviarlo también por email a los miembros
+             * @default false
+             */
+            enviar: boolean;
         };
-        content: {
-          'application/json': components['schemas']['PaginatedMovimientoList'];
+        Hogar: {
+            readonly id: number;
+            nombre: string;
+            moneda?: string;
+            zona_horaria?: string;
+            readonly mi_rol: string;
+            readonly num_miembros: number;
+            /** Format: date-time */
+            readonly creado: string;
         };
-      };
-    };
-  };
-  hogares_movimientos_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['MovimientoRequest'];
-        'multipart/form-data': components['schemas']['MovimientoRequest'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
+        HogarDetalleSoporte: {
+            readonly id: number;
+            readonly nombre: string;
+            readonly zona_horaria: string;
+            readonly num_miembros: number;
+            readonly num_movimientos: number;
+            /** Format: date-time */
+            readonly creado: string;
+            readonly miembros: components["schemas"]["MiembroSoporte"][];
         };
-        content: {
-          'application/json': components['schemas']['Movimiento'];
+        HogarRequest: {
+            nombre: string;
+            moneda?: string;
+            zona_horaria?: string;
         };
-      };
-    };
-  };
-  hogares_movimientos_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este movimiento. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        HogarSoporte: {
+            readonly id: number;
+            readonly nombre: string;
+            readonly zona_horaria: string;
+            readonly num_miembros: number;
+            readonly num_movimientos: number;
+            /** Format: date-time */
+            readonly creado: string;
         };
-        content: {
-          'application/json': components['schemas']['Movimiento'];
+        IdsRequest: {
+            ids: number[];
         };
-      };
-    };
-  };
-  hogares_movimientos_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este movimiento. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['MovimientoRequest'];
-        'multipart/form-data': components['schemas']['MovimientoRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        Importacion: {
+            readonly id: number;
+            readonly estado: components["schemas"]["EstadoImportacionEnum"];
+            readonly cuenta: number;
+            readonly nombre_original: string;
+            readonly formato: components["schemas"]["FormatoEnum"];
+            readonly total_filas: number;
+            readonly procesadas: number;
+            readonly progreso: number;
+            readonly creados: number;
+            readonly conciliados: number;
+            readonly duplicados: number;
+            readonly resumen: unknown;
+            readonly avisos: unknown;
+            readonly error: string;
+            /** Format: date-time */
+            readonly creado: string;
+            /** Format: date-time */
+            readonly terminado_en: string | null;
         };
-        content: {
-          'application/json': components['schemas']['Movimiento'];
+        ImportacionSoporte: {
+            readonly id: number;
+            readonly hogar: number;
+            readonly hogar_nombre: string;
+            readonly nombre_original: string;
+            readonly estado: components["schemas"]["EstadoImportacionEnum"];
+            readonly progreso: number;
+            readonly total_filas: number;
+            readonly creados: number;
+            readonly conciliados: number;
+            readonly duplicados: number;
+            readonly error: string;
+            /** Format: date-time */
+            readonly creado: string;
         };
-      };
-    };
-  };
-  hogares_movimientos_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este movimiento. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
+        Informe: {
+            readonly id: number;
+            /** Format: date */
+            readonly mes: string;
+            readonly tamano: number;
+            readonly automatico: boolean;
+            /** Format: date-time */
+            readonly creado: string;
+            /** Format: date-time */
+            readonly actualizado: string;
         };
-        content?: never;
-      };
-    };
-  };
-  hogares_movimientos_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este movimiento. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        'application/json': components['schemas']['PatchedMovimientoRequest'];
-        'multipart/form-data': components['schemas']['PatchedMovimientoRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        InformeEncolado: {
+            mes: string;
+            estado: string;
         };
-        content: {
-          'application/json': components['schemas']['Movimiento'];
+        Invitacion: {
+            readonly id: number;
+            /** Format: email */
+            email: string;
+            rol?: components["schemas"]["RolEnum"];
+            /** Format: date-time */
+            caduca?: string;
+            /** Format: date-time */
+            aceptada?: string | null;
         };
-      };
-    };
-  };
-  hogares_movimientos_exportar_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        InvitarRequest: {
+            /** Format: email */
+            email: string;
+            /** @default miembro */
+            rol: components["schemas"]["RolEnum"];
         };
-        content: {
-          'text/csv': string;
+        LeerRequest: {
+            ids?: number[];
         };
-      };
-    };
-  };
-  hogares_movimientos_recategorizar_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['RecategorizarRequest'];
-        'multipart/form-data': components['schemas']['RecategorizarRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        LineaTicket: {
+            orden: number;
+            descripcion: string;
+            /** Format: decimal */
+            cantidad?: string;
+            /** Format: decimal */
+            precio_unitario: string;
+            /** Format: decimal */
+            readonly importe: string;
         };
-        content: {
-          'application/json': {
-            actualizados?: number;
-          };
+        MesDashboard: {
+            /** Format: date */
+            mes: string;
+            /** Format: decimal */
+            gastos: string;
+            /** Format: decimal */
+            ingresos: string;
         };
-      };
-    };
-  };
-  hogares_presupuestos_list: {
-    parameters: {
-      query?: {
-        /** @description Mes en formato AAAA-MM */
-        mes?: string;
-        /** @description Qué campo usar para ordenar los resultados. */
-        ordering?: string;
-        /** @description Un término de búsqueda. */
-        search?: string;
-      };
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        Miembro: {
+            readonly id: number;
+            /** Format: email */
+            readonly email: string;
+            readonly nombre: string;
+            rol?: components["schemas"]["RolEnum"];
+            /** Format: date-time */
+            readonly creado: string;
         };
-        content: {
-          'application/json': components['schemas']['Presupuesto'][];
+        MiembroRequest: {
+            rol?: components["schemas"]["RolEnum"];
         };
-      };
-    };
-  };
-  hogares_presupuestos_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['PresupuestoRequest'];
-        'multipart/form-data': components['schemas']['PresupuestoRequest'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
+        MiembroSoporte: {
+            usuario: number;
+            /** Format: email */
+            email: string;
+            rol: string;
         };
-        content: {
-          'application/json': components['schemas']['Presupuesto'];
+        /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
+        Movimiento: {
+            readonly id: number;
+            /** Format: date */
+            fecha: string;
+            /** Format: decimal */
+            importe: string;
+            concepto: string;
+            cuenta: number;
+            readonly cuenta_nombre: string;
+            categoria?: number | null;
+            readonly categoria_nombre: string;
+            readonly categoria_color: string;
+            readonly comercio: components["schemas"]["Comercio"];
+            etiquetas?: string[];
+            notas?: string;
+            readonly origen: components["schemas"]["OrigenEnum"];
+            revisado?: boolean;
+            /** @default 0 */
+            readonly num_adjuntos: number;
+            /** Format: date-time */
+            readonly creado: string;
         };
-      };
-    };
-  };
-  hogares_presupuestos_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este presupuesto. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        MovimientoDeTicket: {
+            readonly id: number;
+            /** Format: date */
+            fecha: string;
+            /** Format: decimal */
+            importe: string;
+            concepto: string;
+            categoria?: number | null;
+            revisado?: boolean;
         };
-        content: {
-          'application/json': components['schemas']['Presupuesto'];
+        /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
+        MovimientoRequest: {
+            /** Format: date */
+            fecha: string;
+            /** Format: decimal */
+            importe: string;
+            concepto: string;
+            cuenta: number;
+            categoria?: number | null;
+            etiquetas?: string[];
+            notas?: string;
+            revisado?: boolean;
         };
-      };
-    };
-  };
-  hogares_presupuestos_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este presupuesto. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['PresupuestoRequest'];
-        'multipart/form-data': components['schemas']['PresupuestoRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        MovimientoSoporte: {
+            readonly id: number;
+            readonly hogar: number;
+            /** Format: date */
+            readonly fecha: string;
+            /** Format: decimal */
+            readonly importe: string;
+            readonly concepto: string;
+            readonly categoria: number | null;
+            readonly categoria_nombre: string;
+            readonly origen: components["schemas"]["OrigenEnum"];
+            readonly revisado: boolean;
         };
-        content: {
-          'application/json': components['schemas']['Presupuesto'];
+        Notificacion: {
+            readonly id: number;
+            readonly tipo: components["schemas"]["NotificacionTipoEnum"];
+            readonly titulo: string;
+            readonly mensaje: string;
+            readonly enlace: string;
+            readonly hogar: number | null;
+            readonly datos: unknown;
+            readonly leida: boolean;
+            /** Format: date-time */
+            readonly creado: string;
         };
-      };
-    };
-  };
-  hogares_presupuestos_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este presupuesto. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  hogares_presupuestos_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este presupuesto. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        'application/json': components['schemas']['PatchedPresupuestoRequest'];
-        'multipart/form-data': components['schemas']['PatchedPresupuestoRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Presupuesto'];
-        };
-      };
-    };
-  };
-  hogares_tickets_list: {
-    parameters: {
-      query?: {
-        cuenta?: number;
-        /**
-         * @description * `pendiente` - Pendiente
-         *     * `procesando` - Procesando
-         *     * `revisar` - Pendiente de revisión
-         *     * `procesado` - Procesado
-         *     * `error` - Error
-         */
-        estado?: 'error' | 'pendiente' | 'procesado' | 'procesando' | 'revisar';
-        /** @description Qué campo usar para ordenar los resultados. */
-        ordering?: string;
-        /** @description Un número de página dentro del conjunto de resultados paginado. */
-        page?: number;
-        /** @description Número de resultados a devolver por página. */
-        page_size?: number;
-        /** @description Un término de búsqueda. */
-        search?: string;
-      };
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['PaginatedTicketList'];
-        };
-      };
-    };
-  };
-  hogares_tickets_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['SubirTicketRequest'];
-        'multipart/form-data': components['schemas']['SubirTicketRequest'];
-      };
-    };
-    responses: {
-      202: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Ticket'];
-        };
-      };
-    };
-  };
-  hogares_tickets_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este ticket. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Ticket'];
-        };
-      };
-    };
-  };
-  hogares_tickets_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este ticket. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  hogares_tickets_archivo_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este ticket. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['UrlArchivo'];
-        };
-      };
-    };
-  };
-  hogares_tickets_confirmar_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este ticket. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['ConfirmarTicketRequest'];
-        'multipart/form-data': components['schemas']['ConfirmarTicketRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Ticket'];
-        };
-      };
-    };
-  };
-  hogares_tickets_reprocesar_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        hogar_pk: string;
-        /** @description Un valor de entero único que identifique este ticket. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        'application/json': components['schemas']['ReprocesarTicketRequest'];
-        'multipart/form-data': components['schemas']['ReprocesarTicketRequest'];
-      };
-    };
-    responses: {
-      202: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Ticket'];
-        };
-      };
-    };
-  };
-  hogares_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Un valor de entero único que identifique este hogar. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Hogar'];
-        };
-      };
-    };
-  };
-  hogares_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Un valor de entero único que identifique este hogar. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['HogarRequest'];
-        'multipart/form-data': components['schemas']['HogarRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Hogar'];
-        };
-      };
-    };
-  };
-  hogares_destroy: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Un valor de entero único que identifique este hogar. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  hogares_partial_update: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Un valor de entero único que identifique este hogar. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        'application/json': components['schemas']['PatchedHogarRequest'];
-        'multipart/form-data': components['schemas']['PatchedHogarRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Hogar'];
-        };
-      };
-    };
-  };
-  invitaciones_aceptar_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        token: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Miembro'];
-        };
-      };
-    };
-  };
-  notificaciones_list: {
-    parameters: {
-      query?: {
-        /** @description El valor del cursor de paginación. */
-        cursor?: string;
-        hogar?: number;
-        leida?: boolean;
-        /** @description Qué campo usar para ordenar los resultados. */
-        ordering?: string;
-        /** @description Un término de búsqueda. */
-        search?: string;
         /**
          * @description * `ticket_procesado` - Ticket procesado
          *     * `ticket_revisar` - Ticket pendiente de revisión
@@ -4371,114 +1540,2908 @@ export interface operations {
          *     * `importacion_error` - Error en una importación
          *     * `presupuesto_superado` - Presupuesto superado
          *     * `informe_listo` - Informe mensual disponible
+         * @enum {string}
          */
-        tipo?:
-          | 'importacion_completada'
-          | 'importacion_error'
-          | 'importacion_lista'
-          | 'informe_listo'
-          | 'presupuesto_superado'
-          | 'ticket_error'
-          | 'ticket_procesado'
-          | 'ticket_revisar';
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        NotificacionTipoEnum: "ticket_procesado" | "ticket_revisar" | "ticket_error" | "importacion_lista" | "importacion_completada" | "importacion_error" | "presupuesto_superado" | "informe_listo";
+        NuevaPasswordRequest: {
+            uid: string;
+            token: string;
+            password: string;
         };
-        content: {
-          'application/json': components['schemas']['PaginatedNotificacionList'];
+        /**
+         * @description * `manual` - Manual
+         *     * `ticket` - Ticket
+         *     * `extracto` - Extracto bancario
+         * @enum {string}
+         */
+        OrigenEnum: "manual" | "ticket" | "extracto";
+        PaginatedAuditoriaList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Auditoria"][];
+            total_pages?: number;
+            page?: number;
+            page_size?: number;
         };
-      };
-    };
-  };
-  notificaciones_leer_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Un valor de entero único que identifique este notificación. */
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
+        PaginatedComercioList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Comercio"][];
+            total_pages?: number;
+            page?: number;
+            page_size?: number;
         };
-        content?: never;
-      };
-    };
-  };
-  notificaciones_leer_todas_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: {
-      content: {
-        'application/json': components['schemas']['LeerRequest'];
-        'multipart/form-data': components['schemas']['LeerRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        PaginatedHogarList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Hogar"][];
+            total_pages?: number;
+            page?: number;
+            page_size?: number;
         };
-        content: {
-          'application/json': components['schemas']['Actualizadas'];
+        PaginatedHogarSoporteList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["HogarSoporte"][];
+            total_pages?: number;
+            page?: number;
+            page_size?: number;
         };
-      };
-    };
-  };
-  notificaciones_no_leidas_retrieve: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        PaginatedImportacionList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Importacion"][];
+            total_pages?: number;
+            page?: number;
+            page_size?: number;
         };
-        content: {
-          'application/json': components['schemas']['Contador'];
+        PaginatedImportacionSoporteList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["ImportacionSoporte"][];
+            total_pages?: number;
+            page?: number;
+            page_size?: number;
         };
-      };
-    };
-  };
-  notificaciones_ws_ticket_create: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
+        PaginatedMovimientoList: {
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?cursor=cD00ODY%3D"
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?cursor=cj0xJnA9NDg3
+             */
+            previous?: string | null;
+            results: components["schemas"]["Movimiento"][];
         };
-        content: {
-          'application/json': components['schemas']['TicketWs'];
+        PaginatedMovimientoSoporteList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["MovimientoSoporte"][];
+            total_pages?: number;
+            page?: number;
+            page_size?: number;
         };
-      };
+        PaginatedNotificacionList: {
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?cursor=cD00ODY%3D"
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?cursor=cj0xJnA9NDg3
+             */
+            previous?: string | null;
+            results: components["schemas"]["Notificacion"][];
+        };
+        PaginatedTicketList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Ticket"][];
+            total_pages?: number;
+            page?: number;
+            page_size?: number;
+        };
+        PaginatedTicketSoporteList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["TicketSoporte"][];
+            total_pages?: number;
+            page?: number;
+            page_size?: number;
+        };
+        PaginatedUsuarioSoporteList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["UsuarioSoporte"][];
+            total_pages?: number;
+            page?: number;
+            page_size?: number;
+        };
+        /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
+        PatchedCategoriaRequest: {
+            nombre?: string;
+            padre?: number | null;
+            color?: string;
+            icono?: string;
+            orden?: number;
+            /** Es de ingresos */
+            es_ingreso?: boolean;
+        };
+        PatchedCuentaRequest: {
+            nombre?: string;
+            tipo?: components["schemas"]["CuentaTipoEnum"];
+            iban?: string;
+            activa?: boolean;
+        };
+        PatchedHogarRequest: {
+            nombre?: string;
+            moneda?: string;
+            zona_horaria?: string;
+        };
+        PatchedMiembroRequest: {
+            rol?: components["schemas"]["RolEnum"];
+        };
+        /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
+        PatchedMovimientoRequest: {
+            /** Format: date */
+            fecha?: string;
+            /** Format: decimal */
+            importe?: string;
+            concepto?: string;
+            cuenta?: number;
+            categoria?: number | null;
+            etiquetas?: string[];
+            notas?: string;
+            revisado?: boolean;
+        };
+        /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
+        PatchedPresupuestoRequest: {
+            categoria?: number;
+            /** Format: date */
+            mes?: string;
+            /** Format: decimal */
+            importe?: string;
+        };
+        PatchedTareaProgramadaRequest: {
+            /**
+             * Habilitado
+             * @description Establece a Falso para deshabilitar la programación
+             */
+            enabled?: boolean;
+        };
+        PatchedUsuarioRequest: {
+            nombre?: string;
+            apellidos?: string;
+        };
+        PatchedUsuarioSoporteRequest: {
+            is_active?: boolean;
+        };
+        PorEstado: {
+            clave: string;
+            total: number;
+        };
+        /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
+        Presupuesto: {
+            readonly id: number;
+            categoria: number;
+            /** Format: date */
+            mes: string;
+            /** Format: decimal */
+            importe: string;
+            /** Format: decimal */
+            readonly gastado: string;
+            readonly porcentaje: number | null;
+        };
+        PresupuestoDashboard: {
+            categoria: string;
+            /** Format: decimal */
+            importe: string;
+            /** Format: decimal */
+            gastado: string;
+            porcentaje: number;
+        };
+        /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
+        PresupuestoRequest: {
+            categoria: number;
+            /** Format: date */
+            mes: string;
+            /** Format: decimal */
+            importe: string;
+        };
+        /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
+        RecategorizarRequest: {
+            ids: number[];
+            categoria: number;
+        };
+        RecategorizarSoporteRequest: {
+            ids: number[];
+            categoria: number;
+        };
+        Registro: {
+            /** Format: email */
+            email: string;
+            nombre?: string;
+            apellidos?: string;
+        };
+        RegistroRequest: {
+            /** Format: email */
+            email: string;
+            nombre?: string;
+            apellidos?: string;
+            password: string;
+        };
+        ReordenarRequest: {
+            ids: number[];
+        };
+        ReprocesarTicketRequest: {
+            /** @default false */
+            repetir_ocr: boolean;
+        };
+        ResultadoLote: {
+            hechos: number;
+            omitidos: number;
+        };
+        Resumen: {
+            tickets_24h: components["schemas"]["PorEstado"][];
+            tickets_atascados: number;
+            importaciones_en_curso: number;
+            importaciones_con_error_7d: number;
+            hogares: number;
+            usuarios_activos: number;
+        };
+        /**
+         * @description * `admin` - Administrador
+         *     * `miembro` - Miembro
+         *     * `lector` - Solo lectura
+         * @enum {string}
+         */
+        RolEnum: "admin" | "miembro" | "lector";
+        /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
+        SubirImportacionRequest: {
+            /** Format: binary */
+            archivo: string;
+            cuenta: number;
+        };
+        /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
+        SubirTicketRequest: {
+            /** Format: binary */
+            archivo: string;
+            cuenta: number;
+        };
+        TareaProgramada: {
+            readonly id: number;
+            /**
+             * Nombre
+             * @description Descripción corta para esta tarea
+             */
+            readonly name: string;
+            /**
+             * Task Name
+             * @description Nombre de la tarea Celery que debe ser ejecutada. (Ejemplo: "proj.tasks.import_contacts")
+             */
+            readonly task: string;
+            readonly horario: string;
+            /**
+             * Habilitado
+             * @description Establece a Falso para deshabilitar la programación
+             */
+            enabled?: boolean;
+            /**
+             * Fecha de última ejecución
+             * Format: date-time
+             * @description Fecha en la cual la programación ejecutó la tarea por última vez. Reinicializa a None si enabled está establecido como falso.
+             */
+            readonly last_run_at: string | null;
+            /**
+             * Contador de ejecuciones totales
+             * @description Contador de cuentas veces ha sido ejecutada la tarea
+             */
+            readonly total_run_count: number;
+        };
+        Ticket: {
+            readonly id: number;
+            readonly estado: components["schemas"]["EstadoTicketEnum"];
+            readonly cuenta: number;
+            readonly nombre_original: string;
+            readonly tipo: string;
+            /** Format: decimal */
+            readonly confianza: string | null;
+            readonly error: string;
+            readonly datos_ia: unknown;
+            readonly intentos: number;
+            readonly lineas: components["schemas"]["LineaTicket"][];
+            readonly movimiento: components["schemas"]["MovimientoDeTicket"];
+            /** Format: date-time */
+            readonly creado: string;
+            /** Format: date-time */
+            readonly procesado_en: string | null;
+        };
+        TicketSoporte: {
+            readonly id: number;
+            readonly hogar: number;
+            readonly hogar_nombre: string;
+            /** Format: email */
+            readonly subido_por: string;
+            readonly estado: components["schemas"]["EstadoTicketEnum"];
+            readonly intentos: number;
+            /** Format: decimal */
+            readonly confianza: string | null;
+            readonly error: string;
+            readonly nombre_original: string;
+            /** Format: date-time */
+            readonly creado: string;
+            /** Format: date-time */
+            readonly actualizado: string;
+        };
+        TicketWs: {
+            ticket: string;
+            /** @description Segundos */
+            caduca_en: number;
+        };
+        TokenObtainPairRequest: {
+            email: string;
+            password: string;
+        };
+        UrlArchivo: {
+            /** Format: uri */
+            url: string;
+        };
+        Usuario: {
+            readonly id: number;
+            /** Format: email */
+            readonly email: string;
+            nombre?: string;
+            apellidos?: string;
+            /** Format: date-time */
+            readonly fecha_alta: string;
+            readonly es_personal: boolean;
+        };
+        UsuarioRequest: {
+            nombre?: string;
+            apellidos?: string;
+        };
+        UsuarioSoporte: {
+            readonly id: number;
+            /** Format: email */
+            readonly email: string;
+            readonly nombre: string;
+            readonly apellidos: string;
+            is_active?: boolean;
+            readonly is_staff: boolean;
+            /** Format: date-time */
+            readonly fecha_alta: string;
+            /**
+             * Último inicio de sesión
+             * Format: date-time
+             */
+            readonly last_login: string | null;
+        };
     };
-  };
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
+}
+export type $defs = Record<string, never>;
+export interface operations {
+    auth_cambiar_password_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CambiarPasswordRequest"];
+                "multipart/form-data": components["schemas"]["CambiarPasswordRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    auth_login_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TokenObtainPairRequest"];
+                "multipart/form-data": components["schemas"]["TokenObtainPairRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Access"];
+                };
+            };
+        };
+    };
+    auth_logout_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    auth_me_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Usuario"];
+                };
+            };
+        };
+    };
+    auth_me_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UsuarioRequest"];
+                "multipart/form-data": components["schemas"]["UsuarioRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Usuario"];
+                };
+            };
+        };
+    };
+    auth_me_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedUsuarioRequest"];
+                "multipart/form-data": components["schemas"]["PatchedUsuarioRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Usuario"];
+                };
+            };
+        };
+    };
+    auth_recuperar_password_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailRequest"];
+                "multipart/form-data": components["schemas"]["EmailRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Detalle"];
+                };
+            };
+        };
+    };
+    auth_recuperar_password_confirmar_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NuevaPasswordRequest"];
+                "multipart/form-data": components["schemas"]["NuevaPasswordRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    auth_refresh_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Access"];
+                };
+            };
+        };
+    };
+    auth_registro_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegistroRequest"];
+                "multipart/form-data": components["schemas"]["RegistroRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Registro"];
+                };
+            };
+        };
+    };
+    auth_verificar_email_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EnlaceTokenRequest"];
+                "multipart/form-data": components["schemas"]["EnlaceTokenRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    backoffice_auditoria_list: {
+        parameters: {
+            query?: {
+                /**
+                 * @description * `crear` - Crear
+                 *     * `modificar` - Modificar
+                 *     * `borrar` - Borrar
+                 */
+                accion?: "borrar" | "crear" | "modificar";
+                /** @description app.modelo, p. ej. finanzas.movimiento */
+                modelo?: string;
+                object_id?: string;
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedAuditoriaList"];
+                };
+            };
+        };
+    };
+    backoffice_auditoria_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este registro auditoria. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Auditoria"];
+                };
+            };
+        };
+    };
+    backoffice_hogares_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedHogarSoporteList"];
+                };
+            };
+        };
+    };
+    backoffice_hogares_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este hogar. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HogarDetalleSoporte"];
+                };
+            };
+        };
+    };
+    backoffice_importaciones_list: {
+        parameters: {
+            query?: {
+                /**
+                 * @description * `pendiente` - Pendiente
+                 *     * `analizando` - Analizando
+                 *     * `vista_previa` - Vista previa
+                 *     * `importando` - Importando
+                 *     * `completada` - Completada
+                 *     * `error` - Error
+                 *     * `deshecha` - Deshecha
+                 */
+                estado?: "analizando" | "completada" | "deshecha" | "error" | "importando" | "pendiente" | "vista_previa";
+                hogar?: number;
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedImportacionSoporteList"];
+                };
+            };
+        };
+    };
+    backoffice_importaciones_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este importación. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportacionSoporte"];
+                };
+            };
+        };
+    };
+    backoffice_importaciones_deshacer_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este importación. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportacionSoporte"];
+                };
+            };
+        };
+    };
+    backoffice_movimientos_list: {
+        parameters: {
+            query?: {
+                categoria?: number;
+                hogar?: number;
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /**
+                 * @description * `manual` - Manual
+                 *     * `ticket` - Ticket
+                 *     * `extracto` - Extracto bancario
+                 */
+                origen?: "extracto" | "manual" | "ticket";
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                revisado?: boolean;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedMovimientoSoporteList"];
+                };
+            };
+        };
+    };
+    backoffice_movimientos_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este movimiento. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MovimientoSoporte"];
+                };
+            };
+        };
+    };
+    backoffice_movimientos_recategorizar_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RecategorizarSoporteRequest"];
+                "multipart/form-data": components["schemas"]["RecategorizarSoporteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoLote"];
+                };
+            };
+        };
+    };
+    backoffice_resumen_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Resumen"];
+                };
+            };
+        };
+    };
+    backoffice_tareas_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TareaProgramada"][];
+                };
+            };
+        };
+    };
+    backoffice_tareas_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este tarea periódica. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TareaProgramada"];
+                };
+            };
+        };
+    };
+    backoffice_tareas_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este tarea periódica. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedTareaProgramadaRequest"];
+                "multipart/form-data": components["schemas"]["PatchedTareaProgramadaRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TareaProgramada"];
+                };
+            };
+        };
+    };
+    backoffice_tickets_list: {
+        parameters: {
+            query?: {
+                /** @description Más de 15 min sin terminar */
+                atascado?: boolean;
+                /**
+                 * @description * `pendiente` - Pendiente
+                 *     * `procesando` - Procesando
+                 *     * `revisar` - Pendiente de revisión
+                 *     * `procesado` - Procesado
+                 *     * `error` - Error
+                 */
+                estado?: "error" | "pendiente" | "procesado" | "procesando" | "revisar";
+                hogar?: number;
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedTicketSoporteList"];
+                };
+            };
+        };
+    };
+    backoffice_tickets_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este ticket. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketSoporte"];
+                };
+            };
+        };
+    };
+    backoffice_tickets_reprocesar_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdsRequest"];
+                "multipart/form-data": components["schemas"]["IdsRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoLote"];
+                };
+            };
+        };
+    };
+    backoffice_usuarios_list: {
+        parameters: {
+            query?: {
+                is_active?: boolean;
+                is_staff?: boolean;
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedUsuarioSoporteList"];
+                };
+            };
+        };
+    };
+    backoffice_usuarios_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este usuario. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UsuarioSoporte"];
+                };
+            };
+        };
+    };
+    backoffice_usuarios_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este usuario. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedUsuarioSoporteRequest"];
+                "multipart/form-data": components["schemas"]["PatchedUsuarioSoporteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UsuarioSoporte"];
+                };
+            };
+        };
+    };
+    comercios_list: {
+        parameters: {
+            query?: {
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedComercioList"];
+                };
+            };
+        };
+    };
+    hogares_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedHogarList"];
+                };
+            };
+        };
+    };
+    hogares_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HogarRequest"];
+                "multipart/form-data": components["schemas"]["HogarRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Hogar"];
+                };
+            };
+        };
+    };
+    hogares_categorias_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Categoria"][];
+                };
+            };
+        };
+    };
+    hogares_categorias_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CategoriaRequest"];
+                "multipart/form-data": components["schemas"]["CategoriaRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Categoria"];
+                };
+            };
+        };
+    };
+    hogares_categorias_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este categoría. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Categoria"];
+                };
+            };
+        };
+    };
+    hogares_categorias_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este categoría. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CategoriaRequest"];
+                "multipart/form-data": components["schemas"]["CategoriaRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Categoria"];
+                };
+            };
+        };
+    };
+    hogares_categorias_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este categoría. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    hogares_categorias_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este categoría. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCategoriaRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCategoriaRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Categoria"];
+                };
+            };
+        };
+    };
+    hogares_categorias_reordenar_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReordenarRequest"];
+                "multipart/form-data": components["schemas"]["ReordenarRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    hogares_cuentas_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Cuenta"][];
+                };
+            };
+        };
+    };
+    hogares_cuentas_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CuentaRequest"];
+                "multipart/form-data": components["schemas"]["CuentaRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Cuenta"];
+                };
+            };
+        };
+    };
+    hogares_cuentas_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este cuenta. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Cuenta"];
+                };
+            };
+        };
+    };
+    hogares_cuentas_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este cuenta. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CuentaRequest"];
+                "multipart/form-data": components["schemas"]["CuentaRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Cuenta"];
+                };
+            };
+        };
+    };
+    hogares_cuentas_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este cuenta. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    hogares_cuentas_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este cuenta. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCuentaRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCuentaRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Cuenta"];
+                };
+            };
+        };
+    };
+    hogares_dashboard_retrieve: {
+        parameters: {
+            query?: {
+                /** @description AAAA-MM (por defecto, el actual) */
+                mes?: string;
+            };
+            header?: never;
+            path: {
+                hogar_pk: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Dashboard"];
+                };
+            };
+            /** @description No response body */
+            304: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    hogares_importaciones_list: {
+        parameters: {
+            query?: {
+                cuenta?: number;
+                /**
+                 * @description * `pendiente` - Pendiente
+                 *     * `analizando` - Analizando
+                 *     * `vista_previa` - Vista previa
+                 *     * `importando` - Importando
+                 *     * `completada` - Completada
+                 *     * `error` - Error
+                 *     * `deshecha` - Deshecha
+                 */
+                estado?: "analizando" | "completada" | "deshecha" | "error" | "importando" | "pendiente" | "vista_previa";
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedImportacionList"];
+                };
+            };
+        };
+    };
+    hogares_importaciones_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubirImportacionRequest"];
+                "multipart/form-data": components["schemas"]["SubirImportacionRequest"];
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Importacion"];
+                };
+            };
+        };
+    };
+    hogares_importaciones_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este importación. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Importacion"];
+                };
+            };
+        };
+    };
+    hogares_importaciones_confirmar_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este importación. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ConfirmarImportacionRequest"];
+                "multipart/form-data": components["schemas"]["ConfirmarImportacionRequest"];
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Importacion"];
+                };
+            };
+        };
+    };
+    hogares_importaciones_deshacer_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este importación. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Importacion"];
+                };
+            };
+        };
+    };
+    hogares_importaciones_filas_retrieve: {
+        parameters: {
+            query?: {
+                accion?: "conciliar" | "crear" | "duplicada";
+            };
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este importación. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FilaImportacion"];
+                };
+            };
+        };
+    };
+    hogares_informes_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Informe"][];
+                };
+            };
+        };
+    };
+    hogares_informes_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerarInformeRequest"];
+                "multipart/form-data": components["schemas"]["GenerarInformeRequest"];
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InformeEncolado"];
+                };
+            };
+        };
+    };
+    hogares_informes_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                mes: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Informe"];
+                };
+            };
+        };
+    };
+    hogares_informes_pdf_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                mes: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description El PDF */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    hogares_miembros_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Miembro"][];
+                };
+            };
+        };
+    };
+    hogares_miembros_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este membresía. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["MiembroRequest"];
+                "multipart/form-data": components["schemas"]["MiembroRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Miembro"];
+                };
+            };
+        };
+    };
+    hogares_miembros_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este membresía. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    hogares_miembros_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este membresía. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedMiembroRequest"];
+                "multipart/form-data": components["schemas"]["PatchedMiembroRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Miembro"];
+                };
+            };
+        };
+    };
+    hogares_miembros_invitar_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvitarRequest"];
+                "multipart/form-data": components["schemas"]["InvitarRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invitacion"];
+                };
+            };
+        };
+    };
+    hogares_movimientos_list: {
+        parameters: {
+            query?: {
+                categoria?: number[];
+                cuenta?: number[];
+                /** @description El valor del cursor de paginación. */
+                cursor?: string;
+                etiqueta?: string;
+                fecha_after?: string;
+                fecha_before?: string;
+                importe_max?: number;
+                importe_min?: number;
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /**
+                 * @description * `manual` - Manual
+                 *     * `ticket` - Ticket
+                 *     * `extracto` - Extracto bancario
+                 */
+                origen?: "extracto" | "manual" | "ticket";
+                revisado?: boolean;
+                /** @description Un término de búsqueda. */
+                search?: string;
+                sin_categoria?: boolean;
+                /**
+                 * @description * `gasto` - Gastos
+                 *     * `ingreso` - Ingresos
+                 */
+                tipo?: "gasto" | "ingreso";
+            };
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedMovimientoList"];
+                };
+            };
+        };
+    };
+    hogares_movimientos_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MovimientoRequest"];
+                "multipart/form-data": components["schemas"]["MovimientoRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Movimiento"];
+                };
+            };
+        };
+    };
+    hogares_movimientos_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este movimiento. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Movimiento"];
+                };
+            };
+        };
+    };
+    hogares_movimientos_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este movimiento. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MovimientoRequest"];
+                "multipart/form-data": components["schemas"]["MovimientoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Movimiento"];
+                };
+            };
+        };
+    };
+    hogares_movimientos_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este movimiento. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    hogares_movimientos_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este movimiento. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedMovimientoRequest"];
+                "multipart/form-data": components["schemas"]["PatchedMovimientoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Movimiento"];
+                };
+            };
+        };
+    };
+    hogares_movimientos_exportar_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": string;
+                };
+            };
+        };
+    };
+    hogares_movimientos_recategorizar_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RecategorizarRequest"];
+                "multipart/form-data": components["schemas"]["RecategorizarRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        actualizados?: number;
+                    };
+                };
+            };
+        };
+    };
+    hogares_presupuestos_list: {
+        parameters: {
+            query?: {
+                /** @description Mes en formato AAAA-MM */
+                mes?: string;
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Presupuesto"][];
+                };
+            };
+        };
+    };
+    hogares_presupuestos_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PresupuestoRequest"];
+                "multipart/form-data": components["schemas"]["PresupuestoRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Presupuesto"];
+                };
+            };
+        };
+    };
+    hogares_presupuestos_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este presupuesto. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Presupuesto"];
+                };
+            };
+        };
+    };
+    hogares_presupuestos_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este presupuesto. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PresupuestoRequest"];
+                "multipart/form-data": components["schemas"]["PresupuestoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Presupuesto"];
+                };
+            };
+        };
+    };
+    hogares_presupuestos_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este presupuesto. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    hogares_presupuestos_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este presupuesto. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedPresupuestoRequest"];
+                "multipart/form-data": components["schemas"]["PatchedPresupuestoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Presupuesto"];
+                };
+            };
+        };
+    };
+    hogares_tickets_list: {
+        parameters: {
+            query?: {
+                cuenta?: number;
+                /**
+                 * @description * `pendiente` - Pendiente
+                 *     * `procesando` - Procesando
+                 *     * `revisar` - Pendiente de revisión
+                 *     * `procesado` - Procesado
+                 *     * `error` - Error
+                 */
+                estado?: "error" | "pendiente" | "procesado" | "procesando" | "revisar";
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedTicketList"];
+                };
+            };
+        };
+    };
+    hogares_tickets_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubirTicketRequest"];
+                "multipart/form-data": components["schemas"]["SubirTicketRequest"];
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Ticket"];
+                };
+            };
+        };
+    };
+    hogares_tickets_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este ticket. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Ticket"];
+                };
+            };
+        };
+    };
+    hogares_tickets_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este ticket. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    hogares_tickets_archivo_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este ticket. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UrlArchivo"];
+                };
+            };
+        };
+    };
+    hogares_tickets_confirmar_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este ticket. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmarTicketRequest"];
+                "multipart/form-data": components["schemas"]["ConfirmarTicketRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Ticket"];
+                };
+            };
+        };
+    };
+    hogares_tickets_reprocesar_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este ticket. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ReprocesarTicketRequest"];
+                "multipart/form-data": components["schemas"]["ReprocesarTicketRequest"];
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Ticket"];
+                };
+            };
+        };
+    };
+    hogares_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este hogar. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Hogar"];
+                };
+            };
+        };
+    };
+    hogares_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este hogar. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HogarRequest"];
+                "multipart/form-data": components["schemas"]["HogarRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Hogar"];
+                };
+            };
+        };
+    };
+    hogares_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este hogar. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    hogares_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este hogar. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedHogarRequest"];
+                "multipart/form-data": components["schemas"]["PatchedHogarRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Hogar"];
+                };
+            };
+        };
+    };
+    invitaciones_aceptar_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Miembro"];
+                };
+            };
+        };
+    };
+    notificaciones_list: {
+        parameters: {
+            query?: {
+                /** @description El valor del cursor de paginación. */
+                cursor?: string;
+                hogar?: number;
+                leida?: boolean;
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un término de búsqueda. */
+                search?: string;
+                /**
+                 * @description * `ticket_procesado` - Ticket procesado
+                 *     * `ticket_revisar` - Ticket pendiente de revisión
+                 *     * `ticket_error` - Error al procesar un ticket
+                 *     * `importacion_lista` - Importación lista para revisar
+                 *     * `importacion_completada` - Importación completada
+                 *     * `importacion_error` - Error en una importación
+                 *     * `presupuesto_superado` - Presupuesto superado
+                 *     * `informe_listo` - Informe mensual disponible
+                 */
+                tipo?: "importacion_completada" | "importacion_error" | "importacion_lista" | "informe_listo" | "presupuesto_superado" | "ticket_error" | "ticket_procesado" | "ticket_revisar";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedNotificacionList"];
+                };
+            };
+        };
+    };
+    notificaciones_leer_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este notificación. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    notificaciones_leer_todas_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["LeerRequest"];
+                "multipart/form-data": components["schemas"]["LeerRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Actualizadas"];
+                };
+            };
+        };
+    };
+    notificaciones_no_leidas_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Contador"];
+                };
+            };
+        };
+    };
+    notificaciones_ws_ticket_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketWs"];
+                };
+            };
+        };
+    };
 }
