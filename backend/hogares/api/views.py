@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from hogares import services
-from hogares.models import Hogar, Membresia
+from hogares.models import Hogar, Invitacion, Membresia
 from hogares.permissions import HogarDesdeUrlMixin, RolEnHogar
 
 from .serializers import HogarSerializer, InvitacionSerializer, InvitarSerializer, MiembroSerializer
@@ -57,7 +57,7 @@ class MiembrosViewSet(
         "GET": Membresia.Rol.LECTOR,
         "PATCH": Membresia.Rol.ADMIN,
         "PUT": Membresia.Rol.ADMIN,
-        "DELETE": Membresia.Rol.ADMIN,
+        "DELETE": Membresia.Rol.LECTOR,  # cualquiera puede salir; expulsar se comprueba en perform_destroy
         "POST": Membresia.Rol.ADMIN,
     }
     pagination_class = None
@@ -70,6 +70,12 @@ class MiembrosViewSet(
     def perform_update(self, serializer):
         services.cambiar_rol(membresia=serializer.instance, rol=serializer.validated_data["rol"])
 
+    def perform_destroy(self, instance):
+        es_uno_mismo = instance.usuario_id == self.request.user.pk
+        if not es_uno_mismo and self.membresia.rol != Membresia.Rol.ADMIN:
+            self.permission_denied(self.request, message="Solo los administradores pueden expulsar a otros miembros.")
+        services.quitar_miembro(membresia=instance)
+
     @extend_schema(request=InvitarSerializer, responses={201: InvitacionSerializer})
     @action(detail=False, methods=["post"])
     def invitar(self, request, *args, **kwargs):
@@ -77,6 +83,21 @@ class MiembrosViewSet(
         datos.is_valid(raise_exception=True)
         inv = services.invitar(hogar=self.hogar, invitado_por=request.user, **datos.validated_data)
         return Response(InvitacionSerializer(inv).data, status=status.HTTP_201_CREATED)
+
+
+class InvitacionesViewSet(HogarDesdeUrlMixin, mixins.ListModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    """/hogares/{h}/invitaciones/: ver y anular invitaciones pendientes (solo admin)."""
+
+    serializer_class = InvitacionSerializer
+    permission_classes = [IsAuthenticated, RolEnHogar]
+    roles_por_metodo = {"GET": Membresia.Rol.ADMIN, "DELETE": Membresia.Rol.ADMIN}
+    pagination_class = None
+
+    def get_queryset(self):
+        if self.es_esquema():
+            return Invitacion.objects.none()
+        # Solo pendientes: una invitación aceptada es historia y no se "anula" (para eso, expulsar al miembro).
+        return Invitacion.objects.filter(hogar=self.hogar, aceptada__isnull=True).order_by("-creado")
 
 
 class AceptarInvitacion(APIView):

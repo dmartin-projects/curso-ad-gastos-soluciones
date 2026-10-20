@@ -54,3 +54,13 @@ def cambiar_rol(*, membresia: Membresia, rol: str) -> Membresia:
     membresia.rol = rol
     membresia.save(update_fields=["rol"])
     return membresia
+
+
+@transaction.atomic
+def quitar_miembro(*, membresia: Membresia) -> None:
+    """Expulsar (admin) o salir (uno mismo). Nunca deja el hogar sin administrador."""
+    if membresia.rol == Membresia.Rol.ADMIN:
+        quedan = Membresia.objects.select_for_update().filter(hogar_id=membresia.hogar_id, rol=Membresia.Rol.ADMIN)
+        if quedan.count() <= 1:
+            raise UltimoAdministrador()
+    membresia.delete()

@@ -1831,6 +1831,70 @@ paths:
       responses:
         '200':
           description: El PDF
+  /api/v1/hogares/{hogar_pk}/invitaciones/:
+    get:
+      operationId: hogares_invitaciones_list
+      description: '/hogares/{h}/invitaciones/: ver y anular invitaciones pendientes
+        (solo admin).'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invitacion'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/invitaciones/{id}/:
+    delete:
+      operationId: hogares_invitaciones_destroy
+      description: '/hogares/{h}/invitaciones/: ver y anular invitaciones pendientes
+        (solo admin).'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este invitación.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/hogares/{hogar_pk}/miembros/:
     get:
       operationId: hogares_miembros_list

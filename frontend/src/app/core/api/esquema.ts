@@ -735,6 +735,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hogares/{hogar_pk}/invitaciones/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description /hogares/{h}/invitaciones/: ver y anular invitaciones pendientes (solo admin). */
+        get: operations["hogares_invitaciones_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/invitaciones/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** @description /hogares/{h}/invitaciones/: ver y anular invitaciones pendientes (solo admin). */
+        delete: operations["hogares_invitaciones_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hogares/{hogar_pk}/miembros/": {
         parameters: {
             query?: never;
@@ -3499,6 +3533,54 @@ export interface operations {
         responses: {
             /** @description El PDF */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    hogares_invitaciones_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invitacion"][];
+                };
+            };
+        };
+    };
+    hogares_invitaciones_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este invitación. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
