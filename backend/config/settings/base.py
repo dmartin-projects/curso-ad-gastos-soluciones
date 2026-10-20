@@ -172,7 +172,7 @@ TASKS = {"default": {"BACKEND": "django_tasks_db.DatabaseBackend", "QUEUES": ["d
 # ── DRF ──
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "core.autenticacion.JWTConSuplantacion",  # JWTAuthentication + suplantación de solo lectura (módulo 79)
         "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],

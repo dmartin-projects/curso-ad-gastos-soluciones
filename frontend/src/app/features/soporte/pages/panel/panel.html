@@ -23,6 +23,12 @@
       {{ e.clave }} {{ e.total }}{{ $last ? '' : ' · ' }}
     }
   </p>
+  <p class="text-sm" [class.text-error]="r.celery.error || !r.celery.workers">
+    Celery: {{ r.celery.error || r.celery.workers + ' workers' }}
+    @for (c of r.celery.colas; track c.nombre) {
+      · {{ c.nombre }}: {{ c.pendientes ?? '?' }} pendientes ({{ c.workers }} workers)
+    }
+  </p>
   <p class="text-sm text-texto-suave">
     IA este mes: {{ r.ia_mes.tickets }} tickets · {{ r.ia_mes.tokens_entrada | number }} tokens de
     entrada · {{ r.ia_mes.tokens_salida | number }} de salida

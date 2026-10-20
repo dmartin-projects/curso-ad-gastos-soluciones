@@ -37,6 +37,7 @@ class RegistroAuditoria(models.Model):
         CREAR = "crear"
         MODIFICAR = "modificar"
         BORRAR = "borrar"
+        SUPLANTAR = "suplantar"  # módulo 79: personal viendo la app como un usuario
 
     fecha = models.DateTimeField(auto_now_add=True, db_index=True)
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="+")

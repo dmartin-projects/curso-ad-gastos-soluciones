@@ -188,6 +188,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/backoffice/comercios/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Comercios (globales) con su uso, para detectar y fusionar duplicados. */
+        get: operations["backoffice_comercios_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/backoffice/comercios/fusionar/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Comercios (globales) con su uso, para detectar y fusionar duplicados. */
+        post: operations["backoffice_comercios_fusionar_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/backoffice/hogares/": {
         parameters: {
             query?: never;
@@ -450,6 +484,27 @@ export interface paths {
         head?: never;
         /** @description Ver usuarios; activar o desactivar (solo quien tenga usuarios.change_usuario, no el grupo Soporte). */
         patch: operations["backoffice_usuarios_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/backoffice/usuarios/{id}/suplantar/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Un access token de 5 minutos, de SOLO LECTURA, para ver la app como este usuario (soporte).
+         *
+         *     Sin refresh token: cuando caduca, se acabó. No se puede suplantar a personal (escalada de privilegios).
+         */
+        post: operations["backoffice_usuarios_suplantar_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/comercios/": {
@@ -1295,9 +1350,10 @@ export interface components {
          * @description * `crear` - Crear
          *     * `modificar` - Modificar
          *     * `borrar` - Borrar
+         *     * `suplantar` - Suplantar
          * @enum {string}
          */
-        AuditoriaAccionEnum: "crear" | "modificar" | "borrar";
+        AuditoriaAccionEnum: "crear" | "modificar" | "borrar" | "suplantar";
         CambiarPasswordRequest: {
             actual: string;
             nueva: string;
@@ -1332,6 +1388,13 @@ export interface components {
             /** Es de ingresos */
             es_ingreso?: boolean;
         };
+        Cola: {
+            nombre: string;
+            /** @description Workers que consumen de esta cola */
+            workers: number;
+            /** @description Mensajes esperando (null: desconocido) */
+            pendientes: number | null;
+        };
         Comercio: {
             readonly id: number;
             nombre: string;
@@ -1345,6 +1408,15 @@ export interface components {
         };
         ComercioRequest: {
             nombre: string;
+        };
+        ComercioSoporte: {
+            readonly id: number;
+            readonly nombre: string;
+            readonly nombre_normalizado: string;
+            readonly nif: string;
+            /** Categoría sugerida */
+            readonly categoria_sugerida: string;
+            readonly num_movimientos: number;
         };
         ComparativaDia: {
             dia: number;
@@ -1483,6 +1555,10 @@ export interface components {
          * @enum {string}
          */
         FormatoEnum: "csv" | "pdf" | "xlsx";
+        FusionarComerciosRequest: {
+            origen: number[];
+            destino: number;
+        };
         GenerarInformeRequest: {
             /** @default mensual */
             tipo: components["schemas"]["TipoInformeEnum"];
@@ -1763,6 +1839,24 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["Comercio"][];
+            total_pages?: number;
+            page?: number;
+            page_size?: number;
+        };
+        PaginatedComercioSoporteList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["ComercioSoporte"][];
             total_pages?: number;
             page?: number;
             page_size?: number;
@@ -2107,11 +2201,16 @@ export interface components {
             /** @default false */
             repetir_ocr: boolean;
         };
+        ResultadoFusion: {
+            reasignados: number;
+            borrados: number;
+        };
         ResultadoLote: {
             hechos: number;
             omitidos: number;
         };
         Resumen: {
+            celery: components["schemas"]["SaludColas"];
             tickets_24h: components["schemas"]["PorEstado"][];
             /** @description Consumo de la IA en el mes en curso (coste) */
             ia_mes: components["schemas"]["IAMes"];
@@ -2128,6 +2227,11 @@ export interface components {
          * @enum {string}
          */
         RolEnum: "admin" | "miembro" | "lector";
+        SaludColas: {
+            workers: number;
+            colas: components["schemas"]["Cola"][];
+            error: string;
+        };
         /**
          * @description * `;` - Punto y coma (;)
          *     * `,` - Coma (,)
@@ -2148,6 +2252,10 @@ export interface components {
             /** Format: binary */
             archivo: string;
             cuenta: number;
+        };
+        SuplantarRequest: {
+            /** @description Obligatorio: queda en la auditoría */
+            motivo: string;
         };
         TareaProgramada: {
             readonly id: number;
@@ -2242,6 +2350,11 @@ export interface components {
         TokenObtainPairRequest: {
             email: string;
             password: string;
+        };
+        TokenSuplantacion: {
+            access: string;
+            /** @description Segundos */
+            caduca_en: number;
         };
         UrlArchivo: {
             /** Format: uri */
@@ -2538,8 +2651,9 @@ export interface operations {
                  * @description * `crear` - Crear
                  *     * `modificar` - Modificar
                  *     * `borrar` - Borrar
+                 *     * `suplantar` - Suplantar
                  */
-                accion?: "borrar" | "crear" | "modificar";
+                accion?: "borrar" | "crear" | "modificar" | "suplantar";
                 /** @description app.modelo, p. ej. finanzas.movimiento */
                 modelo?: string;
                 object_id?: string;
@@ -2586,6 +2700,58 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Auditoria"];
+                };
+            };
+        };
+    };
+    backoffice_comercios_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un número de página dentro del conjunto de resultados paginado. */
+                page?: number;
+                /** @description Número de resultados a devolver por página. */
+                page_size?: number;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedComercioSoporteList"];
+                };
+            };
+        };
+    };
+    backoffice_comercios_fusionar_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FusionarComerciosRequest"];
+                "multipart/form-data": components["schemas"]["FusionarComerciosRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoFusion"];
                 };
             };
         };
@@ -3058,6 +3224,33 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UsuarioSoporte"];
+                };
+            };
+        };
+    };
+    backoffice_usuarios_suplantar_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Un valor de entero único que identifique este usuario. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SuplantarRequest"];
+                "multipart/form-data": components["schemas"]["SuplantarRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenSuplantacion"];
                 };
             };
         };

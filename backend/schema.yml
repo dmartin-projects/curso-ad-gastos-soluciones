@@ -239,10 +239,12 @@ paths:
           - borrar
           - crear
           - modificar
+          - suplantar
         description: |-
           * `crear` - Crear
           * `modificar` - Modificar
           * `borrar` - Borrar
+          * `suplantar` - Suplantar
       - in: query
         name: modelo
         schema:
@@ -311,6 +313,72 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Auditoria'
+          description: ''
+  /api/v1/backoffice/comercios/:
+    get:
+      operationId: backoffice_comercios_list
+      description: Comercios (globales) con su uso, para detectar y fusionar duplicados.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - backoffice
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedComercioSoporteList'
+          description: ''
+  /api/v1/backoffice/comercios/fusionar/:
+    post:
+      operationId: backoffice_comercios_fusionar_create
+      description: Comercios (globales) con su uso, para detectar y fusionar duplicados.
+      tags:
+      - backoffice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FusionarComerciosRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FusionarComerciosRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultadoFusion'
           description: ''
   /api/v1/backoffice/hogares/:
     get:
@@ -909,6 +977,41 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UsuarioSoporte'
+          description: ''
+  /api/v1/backoffice/usuarios/{id}/suplantar/:
+    post:
+      operationId: backoffice_usuarios_suplantar_create
+      description: |-
+        Un access token de 5 minutos, de SOLO LECTURA, para ver la app como este usuario (soporte).
+
+        Sin refresh token: cuando caduca, se acabó. No se puede suplantar a personal (escalada de privilegios).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este usuario.
+        required: true
+      tags:
+      - backoffice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuplantarRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SuplantarRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenSuplantacion'
           description: ''
   /api/v1/comercios/:
     get:
@@ -3569,11 +3672,13 @@ components:
       - crear
       - modificar
       - borrar
+      - suplantar
       type: string
       description: |-
         * `crear` - Crear
         * `modificar` - Modificar
         * `borrar` - Borrar
+        * `suplantar` - Suplantar
     CambiarPasswordRequest:
       type: object
       properties:
@@ -3670,6 +3775,22 @@ components:
           title: Es de ingresos
       required:
       - nombre
+    Cola:
+      type: object
+      properties:
+        nombre:
+          type: string
+        workers:
+          type: integer
+          description: Workers que consumen de esta cola
+        pendientes:
+          type: integer
+          nullable: true
+          description: 'Mensajes esperando (null: desconocido)'
+      required:
+      - nombre
+      - pendientes
+      - workers
     Comercio:
       type: object
       properties:
@@ -3709,6 +3830,35 @@ components:
           maxLength: 120
       required:
       - nombre
+    ComercioSoporte:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          readOnly: true
+        nombre_normalizado:
+          type: string
+          readOnly: true
+        nif:
+          type: string
+          readOnly: true
+        categoria_sugerida:
+          type: string
+          readOnly: true
+          title: Categoría sugerida
+        num_movimientos:
+          type: integer
+          readOnly: true
+      required:
+      - categoria_sugerida
+      - id
+      - nif
+      - nombre
+      - nombre_normalizado
+      - num_movimientos
     ComparativaDia:
       type: object
       properties:
@@ -4048,6 +4198,20 @@ components:
         * `csv` - CSV
         * `pdf` - PDF
         * `xlsx` - Excel
+    FusionarComerciosRequest:
+      type: object
+      properties:
+        origen:
+          type: array
+          items:
+            type: integer
+          maxItems: 100
+          minItems: 1
+        destino:
+          type: integer
+      required:
+      - destino
+      - origen
     GenerarInformeRequest:
       type: object
       properties:
@@ -4816,6 +4980,35 @@ components:
           type: integer
         page_size:
           type: integer
+    PaginatedComercioSoporteList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComercioSoporte'
+        total_pages:
+          type: integer
+        page:
+          type: integer
+        page_size:
+          type: integer
     PaginatedHogarList:
       type: object
       required:
@@ -5497,6 +5690,16 @@ components:
         repetir_ocr:
           type: boolean
           default: false
+    ResultadoFusion:
+      type: object
+      properties:
+        reasignados:
+          type: integer
+        borrados:
+          type: integer
+      required:
+      - borrados
+      - reasignados
     ResultadoLote:
       type: object
       properties:
@@ -5510,6 +5713,8 @@ components:
     Resumen:
       type: object
       properties:
+        celery:
+          $ref: '#/components/schemas/SaludColas'
         tickets_24h:
           type: array
           items:
@@ -5529,6 +5734,7 @@ components:
         usuarios_activos:
           type: integer
       required:
+      - celery
       - hogares
       - ia_mes
       - importaciones_con_error_7d
@@ -5546,6 +5752,21 @@ components:
         * `admin` - Administrador
         * `miembro` - Miembro
         * `lector` - Solo lectura
+    SaludColas:
+      type: object
+      properties:
+        workers:
+          type: integer
+        colas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cola'
+        error:
+          type: string
+      required:
+      - colas
+      - error
+      - workers
     SeparadorEnum:
       enum:
       - ;
@@ -5584,6 +5805,16 @@ components:
       required:
       - archivo
       - cuenta
+    SuplantarRequest:
+      type: object
+      properties:
+        motivo:
+          type: string
+          minLength: 10
+          description: 'Obligatorio: queda en la auditoría'
+          maxLength: 300
+      required:
+      - motivo
     TareaProgramada:
       type: object
       properties:
@@ -5805,6 +6036,17 @@ components:
       required:
       - email
       - password
+    TokenSuplantacion:
+      type: object
+      properties:
+        access:
+          type: string
+        caduca_en:
+          type: integer
+          description: Segundos
+      required:
+      - access
+      - caduca_en
     UrlArchivo:
       type: object
       properties:

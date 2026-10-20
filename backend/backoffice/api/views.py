@@ -7,6 +7,7 @@ y quedan registradas en la auditoría con el usuario de soporte que las hizo.
 from datetime import datetime, time, timedelta
 
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import Coalesce
@@ -14,18 +15,21 @@ from django.forms.models import model_to_dict
 from django.utils import timezone
 from django_celery_beat.models import PeriodicTask
 from drf_spectacular.utils import OpenApiParameter, extend_schema
-from rest_framework import mixins, viewsets
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import AccessToken
 
+from backoffice import salud
+from backoffice import services as backoffice
 from backoffice.permisos import EsPersonal, PermisosPorAccion
 from core.auditoria import registrar
 from core.consultas import contar
 from core.models import RegistroAuditoria
-from finanzas.models import Categoria, Movimiento
+from finanzas.models import Categoria, Comercio, Movimiento
 from finanzas.signals import movimientos_cambiados
 from hogares.models import Hogar, Membresia
 from importaciones import services as importaciones
@@ -39,6 +43,7 @@ from . import serializers as s
 
 PERSONAL = [IsAuthenticated, EsPersonal, PermisosPorAccion]
 ATASCADO = timedelta(minutes=15)
+SUPLANTACION = timedelta(minutes=5)
 M = RegistroAuditoria.Accion.MODIFICAR
 
 
@@ -72,6 +77,7 @@ class ResumenView(APIView):
             tokens_salida=Coalesce(Sum("tokens_salida"), 0),
         )
         datos = {
+            "celery": salud.salud_colas(),
             "ia_mes": ia_mes,
             "tickets_24h": [{"clave": f["estado"], "total": f["total"]} for f in por_estado],
             "tickets_atascados": Ticket.objects.filter(_ticket_atascado()).count(),
@@ -181,11 +187,38 @@ class UsuarioSoporteViewSet(mixins.UpdateModelMixin, viewsets.ReadOnlyModelViewS
         "list": ["usuarios.view_usuario"],
         "retrieve": ["usuarios.view_usuario"],
         "partial_update": ["usuarios.change_usuario"],
+        "suplantar": ["usuarios.view_usuario", "usuarios.suplantar_usuario"],
     }
-    http_method_names = ["get", "patch", "head", "options"]
+    http_method_names = ["get", "post", "patch", "head", "options"]
     queryset = get_user_model().objects.order_by("-fecha_alta")
     filterset_fields = ["is_active", "is_staff"]
     search_fields = ["email", "nombre", "apellidos"]
+
+    @extend_schema(request=s.SuplantarSerializer, responses={201: s.TokenSuplantacionSerializer})
+    @action(detail=True, methods=["post"])
+    def suplantar(self, request, *args, **kwargs):
+        """Un access token de 5 minutos, de SOLO LECTURA, para ver la app como este usuario (soporte).
+
+        Sin refresh token: cuando caduca, se acabó. No se puede suplantar a personal (escalada de privilegios).
+        """
+        objetivo = self.get_object()
+        if objetivo.is_staff or objetivo == request.user or not objetivo.is_active:
+            raise ValidationError({"usuario": ["Solo se puede suplantar a usuarios normales y activos."]})
+        datos = s.SuplantarSerializer(data=request.data)
+        datos.is_valid(raise_exception=True)
+        token = AccessToken.for_user(objetivo)
+        token.set_exp(lifetime=SUPLANTACION)
+        token["suplantado_por"] = request.user.pk  # JWTConSuplantacion: solo lectura y log de cada petición
+        RegistroAuditoria.objects.create(
+            usuario=request.user,
+            accion=RegistroAuditoria.Accion.SUPLANTAR,
+            content_type=ContentType.objects.get_for_model(objetivo),
+            object_id=str(objetivo.pk),
+            representacion=str(objetivo),
+            cambios={"motivo": datos.validated_data["motivo"], "jti": token["jti"]},
+        )
+        caduca = int(SUPLANTACION.total_seconds())
+        return Response({"access": str(token), "caduca_en": caduca}, status=status.HTTP_201_CREATED)
 
     def perform_update(self, serializer):
         if serializer.instance == self.request.user:
@@ -230,6 +263,29 @@ class MovimientoSoporteViewSet(viewsets.ReadOnlyModelViewSet):
                 lambda: movimientos_cambiados.send(sender=Movimiento, hogar_id=categoria.hogar_id, meses=meses)
             )
         return Response({"hechos": n, "omitidos": len(set(ids)) - n})
+
+
+class ComercioSoporteViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """Comercios (globales) con su uso, para detectar y fusionar duplicados."""
+
+    serializer_class = s.ComercioSoporteSerializer
+    permission_classes = PERSONAL
+    permisos_por_accion = {
+        "list": ["finanzas.view_comercio"],
+        "fusionar": ["finanzas.change_comercio", "finanzas.delete_comercio", "finanzas.change_movimiento"],
+    }
+    search_fields = ["nombre", "nif"]
+    ordering = ["nombre"]
+
+    def get_queryset(self):
+        return Comercio.objects.annotate(num_movimientos=contar(Movimiento, "comercio"))
+
+    @extend_schema(request=s.FusionarComerciosSerializer, responses=s.ResultadoFusionSerializer)
+    @action(detail=False, methods=["post"])
+    def fusionar(self, request, *args, **kwargs):
+        datos = s.FusionarComerciosSerializer(data=request.data)
+        datos.is_valid(raise_exception=True)
+        return Response(backoffice.fusionar_comercios(usuario=request.user, **datos.validated_data))
 
 
 class AuditoriaViewSet(viewsets.ReadOnlyModelViewSet):

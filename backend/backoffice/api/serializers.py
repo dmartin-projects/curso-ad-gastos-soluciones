@@ -3,7 +3,7 @@ from django_celery_beat.models import PeriodicTask
 from rest_framework import serializers
 
 from core.models import RegistroAuditoria
-from finanzas.models import Movimiento
+from finanzas.models import Comercio, Movimiento
 from hogares.models import Hogar
 from importaciones.models import Importacion
 from tickets.models import Ticket
@@ -141,7 +141,20 @@ class IAMesSerializer(serializers.Serializer):
     tokens_salida = serializers.IntegerField()
 
 
+class ColaSerializer(serializers.Serializer):
+    nombre = serializers.CharField()
+    workers = serializers.IntegerField(help_text="Workers que consumen de esta cola")
+    pendientes = serializers.IntegerField(allow_null=True, help_text="Mensajes esperando (null: desconocido)")
+
+
+class SaludColasSerializer(serializers.Serializer):
+    workers = serializers.IntegerField()
+    colas = ColaSerializer(many=True)
+    error = serializers.CharField(allow_blank=True)
+
+
 class ResumenSerializer(serializers.Serializer):
+    celery = SaludColasSerializer()
     tickets_24h = PorEstadoSerializer(many=True)
     ia_mes = IAMesSerializer(help_text="Consumo de la IA en el mes en curso (coste)")
     tickets_atascados = serializers.IntegerField()
@@ -149,3 +162,36 @@ class ResumenSerializer(serializers.Serializer):
     importaciones_con_error_7d = serializers.IntegerField()
     hogares = serializers.IntegerField()
     usuarios_activos = serializers.IntegerField()
+
+
+class FusionarComerciosSerializer(serializers.Serializer):
+    origen = serializers.ListField(child=serializers.IntegerField(), min_length=1, max_length=100)
+    destino = serializers.IntegerField()
+
+    def validate(self, datos):
+        if datos["destino"] in datos["origen"]:
+            raise serializers.ValidationError({"origen": ["El destino no puede estar entre los que se fusionan."]})
+        return datos
+
+
+class SuplantarSerializer(serializers.Serializer):
+    motivo = serializers.CharField(min_length=10, max_length=300, help_text="Obligatorio: queda en la auditoría")
+
+
+class TokenSuplantacionSerializer(serializers.Serializer):
+    access = serializers.CharField()
+    caduca_en = serializers.IntegerField(help_text="Segundos")
+
+
+class ComercioSoporteSerializer(serializers.ModelSerializer):
+    num_movimientos = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Comercio
+        fields = ["id", "nombre", "nombre_normalizado", "nif", "categoria_sugerida", "num_movimientos"]
+        read_only_fields = fields
+
+
+class ResultadoFusionSerializer(serializers.Serializer):
+    reasignados = serializers.IntegerField()
+    borrados = serializers.IntegerField()

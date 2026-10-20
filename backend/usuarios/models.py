@@ -31,6 +31,8 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         verbose_name = "usuario"
+        # No va en ningún grupo: solo un superusuario, o quien lo reciba a mano, puede suplantar (módulo 79)
+        permissions = [("suplantar_usuario", "Puede ver la app como otro usuario (solo lectura, 5 min)")]
 
     def __str__(self):
         return self.email

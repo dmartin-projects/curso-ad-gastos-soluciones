@@ -11,12 +11,18 @@ GRUPOS = {
         "importaciones.importacion": ["view", "change"],
         "finanzas.movimiento": ["view", "change"],
         "finanzas.categoria": ["view"],
-        "finanzas.comercio": ["view", "change"],
+        "finanzas.comercio": ["view", "change", "delete"],  # fusionar duplicados borra (módulo 79)
         "hogares.hogar": ["view"],
         "hogares.membresia": ["view"],
         "usuarios.usuario": ["view"],
         "core.registroauditoria": ["view"],
         "django_celery_beat.periodictask": ["view"],
+    },
+    # Módulo 79: lo que antes exigía un superusuario. Sin tickets ni movimientos: no es soporte.
+    "Administración": {
+        "usuarios.usuario": ["view", "change"],
+        "django_celery_beat.periodictask": ["view", "change"],
+        "core.registroauditoria": ["view"],
     },
 }
 
