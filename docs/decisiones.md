@@ -16,10 +16,10 @@ Formato: contexto → decisión → consecuencias. Una decisión no se borra: si
 
 - **Estado:** aceptada (fase 5).
 - **Contexto:** el mismo extracto se importa dos veces, o dos extractos se solapan; las tareas de Celery se pueden ejecutar dos veces (`acks_late`); dos importaciones pueden correr a la vez.
-- **Decisión:** cada movimiento importado lleva `huella` = hash de cuenta + fecha + importe + concepto normalizado + número de ocurrencia ese día, con `UniqueConstraint(cuenta, huella)`, y se inserta con `bulk_create(ignore_conflicts=True)`.
+- **Decisión:** cada movimiento importado lleva `huella` = hash de cuenta + fecha + importe + concepto normalizado + número de ocurrencia ese día, con una `UniqueConstraint(cuenta, huella)` (parcial: solo si hay huella). Al importar se descartan las huellas que ya existen y el resto va en un `bulk_create`; si otra importación simultánea inserta la misma huella entre medias, la restricción da `IntegrityError`, el lote entero se deshace y la tarea se reintenta (`autoretry_for`), viéndola ya como duplicada.
 - **Consecuencias:**
   - ✅ La garantía no depende del código de la aplicación ni de que no haya carreras: la da PostgreSQL.
-  - ✅ Reimportar es seguro y barato; el resumen cuenta "nuevos" frente a "ya existían".
+  - ✅ Reimportar es seguro y barato; la vista previa distingue "nuevos", "duplicados" y "conciliados" (un gasto manual que el banco confirma).
   - ⚠️ Dos movimientos legítimamente idénticos el mismo día se distinguen solo por el número de ocurrencia: si el banco cambia el orden entre extractos, puede haber un falso duplicado (aceptable; se crea a mano).
 
 ## ADR-003 · Backoffice propio en lugar del admin de Django
