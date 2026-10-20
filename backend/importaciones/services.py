@@ -34,7 +34,7 @@ def _avisar(senal, importacion_id: int) -> None:
 
 
 # ── 1. Subida ──
-def subir(*, hogar, cuenta, archivo, formato: str, huella_archivo: str, usuario) -> Importacion:
+def subir(*, hogar, cuenta, archivo, formato: str, huella_archivo: str, usuario, perfil=None) -> Importacion:
     from .tasks import analizar_importacion
 
     importacion = Importacion.objects.create(
@@ -45,6 +45,7 @@ def subir(*, hogar, cuenta, archivo, formato: str, huella_archivo: str, usuario)
         nombre_original=archivo.name[:200],
         formato=formato,
         huella_archivo=huella_archivo,
+        perfil=perfil,
     )
     transaction.on_commit(lambda: analizar_importacion.delay(importacion.pk))
     return importacion
@@ -54,10 +55,10 @@ def subir(*, hogar, cuenta, archivo, formato: str, huella_archivo: str, usuario)
 def analizar(importacion_id: int) -> Importacion | None:
     if not Importacion.objects.filter(pk=importacion_id, estado=E.PENDIENTE).update(estado=E.ANALIZANDO):
         return None  # entrega duplicada: otro worker ya lo está analizando
-    imp = Importacion.objects.get(pk=importacion_id)
+    imp = Importacion.objects.select_related("perfil").get(pk=importacion_id)
     try:
         with imp.archivo.open("rb") as f:
-            lectura = lectores.leer(f.read(), imp.formato)
+            lectura = lectores.leer(f.read(), imp.formato, imp.perfil.como_lector() if imp.perfil else None)
     except lectores.ExtractoNoValido as e:
         fallar(importacion_id, str(e))
         return None
@@ -155,7 +156,7 @@ def importar_lote(importacion_id: int, ids: list[int]) -> dict:
     # FOR UPDATE: una entrega duplicada del mismo lote espera aquí y después ya no encuentra filas pendientes
     filas = list(
         FilaImportacion.objects.select_for_update(of=("self",))
-        .select_related("coincide_con")
+        .select_related("coincide_con", "categoria")
         .filter(importacion_id=importacion_id, pk__in=ids, movimiento__isnull=True)
         .exclude(accion=A.DUPLICADA)
     )
@@ -195,7 +196,7 @@ def importar_lote(importacion_id: int, ids: list[int]) -> dict:
             importe=fila.importe,
             concepto=fila.concepto,
             comercio=(cc := comercio_y_categoria(fila.concepto))[0],
-            categoria=cc[1],
+            categoria=fila.categoria or cc[1],  # lo que eligió el usuario en la vista previa manda
             origen=Movimiento.Origen.EXTRACTO,
             huella=fila.huella,
             creado_por=imp.subido_por,
@@ -261,3 +262,32 @@ def deshacer(imp: Importacion) -> Importacion:
     imp.save(update_fields=["estado", "actualizado"])
     transaction.on_commit(lambda: movimientos_cambiados.send(sender=Movimiento, hogar_id=imp.hogar_id, meses=meses))
     return imp
+
+
+# ── 5. Edición de la vista previa ──
+@transaction.atomic
+def cambiar_categoria(fila: FilaImportacion, categoria) -> FilaImportacion:
+    imp = Importacion.objects.select_for_update().get(pk=fila.importacion_id)  # serializa con confirmar()
+    if imp.estado != E.VISTA_PREVIA:
+        raise EstadoNoPermitido()  # ya se está importando: cambiarla ahora no tendría efecto
+    fila.categoria = categoria
+    fila.save(update_fields=["categoria"])
+    return fila
+
+
+# ── 6. Caducidad ──
+def caducar(dias: int = 7) -> int:
+    """Borra las vistas previas abandonadas (con sus filas y su archivo). La lanza Celery Beat cada noche."""
+    limite = timezone.now() - timedelta(days=dias)
+    with transaction.atomic():
+        # FOR UPDATE SKIP LOCKED: si alguien está confirmando una justo ahora, se deja para mañana
+        viejas = list(
+            Importacion.objects.select_for_update(skip_locked=True)
+            .filter(estado=E.VISTA_PREVIA, actualizado__lt=limite)
+            .only("id", "archivo")
+        )
+        archivos = [(i.archivo.storage, i.archivo.name) for i in viejas]
+        Importacion.objects.filter(pk__in=[i.pk for i in viejas]).delete()  # CASCADE: también sus filas
+        # el archivo, solo si el borrado se confirma (si no, quedaría una importación sin archivo)
+        transaction.on_commit(lambda: [storage.delete(nombre) for storage, nombre in archivos])
+    return len(viejas)

@@ -149,6 +149,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "informes.tasks.generar_informes_mensuales",
         "schedule": crontab(minute=0, hour=7, day_of_month=1),
     },
+    "caducar-vistas-previas": {
+        "task": "importaciones.tasks.caducar_vistas_previas",
+        "schedule": crontab(minute=15, hour=4),
+    },
     "limpiar-resultados-de-tareas": {
         "task": "core.tasks.limpiar_resultados_de_tareas",
         "schedule": crontab(minute=30, hour=3),
@@ -254,3 +258,4 @@ TICKETS_TAMANO_MAXIMO = 10 * 1024 * 1024  # 10 MB
 IMPORTACION_TAMANO_MAXIMO = 5 * 1024 * 1024  # 5 MB
 IMPORTACION_TAMANO_LOTE = 500  # filas por tarea del chord
 IMPORTACION_DIAS_CONCILIACION = 3  # un gasto manual o de ticket y la fila del banco pueden diferir unos días
+IMPORTACION_DIAS_VISTA_PREVIA = 7  # una vista previa sin confirmar se borra pasado este tiempo

@@ -14,6 +14,7 @@ from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 
 import pypdfium2 as pdfium
+from openpyxl import load_workbook
 
 
 class ExtractoNoValido(Exception):
@@ -36,6 +37,22 @@ class Lectura:
 
     def aviso(self, linea: int, mensaje: str) -> None:
         self.avisos.append({"linea": linea, "mensaje": mensaje})
+
+
+@dataclass
+class Perfil:
+    """Lo que el lector necesita de un `PerfilBanco` (este módulo no depende de Django)."""
+
+    separador: str
+    columnas: dict[str, int]  # {"fecha": 0, "concepto": 2, "importe": 3}: posiciones desde 0
+    formato_fecha: str
+    filas_a_saltar: int = 1  # líneas antes del primer movimiento, cabecera incluida
+
+    def fecha(self, texto: str) -> date:
+        try:
+            return datetime.strptime(texto.strip(), self.formato_fecha).date()
+        except ValueError:
+            return parsear_fecha(texto)  # las celdas de fecha de un Excel llegan ya como dd/mm/aaaa
 
 
 # ── Valores ──
@@ -117,6 +134,18 @@ def _decodificar(contenido: bytes) -> str:
     raise ExtractoNoValido("No se reconoce la codificación del archivo.")
 
 
+def _buscar_cabecera(filas: list[list[str]]) -> tuple[int, dict[str, int]] | None:
+    for i, fila in enumerate(filas[:25]):  # la cabecera puede no estar en la primera línea
+        if columnas := _columnas(fila):
+            return i, columnas
+    return None
+
+
+NO_ENCONTRADA = (
+    "No se encuentran las columnas de fecha, concepto e importe. Crea un perfil de banco y elígelo al subir."
+)
+
+
 def _localizar_cabecera(texto: str) -> tuple[list[list[str]], int, dict[str, int]]:
     """Prueba cada separador: el bueno es el que permite encontrar la cabecera.
 
@@ -125,16 +154,15 @@ def _localizar_cabecera(texto: str) -> tuple[list[list[str]], int, dict[str, int
     """
     for separador in (";", ",", "\t", "|"):
         filas = list(csv.reader(io.StringIO(texto), delimiter=separador))
-        for i, fila in enumerate(filas[:25]):  # la cabecera puede no estar en la primera línea
-            if columnas := _columnas(fila):
-                return filas, i, columnas
-    raise ExtractoNoValido("No se encuentran las columnas de fecha, concepto e importe.")
+        if encontrada := _buscar_cabecera(filas):
+            return filas, *encontrada
+    raise ExtractoNoValido(NO_ENCONTRADA)
 
 
-def leer_csv(contenido: bytes) -> Lectura:
-    filas, i, columnas = _localizar_cabecera(_decodificar(contenido))
+def _leer_tabla(filas: list[list[str]], inicio: int, columnas: dict[str, int], fecha=parsear_fecha) -> Lectura:
+    """Las filas de datos (desde `inicio`, 0-based) ya separadas en celdas: igual para CSV, Excel o perfil."""
     lectura = Lectura()
-    for numero, fila in enumerate(filas[i + 1 :], start=i + 2):
+    for numero, fila in enumerate(filas[inicio:], start=inicio + 1):
         if not any(c.strip() for c in fila):
             continue
         try:
@@ -149,7 +177,7 @@ def leer_csv(contenido: bytes) -> Lectura:
             lectura.filas.append(
                 FilaLeida(
                     numero=numero,
-                    fecha=parsear_fecha(fila[columnas["fecha"]]),
+                    fecha=fecha(fila[columnas["fecha"]]),
                     concepto=_limpiar_concepto(fila[columnas["concepto"]]),
                     importe=importe,
                     saldo=saldo,
@@ -158,6 +186,45 @@ def leer_csv(contenido: bytes) -> Lectura:
         except (ValueError, IndexError) as e:
             lectura.aviso(numero, f"Fila ignorada: {e}")
     return lectura
+
+
+def leer_csv(contenido: bytes, perfil: Perfil | None = None) -> Lectura:
+    texto = _decodificar(contenido)
+    if perfil:  # el usuario ya ha dicho cómo es su banco: nada de adivinar
+        filas = list(csv.reader(io.StringIO(texto), delimiter=perfil.separador))
+        return _leer_tabla(filas, perfil.filas_a_saltar, perfil.columnas, perfil.fecha)
+    filas, i, columnas = _localizar_cabecera(texto)
+    return _leer_tabla(filas, i + 1, columnas)
+
+
+# ── Excel ──
+def _texto(valor) -> str:
+    """Celda de openpyxl → el mismo texto que tendría en un CSV."""
+    if valor is None:
+        return ""
+    if isinstance(valor, datetime | date):
+        return valor.strftime("%d/%m/%Y")
+    if isinstance(valor, float):  # 45.3 → "45.30": con 2 decimales, parsear_importe no lo confunde con miles
+        return f"{Decimal(repr(valor)).quantize(Decimal('0.01'))}"
+    return str(valor)
+
+
+def leer_xlsx(contenido: bytes, perfil: Perfil | None = None) -> Lectura:
+    try:
+        # read_only: no carga el libro entero en memoria; data_only: el valor calculado, no la fórmula
+        libro = load_workbook(io.BytesIO(contenido), read_only=True, data_only=True)
+    except Exception as e:  # zip dañado, no es un xlsx, xls antiguo…  # noqa: BLE001
+        raise ExtractoNoValido("No se puede abrir el Excel. Guárdalo como .xlsx o expórtalo en CSV.") from e
+    try:
+        filas = [[_texto(c) for c in fila] for fila in libro.worksheets[0].iter_rows(values_only=True)]
+    finally:
+        libro.close()
+    if perfil:
+        return _leer_tabla(filas, perfil.filas_a_saltar, perfil.columnas, perfil.fecha)
+    if not (encontrada := _buscar_cabecera(filas)):
+        raise ExtractoNoValido(NO_ENCONTRADA)
+    i, columnas = encontrada
+    return _leer_tabla(filas, i + 1, columnas)
 
 
 # ── PDF ──
@@ -221,7 +288,12 @@ def comprobar_saldos(lectura: Lectura) -> None:
         anterior = fila
 
 
-def leer(contenido: bytes, formato: str) -> Lectura:
-    lectura = leer_pdf(contenido) if formato == "pdf" else leer_csv(contenido)
+def leer(contenido: bytes, formato: str, perfil: Perfil | None = None) -> Lectura:
+    if formato == "pdf":
+        lectura = leer_pdf(contenido)
+    elif formato == "xlsx":
+        lectura = leer_xlsx(contenido, perfil)
+    else:
+        lectura = leer_csv(contenido, perfil)
     comprobar_saldos(lectura)
     return lectura

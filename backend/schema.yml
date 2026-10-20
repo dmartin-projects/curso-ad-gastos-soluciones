@@ -1574,6 +1574,50 @@ paths:
               schema:
                 $ref: '#/components/schemas/Importacion'
           description: ''
+  /api/v1/hogares/{hogar_pk}/importaciones/{importacion_pk}/filas/{id}/:
+    patch:
+      operationId: hogares_importaciones_filas_partial_update
+      description: 'PATCH /importaciones/{i}/filas/{id}/: elegir la categoría de una
+        fila antes de confirmar.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este fila importacion.
+        required: true
+      - in: path
+        name: importacion_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCambiarFilaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCambiarFilaRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilaImportacion'
+          description: ''
   /api/v1/hogares/{hogar_pk}/importaciones/{id}/:
     get:
       operationId: hogares_importaciones_retrieve
@@ -2463,6 +2507,206 @@ paths:
                   actualizados:
                     type: integer
           description: ''
+  /api/v1/hogares/{hogar_pk}/perfiles-banco/:
+    get:
+      operationId: hogares_perfiles_banco_list
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PerfilBanco'
+          description: ''
+    post:
+      operationId: hogares_perfiles_banco_create
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerfilBancoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PerfilBancoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerfilBanco'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/perfiles-banco/{id}/:
+    get:
+      operationId: hogares_perfiles_banco_retrieve
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este perfil de banco.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerfilBanco'
+          description: ''
+    put:
+      operationId: hogares_perfiles_banco_update
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este perfil de banco.
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerfilBancoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PerfilBancoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerfilBanco'
+          description: ''
+    patch:
+      operationId: hogares_perfiles_banco_partial_update
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este perfil de banco.
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPerfilBancoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPerfilBancoRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerfilBanco'
+          description: ''
+    delete:
+      operationId: hogares_perfiles_banco_destroy
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este perfil de banco.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/hogares/{hogar_pk}/presupuestos/:
     get:
       operationId: hogares_presupuestos_list
@@ -3669,12 +3913,17 @@ components:
         coincide_con_concepto:
           type: string
           readOnly: true
+        categoria:
+          type: integer
+          readOnly: true
+          nullable: true
         movimiento:
           type: integer
           readOnly: true
           nullable: true
       required:
       - accion
+      - categoria
       - coincide_con
       - coincide_con_concepto
       - concepto
@@ -3697,10 +3946,12 @@ components:
       enum:
       - csv
       - pdf
+      - xlsx
       type: string
       description: |-
         * `csv` - CSV
         * `pdf` - PDF
+        * `xlsx` - Excel
     GenerarInformeRequest:
       type: object
       properties:
@@ -3869,6 +4120,10 @@ components:
           allOf:
           - $ref: '#/components/schemas/FormatoEnum'
           readOnly: true
+        perfil:
+          type: integer
+          readOnly: true
+          nullable: true
         total_filas:
           type: integer
           readOnly: true
@@ -3915,6 +4170,7 @@ components:
       - formato
       - id
       - nombre_original
+      - perfil
       - procesadas
       - progreso
       - resumen
@@ -4742,6 +4998,14 @@ components:
           type: integer
         page_size:
           type: integer
+    PatchedCambiarFilaRequest:
+      type: object
+      description: 'Limita los campos relacionados al hogar de la URL: no se puede
+        apuntar a datos de otro hogar (módulo 33).'
+      properties:
+        categoria:
+          type: integer
+          nullable: true
     PatchedCategoriaRequest:
       type: object
       description: 'Limita los campos relacionados al hogar de la URL: no se puede
@@ -4833,6 +5097,27 @@ components:
           type: string
         revisado:
           type: boolean
+    PatchedPerfilBancoRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 80
+        separador:
+          $ref: '#/components/schemas/SeparadorEnum'
+        filas_a_saltar:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          description: Líneas antes del primer movimiento
+        columnas:
+          description: 'Posición (desde 0) de cada campo: {"fecha": 0, "concepto":
+            2, …}'
+        formato_fecha:
+          type: string
+          minLength: 1
+          maxLength: 20
     PatchedPresupuestoRequest:
       type: object
       description: 'Limita los campos relacionados al hogar de la URL: no se puede
@@ -4868,6 +5153,56 @@ components:
       properties:
         is_active:
           type: boolean
+    PerfilBanco:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          maxLength: 80
+        separador:
+          $ref: '#/components/schemas/SeparadorEnum'
+        filas_a_saltar:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          description: Líneas antes del primer movimiento
+        columnas:
+          description: 'Posición (desde 0) de cada campo: {"fecha": 0, "concepto":
+            2, …}'
+        formato_fecha:
+          type: string
+          maxLength: 20
+      required:
+      - columnas
+      - id
+      - nombre
+    PerfilBancoRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 80
+        separador:
+          $ref: '#/components/schemas/SeparadorEnum'
+        filas_a_saltar:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          description: Líneas antes del primer movimiento
+        columnas:
+          description: 'Posición (desde 0) de cada campo: {"fecha": 0, "concepto":
+            2, …}'
+        formato_fecha:
+          type: string
+          minLength: 1
+          maxLength: 20
+      required:
+      - columnas
+      - nombre
     PorEstado:
       type: object
       properties:
@@ -5077,6 +5412,15 @@ components:
         * `admin` - Administrador
         * `miembro` - Miembro
         * `lector` - Solo lectura
+    SeparadorEnum:
+      enum:
+      - ;
+      - ','
+      - "\t"
+      - '|'
+      type: string
+      description: "* `;` - Punto y coma (;)\n* `,` - Coma (,)\n* `\t` - Tabulador\n*
+        `|` - Barra (|)"
     SubirImportacionRequest:
       type: object
       description: 'Limita los campos relacionados al hogar de la URL: no se puede
@@ -5087,6 +5431,9 @@ components:
           format: binary
         cuenta:
           type: integer
+        perfil:
+          type: integer
+          nullable: true
       required:
       - archivo
       - cuenta

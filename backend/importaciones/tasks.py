@@ -51,3 +51,8 @@ def lanzar_importacion(importacion_id: int, ids: list[int]) -> None:
         return
     cierre = finalizar_importacion.si(importacion_id).on_error(importacion_fallida.si(importacion_id))
     chord(importar_lote.si(importacion_id, lote) for lote in lotes)(cierre)
+
+
+@shared_task(ignore_result=True)
+def caducar_vistas_previas() -> int:
+    return services.caducar(dias=settings.IMPORTACION_DIAS_VISTA_PREVIA)

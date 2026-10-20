@@ -1,5 +1,8 @@
+import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from weasyprint import HTML
+
+from conftest import CuentaFactory
 
 # Banco "A": separador ;, Windows-1252, tres líneas antes de la cabecera, importe con signo
 CSV_BANCO_A = (
@@ -33,3 +36,34 @@ def pdf_extracto(filas, pie="Página 1 de 1") -> bytes:
 
 def archivo(contenido: bytes, nombre="extracto.csv"):
     return SimpleUploadedFile(nombre, contenido, content_type="text/csv")
+
+
+# ── Fixtures de la API (test_api.py y test_ejercicios.py) ──
+def url(hogar, sufijo=""):
+    return f"/api/v1/hogares/{hogar.pk}/importaciones/{sufijo}"
+
+
+@pytest.fixture
+def escenario(hogar_con_roles):
+    hogar, roles = hogar_con_roles
+    return hogar, roles, CuentaFactory(hogar=hogar, nombre="Nómina")
+
+
+@pytest.fixture
+def en_commit(django_capture_on_commit_callbacks):
+    """Ejecuta lo que se encola en on_commit (Celery eager): análisis, chord de lotes y cierre."""
+
+    def _ejecutar(funcion, *args, **kwargs):
+        with django_capture_on_commit_callbacks(execute=True):
+            return funcion(*args, **kwargs)
+
+    return _ejecutar
+
+
+@pytest.fixture
+def subir(cliente, en_commit):
+    def _subir(hogar, usuario, cuenta, contenido=CSV_BANCO_A, nombre="extracto.csv"):
+        datos = {"archivo": archivo(contenido, nombre), "cuenta": cuenta.pk}
+        return en_commit(cliente(usuario).post, url(hogar), datos, format="multipart")
+
+    return _subir

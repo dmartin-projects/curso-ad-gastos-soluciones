@@ -615,6 +615,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hogares/{hogar_pk}/importaciones/{importacion_pk}/filas/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description PATCH /importaciones/{i}/filas/{id}/: elegir la categoría de una fila antes de confirmar. */
+        patch: operations["hogares_importaciones_filas_partial_update"];
+        trace?: never;
+    };
     "/api/v1/hogares/{hogar_pk}/importaciones/{id}/": {
         parameters: {
             query?: never;
@@ -926,6 +943,44 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/perfiles-banco/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        get: operations["hogares_perfiles_banco_list"];
+        put?: never;
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        post: operations["hogares_perfiles_banco_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/perfiles-banco/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        get: operations["hogares_perfiles_banco_retrieve"];
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        put: operations["hogares_perfiles_banco_update"];
+        post?: never;
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        delete: operations["hogares_perfiles_banco_destroy"];
+        options?: never;
+        head?: never;
+        /** @description Base de los recursos anidados en /hogares/{h}/…: permisos por rol, contexto y hogar automáticos. */
+        patch: operations["hogares_perfiles_banco_partial_update"];
         trace?: never;
     };
     "/api/v1/hogares/{hogar_pk}/presupuestos/": {
@@ -1362,6 +1417,7 @@ export interface components {
             readonly accion: components["schemas"]["FilaImportacionAccionEnum"];
             readonly coincide_con: number | null;
             readonly coincide_con_concepto: string;
+            readonly categoria: number | null;
             readonly movimiento: number | null;
         };
         /**
@@ -1374,9 +1430,10 @@ export interface components {
         /**
          * @description * `csv` - CSV
          *     * `pdf` - PDF
+         *     * `xlsx` - Excel
          * @enum {string}
          */
-        FormatoEnum: "csv" | "pdf";
+        FormatoEnum: "csv" | "pdf" | "xlsx";
         GenerarInformeRequest: {
             /**
              * Format: date
@@ -1437,6 +1494,7 @@ export interface components {
             readonly cuenta: number;
             readonly nombre_original: string;
             readonly formato: components["schemas"]["FormatoEnum"];
+            readonly perfil: number | null;
             readonly total_filas: number;
             readonly procesadas: number;
             readonly progreso: number;
@@ -1839,6 +1897,10 @@ export interface components {
             page_size?: number;
         };
         /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
+        PatchedCambiarFilaRequest: {
+            categoria?: number | null;
+        };
+        /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
         PatchedCategoriaRequest: {
             nombre?: string;
             padre?: number | null;
@@ -1875,6 +1937,15 @@ export interface components {
             notas?: string;
             revisado?: boolean;
         };
+        PatchedPerfilBancoRequest: {
+            nombre?: string;
+            separador?: components["schemas"]["SeparadorEnum"];
+            /** @description Líneas antes del primer movimiento */
+            filas_a_saltar?: number;
+            /** @description Posición (desde 0) de cada campo: {"fecha": 0, "concepto": 2, …} */
+            columnas?: unknown;
+            formato_fecha?: string;
+        };
         /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
         PatchedPresupuestoRequest: {
             categoria?: number;
@@ -1896,6 +1967,25 @@ export interface components {
         };
         PatchedUsuarioSoporteRequest: {
             is_active?: boolean;
+        };
+        PerfilBanco: {
+            readonly id: number;
+            nombre: string;
+            separador?: components["schemas"]["SeparadorEnum"];
+            /** @description Líneas antes del primer movimiento */
+            filas_a_saltar?: number;
+            /** @description Posición (desde 0) de cada campo: {"fecha": 0, "concepto": 2, …} */
+            columnas: unknown;
+            formato_fecha?: string;
+        };
+        PerfilBancoRequest: {
+            nombre: string;
+            separador?: components["schemas"]["SeparadorEnum"];
+            /** @description Líneas antes del primer movimiento */
+            filas_a_saltar?: number;
+            /** @description Posición (desde 0) de cada campo: {"fecha": 0, "concepto": 2, …} */
+            columnas: unknown;
+            formato_fecha?: string;
         };
         PorEstado: {
             clave: string;
@@ -1979,11 +2069,20 @@ export interface components {
          * @enum {string}
          */
         RolEnum: "admin" | "miembro" | "lector";
+        /**
+         * @description * `;` - Punto y coma (;)
+         *     * `,` - Coma (,)
+         *     * `	` - Tabulador
+         *     * `|` - Barra (|)
+         * @enum {string}
+         */
+        SeparadorEnum: ";" | "," | "\t" | "|";
         /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
         SubirImportacionRequest: {
             /** Format: binary */
             archivo: string;
             cuenta: number;
+            perfil?: number | null;
         };
         /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
         SubirTicketRequest: {
@@ -3391,6 +3490,35 @@ export interface operations {
             };
         };
     };
+    hogares_importaciones_filas_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este fila importacion. */
+                id: number;
+                importacion_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCambiarFilaRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCambiarFilaRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FilaImportacion"];
+                };
+            };
+        };
+    };
     hogares_importaciones_retrieve: {
         parameters: {
             query?: never;
@@ -4038,6 +4166,159 @@ export interface operations {
                     "application/json": {
                         actualizados?: number;
                     };
+                };
+            };
+        };
+    };
+    hogares_perfiles_banco_list: {
+        parameters: {
+            query?: {
+                /** @description Qué campo usar para ordenar los resultados. */
+                ordering?: string;
+                /** @description Un término de búsqueda. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerfilBanco"][];
+                };
+            };
+        };
+    };
+    hogares_perfiles_banco_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PerfilBancoRequest"];
+                "multipart/form-data": components["schemas"]["PerfilBancoRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerfilBanco"];
+                };
+            };
+        };
+    };
+    hogares_perfiles_banco_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este perfil de banco. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerfilBanco"];
+                };
+            };
+        };
+    };
+    hogares_perfiles_banco_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este perfil de banco. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PerfilBancoRequest"];
+                "multipart/form-data": components["schemas"]["PerfilBancoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerfilBanco"];
+                };
+            };
+        };
+    };
+    hogares_perfiles_banco_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este perfil de banco. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    hogares_perfiles_banco_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este perfil de banco. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedPerfilBancoRequest"];
+                "multipart/form-data": components["schemas"]["PatchedPerfilBancoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerfilBanco"];
                 };
             };
         };

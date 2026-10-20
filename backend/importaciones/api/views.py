@@ -1,18 +1,22 @@
 from django.db import transaction
 from drf_spectacular.utils import OpenApiParameter, extend_schema
-from rest_framework import status
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from finanzas.api.views import DelHogarViewSet
 from hogares.models import Membresia
+from hogares.permissions import HogarDesdeUrlMixin, RolEnHogar
 from importaciones import services
-from importaciones.models import FilaImportacion, Importacion
+from importaciones.models import FilaImportacion, Importacion, PerfilBanco
 
 from .serializers import (
+    CambiarFilaSerializer,
     ConfirmarImportacionSerializer,
     FilaImportacionSerializer,
     ImportacionSerializer,
+    PerfilBancoSerializer,
     SubirImportacionSerializer,
 )
 
@@ -71,3 +75,32 @@ class ImportacionViewSet(DelHogarViewSet):
     @action(detail=True, methods=["post"])
     def deshacer(self, request, *args, **kwargs):
         return self._respuesta(services.deshacer(self.get_object()))
+
+
+class FilaImportacionViewSet(HogarDesdeUrlMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    """PATCH /importaciones/{i}/filas/{id}/: elegir la categoría de una fila antes de confirmar."""
+
+    serializer_class = FilaImportacionSerializer
+    permission_classes = [IsAuthenticated, RolEnHogar]  # PATCH → miembro
+    http_method_names = ["patch", "options"]
+
+    def get_queryset(self):
+        if self.es_esquema():
+            return FilaImportacion.objects.none()
+        return FilaImportacion.objects.filter(
+            importacion__hogar=self.hogar, importacion_id=self.kwargs["importacion_pk"]
+        ).exclude(accion=FilaImportacion.Accion.DUPLICADA)  # una duplicada no se importa: no hay nada que elegir
+
+    @extend_schema(request=CambiarFilaSerializer, responses={200: FilaImportacionSerializer})
+    def partial_update(self, request, *args, **kwargs):
+        fila = self.get_object()
+        entrada = CambiarFilaSerializer(data=request.data, context={"hogar": self.hogar})
+        entrada.is_valid(raise_exception=True)
+        fila = services.cambiar_categoria(fila, entrada.validated_data["categoria"])
+        return Response(FilaImportacionSerializer(fila).data)
+
+
+class PerfilBancoViewSet(DelHogarViewSet):
+    modelo = PerfilBanco
+    serializer_class = PerfilBancoSerializer
+    pagination_class = None

@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pytest
 
-from conftest import CategoriaFactory, CuentaFactory, MovimientoFactory
+from conftest import CategoriaFactory, MovimientoFactory
 from finanzas.models import Comercio, Movimiento
 from finanzas.signals import movimientos_cambiados
 from importaciones import services
@@ -15,34 +15,8 @@ pytestmark = pytest.mark.django_db
 E, A = Importacion.Estado, FilaImportacion.Accion
 
 
-@pytest.fixture
-def escenario(hogar_con_roles):
-    hogar, roles = hogar_con_roles
-    return hogar, roles, CuentaFactory(hogar=hogar, nombre="Nómina")
-
-
 def url(hogar, sufijo=""):
     return f"/api/v1/hogares/{hogar.pk}/importaciones/{sufijo}"
-
-
-@pytest.fixture
-def en_commit(django_capture_on_commit_callbacks):
-    """Ejecuta lo que se encola en on_commit (Celery eager): análisis, chord de lotes y cierre."""
-
-    def _ejecutar(funcion, *args, **kwargs):
-        with django_capture_on_commit_callbacks(execute=True):
-            return funcion(*args, **kwargs)
-
-    return _ejecutar
-
-
-@pytest.fixture
-def subir(cliente, en_commit):
-    def _subir(hogar, usuario, cuenta, contenido=CSV_BANCO_A, nombre="extracto.csv"):
-        datos = {"archivo": archivo(contenido, nombre), "cuenta": cuenta.pk}
-        return en_commit(cliente(usuario).post, url(hogar), datos, format="multipart")
-
-    return _subir
 
 
 def test_flujo_completo_vista_previa_conciliacion_e_importacion(escenario, subir, cliente, en_commit, settings):
@@ -140,7 +114,10 @@ def test_el_mismo_extracto_no_se_sube_dos_veces(escenario, subir):
 
 def test_archivo_binario_se_rechaza_y_csv_ilegible_acaba_en_error(escenario, subir):
     hogar, roles, cuenta = escenario
-    assert subir(hogar, roles["miembro"], cuenta, b"PK\x03\x04\x00\x00", "extracto.xlsx").status_code == 400
+    assert subir(hogar, roles["miembro"], cuenta, b"\x89PNG\r\n\x1a\n\x00\x00", "extracto.png").status_code == 400
+    # Un ZIP pasa el filtro de la subida (podría ser un .xlsx), pero el análisis no lo puede abrir (ejercicio 2)
+    r = subir(hogar, roles["miembro"], cuenta, b"PK\x03\x04\x00\x00", "extracto.xlsx")
+    assert Importacion.objects.get(pk=r.data["id"]).error.startswith("No se puede abrir el Excel")
 
     r = subir(hogar, roles["miembro"], cuenta, b"nombre;edad\nana;30\n")
 
