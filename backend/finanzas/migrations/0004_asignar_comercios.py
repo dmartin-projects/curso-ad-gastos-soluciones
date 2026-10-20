@@ -26,13 +26,13 @@ def asignar(apps, schema_editor):
         return
     # Se normalizan los conceptos DISTINTOS (pocos) y se hace UN update por comercio. Con el seed de
     # 50.000 movimientos, `migrate` tarda ~6 s; recorriendo fila a fila con bulk_update, ~17 s.
-    ids_por_comercio = defaultdict(list)
+    conceptos_por_comercio = defaultdict(list)
     sin_comercio = Movimiento.objects.filter(comercio__isnull=True).values_list("concepto").distinct()
     for (concepto,) in sin_comercio.iterator():
         comercio_id = por_nombre.get(normalizar(concepto))
         if comercio_id:
-            ids_por_comercio[comercio_id].append(concepto)
-    for comercio_id, conceptos in ids_por_comercio.items():
+            conceptos_por_comercio[comercio_id].append(concepto)
+    for comercio_id, conceptos in conceptos_por_comercio.items():
         Movimiento.objects.filter(comercio__isnull=True, concepto__in=conceptos).update(comercio_id=comercio_id)
 
 
