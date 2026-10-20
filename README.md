@@ -1,8 +1,8 @@
-# Gastos — proyecto final de referencia
+# Gastos — proyecto final con los ejercicios resueltos
 
-El código completo del proyecto final del curso (módulos 70-83), tal como queda al terminar el módulo 83. Úsalo para **comparar** cuando algo no te funcione, no para copiarlo de golpe: el curso explica por qué cada archivo es como es.
+El proyecto de referencia (`gastos-referencia.zip`) **más las soluciones de todos los ejercicios de la Parte 5** (módulos 71-83), un commit por módulo: `git log --oneline` para verlos y `git show <commit>` para ver qué cambia cada solución. Inténtalos antes de mirar.
 
-Estado comprobado: 134 tests de *backend* (cobertura 92,6 %), 10 de *frontend* (Vitest) y 7 de punta a punta (Playwright), todos en verde.
+Estado comprobado: 275 tests de *backend* (cobertura 94 %), 32 de *frontend* (Vitest), 16 de punta a punta (Playwright, también con `E2E_WORKERS=2`) y el recorrido contra producción (`playwright.produccion.config.ts`, módulo 83), todos en verde.
 
 ## Estructura
 
@@ -65,8 +65,8 @@ Personal de soporte (el *backoffice* está dentro de la app, no hay Django admin
 ## Tests
 
 ```bash
-cd backend && uv run pytest -n 4 --cov                 # 133 tests
-cd frontend && npx ng test --watch=false                # 10 tests
+cd backend && uv run pytest -n 4 --cov                 # 273 tests
+cd frontend && npx ng test --watch=false                # 32 tests
 # punta a punta (módulo 82): una vez, crea la BD de E2E
 docker compose exec db createdb -U gastos gastos_e2e
 cd backend && DJANGO_SETTINGS_MODULE=config.settings.e2e uv run python manage.py migrate
