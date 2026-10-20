@@ -860,6 +860,40 @@ export interface paths {
         patch: operations["hogares_movimientos_partial_update"];
         trace?: never;
     };
+    "/api/v1/hogares/{hogar_pk}/movimientos/{id}/duplicar/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Copia con fecha de hoy (en la zona del hogar): la compra de cada semana sin volver a teclearla. */
+        post: operations["hogares_movimientos_duplicar_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hogares/{hogar_pk}/movimientos/exportaciones/{archivo}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description El enlace de la notificación. La ruta incluye el hogar: un id de otro hogar da 404. */
+        get: operations["hogares_movimientos_exportaciones_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/hogares/{hogar_pk}/movimientos/exportar/": {
         parameters: {
             query?: never;
@@ -1314,6 +1348,9 @@ export interface components {
          * @enum {string}
          */
         EstadoTicketEnum: "pendiente" | "procesando" | "revisar" | "procesado" | "error";
+        ExportacionEncolada: {
+            estado: string;
+        };
         FilaImportacion: {
             readonly id: number;
             readonly numero: number;
@@ -1574,9 +1611,10 @@ export interface components {
          *     * `importacion_error` - Error en una importación
          *     * `presupuesto_superado` - Presupuesto superado
          *     * `informe_listo` - Informe mensual disponible
+         *     * `exportacion_lista` - Exportación lista
          * @enum {string}
          */
-        NotificacionTipoEnum: "ticket_procesado" | "ticket_revisar" | "ticket_error" | "importacion_lista" | "importacion_completada" | "importacion_error" | "presupuesto_superado" | "informe_listo";
+        NotificacionTipoEnum: "ticket_procesado" | "ticket_revisar" | "ticket_error" | "importacion_lista" | "importacion_completada" | "importacion_error" | "presupuesto_superado" | "informe_listo" | "exportacion_lista";
         NuevaPasswordRequest: {
             uid: string;
             token: string;
@@ -3893,9 +3931,56 @@ export interface operations {
             };
         };
     };
-    hogares_movimientos_exportar_retrieve: {
+    hogares_movimientos_duplicar_create: {
         parameters: {
             query?: never;
+            header?: never;
+            path: {
+                hogar_pk: string;
+                /** @description Un valor de entero único que identifique este movimiento. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Movimiento"];
+                };
+            };
+        };
+    };
+    hogares_movimientos_exportaciones_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                archivo: string;
+                hogar_pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description El .xlsx */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    hogares_movimientos_exportar_retrieve: {
+        parameters: {
+            query?: {
+                /** @description csv (defecto) o xlsx */
+                formato?: "csv" | "xlsx";
+            };
             header?: never;
             path: {
                 hogar_pk: string;
@@ -3910,6 +3995,14 @@ export interface operations {
                 };
                 content: {
                     "text/csv": string;
+                };
+            };
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExportacionEncolada"];
                 };
             };
         };
@@ -4424,8 +4517,9 @@ export interface operations {
                  *     * `importacion_error` - Error en una importación
                  *     * `presupuesto_superado` - Presupuesto superado
                  *     * `informe_listo` - Informe mensual disponible
+                 *     * `exportacion_lista` - Exportación lista
                  */
-                tipo?: "importacion_completada" | "importacion_error" | "importacion_lista" | "informe_listo" | "presupuesto_superado" | "ticket_error" | "ticket_procesado" | "ticket_revisar";
+                tipo?: "exportacion_lista" | "importacion_completada" | "importacion_error" | "importacion_lista" | "informe_listo" | "presupuesto_superado" | "ticket_error" | "ticket_procesado" | "ticket_revisar";
             };
             header?: never;
             path?: never;

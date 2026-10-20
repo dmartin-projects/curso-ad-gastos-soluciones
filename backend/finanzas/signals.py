@@ -13,6 +13,9 @@ from .servicios_categorias import crear_categorias_por_defecto
 # Argumentos: hogar_id, meses (set de date, día 1). Lo escuchan el dashboard (77) y las alertas (76).
 movimientos_cambiados = Signal()
 
+# Exportación a Excel terminada. Argumentos: hogar, usuario_id, archivo (identificador para descargarla).
+exportacion_lista = Signal()
+
 
 @receiver(hogar_creado, dispatch_uid="finanzas_categorias_por_defecto")
 def al_crear_hogar(sender, hogar, **kwargs):

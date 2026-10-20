@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 
 from core.agrupar import agrupar
 from finanzas.servicios_presupuestos import presupuesto_superado
-from finanzas.signals import movimientos_cambiados
+from finanzas.signals import exportacion_lista, movimientos_cambiados
 from hogares.models import Membresia
 from importaciones.models import Importacion
 from importaciones.signals import importacion_analizada, importacion_progreso, importacion_terminada
@@ -173,4 +173,17 @@ def al_generar_informe(sender, informe, **kwargs):
         contexto={"mes": f"{informe.mes:%m/%Y}"},
         hogar=informe.hogar,
         enlace=f"/hogares/{informe.hogar_id}/informes",
+    )
+
+
+# ── Exportaciones ──
+@receiver(exportacion_lista, dispatch_uid="notif_exportacion_lista")
+def al_terminar_exportacion(sender, hogar, usuario_id, archivo, **kwargs):
+    notificar(
+        get_user_model().objects.filter(pk=usuario_id, is_active=True),  # solo a quien la pidió
+        tipo=T.EXPORTACION_LISTA,
+        titulo=_("Tu exportación de %(hogar)s está lista"),
+        contexto={"hogar": hogar.nombre, "archivo": archivo},  # el frontend descarga …/exportaciones/<archivo>/
+        hogar=hogar,
+        enlace=f"/hogares/{hogar.pk}/movimientos",
     )

@@ -17,6 +17,11 @@ CERO = Decimal("0")
 DURACION_CACHE = 60 * 60  # 1 h: de todos modos se invalida en cuanto cambia algo
 
 
+def hoy(hogar) -> date:
+    """La fecha de hoy en la zona horaria del hogar."""
+    return timezone.localdate(timezone=ZoneInfo(hogar.zona_horaria))
+
+
 def mes_actual(hogar) -> date:
     """El mes "de hoy" en la zona horaria del hogar: a las 00:30 del día 1 en Madrid aún es el mes anterior en UTC."""
     return timezone.localdate(timezone=ZoneInfo(hogar.zona_horaria)).replace(day=1)

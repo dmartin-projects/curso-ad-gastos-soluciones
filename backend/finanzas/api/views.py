@@ -1,12 +1,15 @@
 import csv
 
+from django.core.files.storage import default_storage
 from django.db import transaction
 from django.db.models import Count, DecimalField, Sum, Value
 from django.db.models.functions import Coalesce
 from django.forms.models import model_to_dict
-from django.http import StreamingHttpResponse
-from drf_spectacular.utils import OpenApiParameter, extend_schema
-from rest_framework import filters, mixins, status, viewsets
+from django.http import FileResponse, Http404, StreamingHttpResponse
+from django.utils import timezone
+from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema, inline_serializer
+from rest_framework import filters, mixins, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -16,10 +19,11 @@ from core.api.paginacion import PaginacionCursor, PaginacionEstandar
 from core.auditoria import registrar
 from core.hojas_de_calculo import texto_csv
 from core.models import RegistroAuditoria
-from finanzas import dashboard
+from finanzas import dashboard, exportacion
 from finanzas.models import Categoria, Comercio, Cuenta, Movimiento, Presupuesto
 from finanzas.servicios_comercios import reconocer_comercio
 from finanzas.signals import movimientos_cambiados
+from finanzas.tasks import exportar_movimientos_xlsx
 from hogares.models import Membresia
 from hogares.permissions import HogarDesdeUrlMixin, RolEnHogar
 
@@ -101,7 +105,8 @@ class MovimientoViewSet(DelHogarViewSet):
     modelo = Movimiento
     serializer_class = MovimientoSerializer
     filterset_class = MovimientoFilter
-    search_fields = ["concepto", "comercio__nombre", "notas"]
+    filter_backends = [DjangoFilterBackend, filters.UnaccentedSearchFilter, filters.OrderingFilter]
+    search_fields = ["concepto", "comercio__nombre", "notas"]  # "cafe" encuentra "Café" (unaccent, módulo 37)
     ordering_fields = ["fecha", "importe", "concepto"]
     ordering = ["-fecha", "-id"]
     pagination_class = PaginacionCursor
@@ -156,12 +161,48 @@ class MovimientoViewSet(DelHogarViewSet):
             )
         return Response({"actualizados": n})
 
-    @extend_schema(responses={(200, "text/csv"): str})
+    @extend_schema(request=None, responses={201: MovimientoSerializer})
+    @action(detail=True, methods=["post"])
+    def duplicar(self, request, *args, **kwargs):
+        """Copia con fecha de hoy (en la zona del hogar): la compra de cada semana sin volver a teclearla."""
+        original = self.get_object()
+        copia = Movimiento.objects.create(
+            hogar=self.hogar,
+            cuenta=original.cuenta,
+            fecha=dashboard.hoy(self.hogar),
+            importe=original.importe,
+            concepto=original.concepto,
+            comercio=original.comercio,
+            categoria=original.categoria,
+            etiquetas=list(original.etiquetas),
+            notas=original.notas,
+            # origen, huella, revisado: los valores por defecto. Una copia es MANUAL, no viene de un
+            # extracto (con la huella del original chocaría con movimiento_huella_unica) y ya está revisada.
+            creado_por=request.user,
+        )
+        registrar(copia, RegistroAuditoria.Accion.CREAR, request.user)
+        return Response(self.get_serializer(self.get_queryset().get(pk=copia.pk)).data, status=status.HTTP_201_CREATED)
+
+    @extend_schema(
+        parameters=[OpenApiParameter("formato", str, enum=["csv", "xlsx"], description="csv (defecto) o xlsx")],
+        responses={
+            (200, "text/csv"): str,
+            202: inline_serializer("ExportacionEncolada", {"estado": serializers.CharField()}),
+        },
+    )
     @action(detail=False, methods=["get"])
     def exportar(self, request, *args, **kwargs):
-        qs = self.filter_queryset(self.get_queryset()).values_list(
-            "fecha", "concepto", "importe", "cuenta__nombre", "categoria__nombre", "etiquetas"
-        )
+        formato = request.query_params.get("formato", "csv")
+        if formato not in ("csv", "xlsx"):
+            raise serializers.ValidationError({"formato": "Usa csv o xlsx."})
+        qs = self.filter_queryset(self.get_queryset())  # valida los filtros YA: un 400 aquí, no un fallo en el worker
+        if formato == "xlsx":
+            params = {k: v for k, v in request.query_params.lists() if k != "formato"}
+            hogar_id, usuario_id = self.hogar.pk, request.user.pk
+            transaction.on_commit(lambda: exportar_movimientos_xlsx.delay(hogar_id, usuario_id, params))
+            return Response({"estado": "generando"}, status=status.HTTP_202_ACCEPTED)
+
+        qs = qs.values_list("fecha", "concepto", "importe", "cuenta__nombre", "categoria__nombre", "etiquetas")
 
         class Eco:
             def write(self, valor):
@@ -181,6 +222,26 @@ class MovimientoViewSet(DelHogarViewSet):
         )
         respuesta["Content-Disposition"] = f'attachment; filename="movimientos-{self.hogar.pk}.csv"'
         return respuesta
+
+    @extend_schema(
+        responses={
+            (200, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"): OpenApiResponse(
+                description="El .xlsx"
+            )
+        }
+    )
+    @action(detail=False, methods=["get"], url_path=r"exportaciones/(?P<archivo>[0-9a-f]{32})")
+    def descargar_exportacion(self, request, archivo, *args, **kwargs):
+        """El enlace de la notificación. La ruta incluye el hogar: un id de otro hogar da 404."""
+        ruta = exportacion.ruta(self.hogar.pk, archivo)
+        if not default_storage.exists(ruta):
+            raise Http404
+        return FileResponse(
+            default_storage.open(ruta, "rb"),
+            as_attachment=True,
+            filename=f"movimientos-{timezone.localdate():%Y-%m-%d}.xlsx",
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
 
 
 class PresupuestoViewSet(DelHogarViewSet):

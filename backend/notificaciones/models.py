@@ -17,6 +17,7 @@ class Notificacion(ModeloConFechas):
         IMPORTACION_ERROR = "importacion_error", _("Error en una importación")
         PRESUPUESTO_SUPERADO = "presupuesto_superado", _("Presupuesto superado")
         INFORME_LISTO = "informe_listo", _("Informe mensual disponible")
+        EXPORTACION_LISTA = "exportacion_lista", _("Exportación lista")
 
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notificaciones")
     hogar = models.ForeignKey(Hogar, on_delete=models.CASCADE, null=True, blank=True, related_name="+")

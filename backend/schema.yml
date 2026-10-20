@@ -2333,12 +2333,76 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/hogares/{hogar_pk}/movimientos/{id}/duplicar/:
+    post:
+      operationId: hogares_movimientos_duplicar_create
+      description: 'Copia con fecha de hoy (en la zona del hogar): la compra de cada
+        semana sin volver a teclearla.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este movimiento.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movimiento'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/movimientos/exportaciones/{archivo}/:
+    get:
+      operationId: hogares_movimientos_exportaciones_retrieve
+      description: 'El enlace de la notificación. La ruta incluye el hogar: un id
+        de otro hogar da 404.'
+      parameters:
+      - in: path
+        name: archivo
+        schema:
+          type: string
+          pattern: ^[0-9a-f]{32}$
+        required: true
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: El .xlsx
   /api/v1/hogares/{hogar_pk}/movimientos/exportar/:
     get:
       operationId: hogares_movimientos_exportar_retrieve
       description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
         rol, contexto y hogar automáticos.'
       parameters:
+      - in: query
+        name: formato
+        schema:
+          type: string
+          enum:
+          - csv
+          - xlsx
+        description: csv (defecto) o xlsx
       - in: path
         name: hogar_pk
         schema:
@@ -2356,6 +2420,12 @@ paths:
             text/csv:
               schema:
                 type: string
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportacionEncolada'
           description: ''
   /api/v1/hogares/{hogar_pk}/movimientos/recategorizar/:
     post:
@@ -3020,6 +3090,7 @@ paths:
         schema:
           type: string
           enum:
+          - exportacion_lista
           - importacion_completada
           - importacion_error
           - importacion_lista
@@ -3037,6 +3108,7 @@ paths:
           * `importacion_error` - Error en una importación
           * `presupuesto_superado` - Presupuesto superado
           * `informe_listo` - Informe mensual disponible
+          * `exportacion_lista` - Exportación lista
       tags:
       - notificaciones
       security:
@@ -3558,6 +3630,13 @@ components:
         * `revisar` - Pendiente de revisión
         * `procesado` - Procesado
         * `error` - Error
+    ExportacionEncolada:
+      type: object
+      properties:
+        estado:
+          type: string
+      required:
+      - estado
     FilaImportacion:
       type: object
       properties:
@@ -4284,6 +4363,7 @@ components:
       - importacion_error
       - presupuesto_superado
       - informe_listo
+      - exportacion_lista
       type: string
       description: |-
         * `ticket_procesado` - Ticket procesado
@@ -4294,6 +4374,7 @@ components:
         * `importacion_error` - Error en una importación
         * `presupuesto_superado` - Presupuesto superado
         * `informe_listo` - Informe mensual disponible
+        * `exportacion_lista` - Exportación lista
     NuevaPasswordRequest:
       type: object
       properties:

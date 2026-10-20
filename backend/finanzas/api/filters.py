@@ -26,6 +26,14 @@ class MovimientoFilter(django_filters.FilterSet):
         model = Movimiento
         fields = ["fecha", "cuenta", "categoria", "origen", "revisado"]
 
+    @classmethod
+    def para_hogar(cls, datos, hogar, queryset):
+        """Sin petición (tareas): las opciones de cuenta y categoría se limitan al hogar a mano."""
+        filtro = cls(datos, queryset=queryset)
+        filtro.filters["cuenta"].queryset = Cuenta.objects.filter(hogar=hogar)
+        filtro.filters["categoria"].queryset = Categoria.objects.filter(hogar=hogar)
+        return filtro
+
     def filtrar_categoria(self, qs, name, categorias):
         """Una categoría padre incluye a sus hijas."""
         if not categorias:
