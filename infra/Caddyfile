@@ -24,7 +24,16 @@
 		request_body {
 			max_size 12MB # tickets de hasta 10 MB (módulo 74) + la envoltura multipart
 		}
-		reverse_proxy web:8000 {
+		reverse_proxy {
+			# Todas las réplicas de "web" (DNS de Docker: un registro A por contenedor), releído cada segundo
+			dynamic a web 8000 {
+				refresh 1s
+			}
+			lb_policy round_robin
+			# Si una réplica no responde (se está parando), reintenta en otra durante hasta 10 s
+			lb_try_duration 10s
+			lb_try_interval 250ms
+			fail_duration 10s # y la aparta 10 s (comprobación pasiva)
 			header_up X-Request-ID {http.request.uuid}
 		}
 	}
