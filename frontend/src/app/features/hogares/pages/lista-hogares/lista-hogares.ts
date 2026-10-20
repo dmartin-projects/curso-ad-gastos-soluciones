@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { booleanAttribute, Component, inject, input, OnInit, signal } from '@angular/core';
 import { form, FormField, FormRoot, maxLength, required } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -50,9 +50,14 @@ export default class ListaHogares implements OnInit {
     },
   );
 
+  /** ?elegir=1 (enlace "Mis hogares" del menú): mostrar la lista aunque haya un hogar al que saltar. */
+  readonly elegir = input(false, { transform: booleanAttribute });
+
   async ngOnInit() {
     await this.store.cargar();
-    if (this.store.hogares().length === 1)
-      this.router.navigate(['/hogares', this.store.hogares()[0].id]); // atajo
+    if (this.elegir()) return;
+    const hogares = this.store.hogares();
+    const destino = this.store.ultimo() ?? (hogares.length === 1 ? hogares[0].id : null);
+    if (destino) this.router.navigate(['/hogares', destino], { replaceUrl: true }); // atajo
   }
 }

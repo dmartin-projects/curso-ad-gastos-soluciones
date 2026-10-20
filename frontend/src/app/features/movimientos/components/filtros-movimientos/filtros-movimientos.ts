@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, input, output } from '@angular/core';
+import { Component, DestroyRef, ElementRef, inject, input, output, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatChipsModule } from '@angular/material/chips';
@@ -27,6 +27,14 @@ export class FiltrosMovimientosComponent {
   readonly valor = input.required<FiltrosMovimientos>();
   readonly categorias = input<Categoria[]>([]);
   readonly cambio = output<Partial<FiltrosMovimientos>>();
+  private readonly busquedaInput =
+    viewChild.required<ElementRef<HTMLInputElement>>('busquedaInput');
+
+  /** Para el atajo "/" (módulo 80): el padre pide el foco sin conocer el DOM de este componente. */
+  enfocarBusqueda() {
+    this.busquedaInput().nativeElement.focus();
+    this.busquedaInput().nativeElement.select();
+  }
 
   /** Teclear no lanza una petición por letra: se espera a que el usuario pare 300 ms (RxJS, módulo 46). */
   protected readonly busqueda = new Subject<string>();

@@ -3643,6 +3643,7 @@ components:
           type: string
           format: email
           readOnly: true
+          nullable: true
         accion:
           allOf:
           - $ref: '#/components/schemas/AuditoriaAccionEnum'
@@ -4159,6 +4160,7 @@ components:
         coincide_con_concepto:
           type: string
           readOnly: true
+          nullable: true
         categoria:
           type: integer
           readOnly: true
@@ -4706,9 +4708,11 @@ components:
         categoria_nombre:
           type: string
           readOnly: true
+          nullable: true
         categoria_color:
           type: string
           readOnly: true
+          nullable: true
         comercio:
           allOf:
           - $ref: '#/components/schemas/Comercio'
@@ -4837,6 +4841,7 @@ components:
         categoria_nombre:
           type: string
           readOnly: true
+          nullable: true
         origen:
           allOf:
           - $ref: '#/components/schemas/OrigenEnum'
@@ -5835,6 +5840,7 @@ components:
         horario:
           type: string
           readOnly: true
+          nullable: true
         enabled:
           type: boolean
           title: Habilitado
@@ -5940,6 +5946,7 @@ components:
           type: string
           format: email
           readOnly: true
+          nullable: true
         estado:
           allOf:
           - $ref: '#/components/schemas/EstadoTicketEnum'

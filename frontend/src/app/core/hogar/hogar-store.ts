@@ -5,6 +5,27 @@ import { firstValueFrom } from 'rxjs';
 import { Hogar, HogarNuevo, Rol } from '../api/tipos';
 import { HogaresApi } from './hogares-api';
 
+const CLAVE_ULTIMO = 'gastos.ultimoHogar';
+
+/** localStorage puede no existir o lanzar (modo privado, cookies bloqueadas): nunca debe romper la app. */
+const recuerdo = {
+  leer: () => {
+    try {
+      return Number(localStorage.getItem(CLAVE_ULTIMO)) || null;
+    } catch {
+      return null;
+    }
+  },
+  guardar: (id: number | null) => {
+    try {
+      if (id === null) localStorage.removeItem(CLAVE_ULTIMO);
+      else localStorage.setItem(CLAVE_ULTIMO, String(id));
+    } catch {
+      /* sin almacenamiento: simplemente no se recuerda */
+    }
+  },
+};
+
 interface EstadoHogar {
   hogares: Hogar[];
   activoId: number | null; // lo fija el guard a partir de la URL: /hogares/:hogarId/…
@@ -35,6 +56,12 @@ export const HogarStore = signalStore(
     },
     seleccionar(activoId: number) {
       patchState(store, { activoId });
+      recuerdo.guardar(activoId); // módulo 80: al volver a /hogares se salta a él
+    },
+    /** El último hogar visitado, si sigue siendo mío (pudieron echarme o borrarlo desde otro dispositivo). */
+    ultimo(): number | null {
+      const id = recuerdo.leer();
+      return id && store.hogares().some((h) => h.id === id) ? id : null;
     },
     async crear(datos: HogarNuevo) {
       const hogar = await firstValueFrom(api.crear(datos));
@@ -43,6 +70,7 @@ export const HogarStore = signalStore(
     },
     reiniciar() {
       patchState(store, { hogares: [], activoId: null, cargado: false });
+      recuerdo.guardar(null); // al cerrar sesión: el siguiente usuario de este navegador no hereda nada
     },
   })),
 );

@@ -38,7 +38,9 @@
         @for (h of store.hogares(); track h.id) {
           <button mat-menu-item (click)="cambiarHogar(h.id)">{{ h.nombre }}</button>
         }
-        <a mat-menu-item routerLink="/hogares"><mat-icon>add_home</mat-icon> Mis hogares</a>
+        <a mat-menu-item routerLink="/hogares" [queryParams]="{ elegir: 1 }"
+          ><mat-icon>add_home</mat-icon> Mis hogares</a
+        >
       </mat-menu>
       <span class="flex-1"></span>
       <app-campana />

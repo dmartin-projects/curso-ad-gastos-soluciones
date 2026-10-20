@@ -11,7 +11,7 @@ from tickets.models import Ticket
 
 class TicketSoporteSerializer(serializers.ModelSerializer):
     hogar_nombre = serializers.CharField(source="hogar.nombre", read_only=True)
-    subido_por = serializers.EmailField(source="subido_por.email", read_only=True, default=None)
+    subido_por = serializers.EmailField(source="subido_por.email", read_only=True, default=None, allow_null=True)
 
     class Meta:
         model = Ticket
@@ -86,7 +86,7 @@ class UsuarioSoporteSerializer(serializers.ModelSerializer):
 
 
 class MovimientoSoporteSerializer(serializers.ModelSerializer):
-    categoria_nombre = serializers.CharField(source="categoria.nombre", read_only=True, default=None)
+    categoria_nombre = serializers.CharField(source="categoria.nombre", read_only=True, default=None, allow_null=True)
 
     class Meta:
         model = Movimiento
@@ -109,7 +109,7 @@ class IdsSerializer(serializers.Serializer):
 
 
 class AuditoriaSerializer(serializers.ModelSerializer):
-    usuario = serializers.EmailField(source="usuario.email", read_only=True, default=None)
+    usuario = serializers.EmailField(source="usuario.email", read_only=True, default=None, allow_null=True)
     modelo = serializers.SerializerMethodField()
 
     class Meta:
@@ -122,7 +122,7 @@ class AuditoriaSerializer(serializers.ModelSerializer):
 
 
 class TareaProgramadaSerializer(serializers.ModelSerializer):
-    horario = serializers.CharField(source="crontab", read_only=True, default=None)
+    horario = serializers.CharField(source="crontab", read_only=True, default=None, allow_null=True)
 
     class Meta:
         model = PeriodicTask

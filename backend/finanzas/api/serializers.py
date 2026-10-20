@@ -54,8 +54,8 @@ class ComercioSerializer(serializers.ModelSerializer):
 class MovimientoSerializer(DelHogarMixin, serializers.ModelSerializer):
     campos_del_hogar = {"cuenta": Cuenta, "categoria": Categoria}
     cuenta_nombre = serializers.CharField(source="cuenta.nombre", read_only=True)
-    categoria_nombre = serializers.CharField(source="categoria.nombre", read_only=True, default=None)
-    categoria_color = serializers.CharField(source="categoria.color", read_only=True, default=None)
+    categoria_nombre = serializers.CharField(source="categoria.nombre", read_only=True, default=None, allow_null=True)
+    categoria_color = serializers.CharField(source="categoria.color", read_only=True, default=None, allow_null=True)
     comercio = ComercioSerializer(read_only=True)
     num_adjuntos = serializers.IntegerField(read_only=True, default=0)
 

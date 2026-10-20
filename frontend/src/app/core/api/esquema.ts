@@ -1339,7 +1339,7 @@ export interface components {
             /** Format: date-time */
             readonly fecha: string;
             /** Format: email */
-            readonly usuario: string;
+            readonly usuario: string | null;
             readonly accion: components["schemas"]["AuditoriaAccionEnum"];
             readonly modelo: string;
             readonly object_id: string;
@@ -1537,7 +1537,7 @@ export interface components {
             readonly importe: string;
             readonly accion: components["schemas"]["FilaImportacionAccionEnum"];
             readonly coincide_con: number | null;
-            readonly coincide_con_concepto: string;
+            readonly coincide_con_concepto: string | null;
             readonly categoria: number | null;
             readonly movimiento: number | null;
         };
@@ -1735,8 +1735,8 @@ export interface components {
             cuenta: number;
             readonly cuenta_nombre: string;
             categoria?: number | null;
-            readonly categoria_nombre: string;
-            readonly categoria_color: string;
+            readonly categoria_nombre: string | null;
+            readonly categoria_color: string | null;
             readonly comercio: components["schemas"]["Comercio"];
             etiquetas?: string[];
             notas?: string;
@@ -1779,7 +1779,7 @@ export interface components {
             readonly importe: string;
             readonly concepto: string;
             readonly categoria: number | null;
-            readonly categoria_nombre: string;
+            readonly categoria_nombre: string | null;
             readonly origen: components["schemas"]["OrigenEnum"];
             readonly revisado: boolean;
         };
@@ -2269,7 +2269,7 @@ export interface components {
              * @description Nombre de la tarea Celery que debe ser ejecutada. (Ejemplo: "proj.tasks.import_contacts")
              */
             readonly task: string;
-            readonly horario: string;
+            readonly horario: string | null;
             /**
              * Habilitado
              * @description Establece a Falso para deshabilitar la programación
@@ -2310,7 +2310,7 @@ export interface components {
             readonly hogar: number;
             readonly hogar_nombre: string;
             /** Format: email */
-            readonly subido_por: string;
+            readonly subido_por: string | null;
             readonly estado: components["schemas"]["EstadoTicketEnum"];
             readonly intentos: number;
             /** Format: decimal */

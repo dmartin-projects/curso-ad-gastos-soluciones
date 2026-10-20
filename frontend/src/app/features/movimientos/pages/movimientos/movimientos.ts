@@ -1,6 +1,14 @@
 import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
 import { DatePipe } from '@angular/common';
-import { booleanAttribute, Component, computed, inject, input, viewChild } from '@angular/core';
+import {
+  booleanAttribute,
+  Component,
+  computed,
+  inject,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,7 +23,7 @@ import {
 } from '@tanstack/angular-query-experimental';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 
-import { Movimiento } from '../../../../core/api/tipos';
+import { Categoria, Movimiento } from '../../../../core/api/tipos';
 import { claves, opcionesCategorias, opcionesCuentas } from '../../../../core/hogar/consultas';
 import { HogarStore } from '../../../../core/hogar/hogar-store';
 import { HogaresApi } from '../../../../core/hogar/hogares-api';
@@ -23,12 +31,15 @@ import { Avisos } from '../../../../core/http/avisos';
 import { erroresDelServidor } from '../../../../core/http/errores-formulario';
 import { Confirmaciones } from '../../../../shared/components/confirmar/confirmaciones';
 import { Importe } from '../../../../shared/components/importe/importe';
+import { esCampoDeTexto } from '../../../../shared/utils/atajos';
+import { guardarArchivo } from '../../../../shared/utils/descargar';
 import {
   DatosFormularioMovimiento,
   FormularioMovimiento,
 } from '../../components/dialogs/formulario-movimiento/formulario-movimiento';
 import { FiltrosMovimientosComponent } from '../../components/filtros-movimientos/filtros-movimientos';
 import { FiltrosMovimientos } from '../../interfaces/movimientos.models';
+import { conCategoria, PaginasMovimientos } from '../../services/consultas';
 import { MovimientosApi } from '../../services/movimientos-api';
 
 /** "3" → 3; ausente o basura → undefined (con numberAttribute, un parámetro ausente daría NaN, módulo 50). */
@@ -37,6 +48,7 @@ const numeroOpcional = (v: unknown) =>
 
 @Component({
   selector: 'app-movimientos',
+  host: { '(document:keydown)': 'atajo($event)' },
   imports: [
     ScrollingModule,
     DatePipe,
@@ -59,6 +71,8 @@ export default class Movimientos {
   private readonly avisos = inject(Avisos);
   private readonly confirmaciones = inject(Confirmaciones);
   private readonly viewport = viewChild(CdkVirtualScrollViewport);
+  private readonly filtrosRef = viewChild.required<FiltrosMovimientosComponent>('filtrosRef');
+  protected readonly exportando = signal(false);
 
   // ── Filtros: la URL es la fuente de verdad (?q=…&categoria=…), enlazada como inputs (withComponentInputBinding)
   readonly q = input<string>();
@@ -105,6 +119,52 @@ export default class Movimientos {
       return this.queryClient.invalidateQueries({ queryKey: claves.movimientos(this.hogarId()) });
     },
   }));
+
+  /**
+   * Cambio de categoría optimista: la fila cambia YA en todas las páginas cargadas y, si la API falla,
+   * vuelve a como estaba. Al final se revalida igualmente (con un filtro por categoría, la fila puede sobrar).
+   */
+  protected readonly cambiarCategoria = injectMutation(() => ({
+    mutationFn: ({ m, categoria }: { m: Movimiento; categoria: Categoria | null }) =>
+      lastValueFrom(this.api.cambiarCategoria(this.hogarId(), m.id, categoria?.id ?? null)),
+    onMutate: async ({ m, categoria }) => {
+      const clave = claves.movimientos(this.hogarId());
+      await this.queryClient.cancelQueries({ queryKey: clave }); // que una carga en vuelo no lo pise
+      const antes = this.queryClient.getQueriesData<PaginasMovimientos>({ queryKey: clave });
+      this.queryClient.setQueriesData<PaginasMovimientos>({ queryKey: clave }, (datos) =>
+        conCategoria(datos, m.id, categoria),
+      );
+      return { antes };
+    },
+    onError: (_e, _vars, contexto) => {
+      contexto?.antes.forEach(([clave, datos]) => this.queryClient.setQueryData(clave, datos));
+      this.avisos.error('No se ha podido cambiar la categoría');
+    },
+    onSettled: () =>
+      this.queryClient.invalidateQueries({ queryKey: claves.movimientos(this.hogarId()) }),
+  }));
+
+  protected async exportar() {
+    this.exportando.set(true);
+    try {
+      guardarArchivo(await firstValueFrom(this.api.exportarCsv(this.hogarId(), this.filtros())));
+    } finally {
+      this.exportando.set(false);
+    }
+  }
+
+  /** "n": nuevo movimiento · "/": a la búsqueda. Nunca mientras se escribe ni con un diálogo abierto. */
+  protected atajo(e: KeyboardEvent) {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+    if (esCampoDeTexto(e.target) || this.dialog.openDialogs.length) return;
+    if (e.key === 'n' && this.store.puedeEditar()) {
+      e.preventDefault();
+      this.abrirFormulario();
+    } else if (e.key === '/') {
+      e.preventDefault(); // en Firefox, "/" abre la búsqueda rápida de la página
+      this.filtrosRef().enfocarBusqueda();
+    }
+  }
 
   protected alDesplazar() {
     const vp = this.viewport();

@@ -110,7 +110,9 @@ class ImportacionSerializer(serializers.ModelSerializer):
 
 
 class FilaImportacionSerializer(serializers.ModelSerializer):
-    coincide_con_concepto = serializers.CharField(source="coincide_con.concepto", read_only=True, default=None)
+    coincide_con_concepto = serializers.CharField(
+        source="coincide_con.concepto", read_only=True, default=None, allow_null=True
+    )
 
     class Meta:
         model = FilaImportacion
