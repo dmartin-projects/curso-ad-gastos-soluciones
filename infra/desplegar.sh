@@ -26,6 +26,9 @@ echo "▶ Comprobando salud…"
 for _ in $(seq 1 30); do
   if curl -fsS "https://${DOMINIO}/health/ready/" >/dev/null; then
     echo "$VERSION" > .version-actual
+    # y en .env: cualquier "docker compose …" que se lance después a mano (run, up -d) usará ESTA
+    # versión y no la que hubiera en .env (latest, que tras una vuelta atrás puede ser la rota)
+    sed -i "s/^VERSION=.*/VERSION=$VERSION/" .env
     docker image prune -f >/dev/null
     echo "✅ $VERSION desplegada"
     exit 0
@@ -36,4 +39,5 @@ done
 echo "❌ La versión $VERSION no responde: volviendo a $ANTERIOR"
 # shellcheck disable=SC2086
 VERSION=$ANTERIOR $COMPOSE up -d $SERVICIOS
+sed -i "s/^VERSION=.*/VERSION=$ANTERIOR/" .env
 exit 1
