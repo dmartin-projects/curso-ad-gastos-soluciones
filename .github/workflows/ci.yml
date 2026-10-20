@@ -70,11 +70,21 @@ jobs:
           git diff --exit-code schema.yml
 
       - name: check --deploy con ajustes de producción
-        env:
+        env: # prod.py exige todas estas (sin valores por defecto, a propósito): sin ellas, ImproperlyConfigured
           DJANGO_SETTINGS_MODULE: config.settings.prod
+          DJANGO_SECRET_KEY: ci-una-clave-larga-y-aleatoria-solo-para-el-check-deploy-0123456789 # la del job es corta: W009
           DJANGO_ALLOWED_HOSTS: gastos.example.com
+          DJANGO_CSRF_TRUSTED_ORIGINS: https://gastos.example.com
+          FRONTEND_URL: https://gastos.example.com
           IA_API_KEY: ci
           BANCO_WEBHOOK_SECRET: ci
+          S3_BUCKET: ci
+          S3_ENDPOINT_URL: https://s3.example.com
+          S3_ACCESS_KEY: ci
+          S3_SECRET_KEY: ci
+          SMTP_HOST: ci
+          SMTP_USER: ci
+          SMTP_PASSWORD: ci
           SENTRY_DSN: ""
         run: uv run python manage.py check --deploy --fail-level WARNING
 
