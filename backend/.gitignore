@@ -10,3 +10,5 @@ wheels/
 .venv
 media-e2e/
 staticfiles/
+.coverage
+coverage.xml
