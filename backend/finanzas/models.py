@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import GinIndex
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
@@ -126,6 +127,17 @@ class Movimiento(ModeloConFechas):
     @property
     def es_gasto(self) -> bool:
         return self.importe < 0
+
+    def clean(self):
+        # Defensa en Python (formularios, full_clean, backoffice). La garantía real la da la BD:
+        # FK compuesta (categoria_id, hogar_id) de la migración 0003.
+        errores = {}
+        if self.categoria_id and self.hogar_id and self.categoria.hogar_id != self.hogar_id:
+            errores["categoria"] = _("La categoría pertenece a otro hogar.")
+        if self.cuenta_id and self.hogar_id and self.cuenta.hogar_id != self.hogar_id:
+            errores["cuenta"] = _("La cuenta pertenece a otro hogar.")
+        if errores:
+            raise ValidationError(errores)
 
 
 class Presupuesto(ModeloConFechas):
