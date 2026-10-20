@@ -1821,7 +1821,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/InformeEncolado'
           description: ''
-  /api/v1/hogares/{hogar_pk}/informes/{mes}/:
+  /api/v1/hogares/{hogar_pk}/informes/{periodo}/:
     get:
       operationId: hogares_informes_retrieve
       description: 'Informes mensuales en PDF: /informes/ · /informes/2026-10/ · /informes/2026-10/pdf/'
@@ -1833,10 +1833,10 @@ paths:
           pattern: ^\d+$
         required: true
       - in: path
-        name: mes
+        name: periodo
         schema:
           type: string
-          pattern: ^\d{4}-\d{2}$
+          pattern: ^\d{4}(-\d{2})?$
         required: true
       tags:
       - hogares
@@ -1850,7 +1850,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Informe'
           description: ''
-  /api/v1/hogares/{hogar_pk}/informes/{mes}/pdf/:
+  /api/v1/hogares/{hogar_pk}/informes/{periodo}/pdf/:
     get:
       operationId: hogares_informes_pdf_retrieve
       description: 'Informes mensuales en PDF: /informes/ · /informes/2026-10/ · /informes/2026-10/pdf/'
@@ -1862,10 +1862,10 @@ paths:
           pattern: ^\d+$
         required: true
       - in: path
-        name: mes
+        name: periodo
         schema:
           type: string
-          pattern: ^\d{4}-\d{2}$
+          pattern: ^\d{4}(-\d{2})?$
         required: true
       tags:
       - hogares
@@ -3276,6 +3276,29 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/informes/baja/{token}/:
+    post:
+      operationId: informes_baja_create
+      description: |-
+        POST /informes/baja/<token>/: la URL de `List-Unsubscribe` (baja en un clic, RFC 8058).
+
+        Sin sesión: la hace el cliente de correo, o la página de baja del frontend. Solo POST: un GET no
+        puede cambiar nada, porque los antivirus y los clientes de correo abren los enlaces para analizarlos.
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      tags:
+      - informes
+      security:
+      - {}
+      responses:
+        '204':
+          description: No response body
+        '400':
+          description: No response body
   /api/v1/invitaciones/{token}/aceptar/:
     post:
       operationId: invitaciones_aceptar_create
@@ -4028,10 +4051,14 @@ components:
     GenerarInformeRequest:
       type: object
       properties:
+        tipo:
+          allOf:
+          - $ref: '#/components/schemas/TipoInformeEnum'
+          default: mensual
         mes:
           type: string
           format: date
-          description: AAAA-MM
+          description: AAAA-MM (en un anual, cualquier mes del año)
         enviar:
           type: boolean
           default: false
@@ -4309,10 +4336,18 @@ components:
         id:
           type: integer
           readOnly: true
+        tipo:
+          allOf:
+          - $ref: '#/components/schemas/TipoInformeEnum'
+          readOnly: true
         mes:
           type: string
           format: date
           readOnly: true
+        periodo:
+          type: string
+          readOnly: true
+          description: 'AAAA-MM (mensual) o AAAA (anual): va en la URL'
         tamano:
           type: integer
           readOnly: true
@@ -4333,7 +4368,9 @@ components:
       - creado
       - id
       - mes
+      - periodo
       - tamano
+      - tipo
     InformeEncolado:
       type: object
       properties:
@@ -5272,8 +5309,12 @@ components:
           items:
             $ref: '#/components/schemas/TipoNotificacionEnum'
           maxItems: 50
+        recibir_informes:
+          type: boolean
+          description: El PDF mensual/anual por email (módulo 78)
       required:
       - emails_desactivados
+      - recibir_informes
     PreferenciasRequest:
       type: object
       properties:
@@ -5282,8 +5323,12 @@ components:
           items:
             $ref: '#/components/schemas/TipoNotificacionEnum'
           maxItems: 50
+        recibir_informes:
+          type: boolean
+          description: El PDF mensual/anual por email (módulo 78)
       required:
       - emails_desactivados
+      - recibir_informes
     Presupuesto:
       type: object
       description: 'Limita los campos relacionados al hogar de la URL: no se puede
@@ -5714,6 +5759,14 @@ components:
       required:
       - caduca_en
       - ticket
+    TipoInformeEnum:
+      enum:
+      - mensual
+      - anual
+      type: string
+      description: |-
+        * `mensual` - Mensual
+        * `anual` - Anual
     TipoNotificacionEnum:
       enum:
       - ticket_procesado

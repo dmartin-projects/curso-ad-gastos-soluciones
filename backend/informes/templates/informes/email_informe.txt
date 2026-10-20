@@ -1,6 +1,6 @@
 {% load i18n %}{% blocktranslate with nombre=usuario.nombre %}Hola, {{ nombre }}:{% endblocktranslate %}
 
-{% blocktranslate with mes=informe.mes|date:"F Y" hogar=informe.hogar.nombre %}Te adjuntamos el informe de {{ mes }} de «{{ hogar }}».{% endblocktranslate %}
+{% blocktranslate with mes=periodo hogar=informe.hogar.nombre %}Te adjuntamos el informe de {{ mes }} de «{{ hogar }}».{% endblocktranslate %}
 
 {% translate "Gastos" %}: {{ resumen.gastos|floatformat:"2g" }} €
 {% translate "Ingresos" %}: {{ resumen.ingresos|floatformat:"2g" }} €
@@ -9,3 +9,6 @@
 - {{ c.nombre }}: {{ c.total|floatformat:"2g" }} €{% endfor %}
 
 {% translate "Ver en la app" %}: {{ frontend_url }}{{ enlace }}
+
+--
+{% translate "¿No quieres recibir más informes por email?" %} {{ enlace_baja }}

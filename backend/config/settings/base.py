@@ -145,9 +145,13 @@ CELERY_TASK_ROUTES = {"tickets.tasks.*": {"queue": "ocr"}}  # el resto (importac
 # Tareas periódicas (módulo 78). Con el DatabaseScheduler de django-celery-beat se copian a la BD al
 # arrancar Beat y se pueden pausar desde el backoffice (módulo 79). Horas en CELERY_TIMEZONE (Europe/Madrid).
 CELERY_BEAT_SCHEDULE = {
-    "informes-mensuales": {
+    "informes-mensuales": {  # cada hora: la tarea decide en qué zonas horarias son ya las 7:00 del día 1
         "task": "informes.tasks.generar_informes_mensuales",
-        "schedule": crontab(minute=0, hour=7, day_of_month=1),
+        "schedule": crontab(minute=0),
+    },
+    "informes-anuales": {
+        "task": "informes.tasks.generar_informes_anuales",
+        "schedule": crontab(minute=0, hour=7, day_of_month=2, month_of_year=1),
     },
     "caducar-vistas-previas": {
         "task": "importaciones.tasks.caducar_vistas_previas",
@@ -185,7 +189,13 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "core.api.paginacion.PaginacionEstandar",
     "PAGE_SIZE": 20,
     "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.ScopedRateThrottle"],
-    "DEFAULT_THROTTLE_RATES": {"login": "5/min", "registro": "5/hour", "recuperar": "3/hour", "subidas": "60/hour"},
+    "DEFAULT_THROTTLE_RATES": {
+        "login": "5/min",
+        "registro": "5/hour",
+        "recuperar": "3/hour",
+        "subidas": "60/hour",
+        "baja": "30/hour",
+    },
     "EXCEPTION_HANDLER": "core.api.exceptions.manejador_errores",
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
@@ -217,6 +227,7 @@ SPECTACULAR_SETTINGS = {
         "EstadoTicketEnum": "tickets.models.Ticket.Estado",
         "EstadoImportacionEnum": "importaciones.models.Importacion.Estado",
         "TipoNotificacionEnum": "notificaciones.models.Notificacion.Tipo",
+        "TipoInformeEnum": "informes.models.InformeMensual.Tipo",
     },
 }
 

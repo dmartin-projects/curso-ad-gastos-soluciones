@@ -25,6 +25,9 @@
   .barra { height: 7pt; background: #e0e0e0; }
   .barra span { display: block; height: 7pt; }
   .excedido { color: #c62828; font-weight: bold; }
+  .grafico { width: 100%; height: 4.4cm; }
+  .leyenda { font-size: 8pt; color: #666; margin: 2pt 0 0; }
+  .leyenda span { display: inline-block; width: 8pt; height: 8pt; margin: 0 3pt 0 10pt; vertical-align: -1pt; }
   .grupo { break-inside: avoid; }        /* no partir una categoría corta entre dos páginas */
   thead { display: table-header-group; }  /* la cabecera de la tabla se repite en cada página */
 </style>
@@ -41,6 +44,9 @@
       {% if resumen.variacion is None %}—{% else %}{% if resumen.variacion > 0 %}+{% endif %}{{ resumen.variacion|floatformat:1 }} %{% endif %}
     </span></td>
   </tr></table>
+
+  <h2>{% translate "Últimos 12 meses" %}</h2>
+  {% include "informes/parciales/grafico.html" %}
 
   <h2>{% translate "Gasto por categoría" %}</h2>
   <table class="datos">

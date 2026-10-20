@@ -6,7 +6,7 @@
       <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px; width:100%; background:#ffffff; border-radius:8px;">
         <tr><td style="padding:24px;">
           <p style="margin:0 0 12px; font-size:16px;">{% blocktranslate with nombre=usuario.nombre %}Hola, {{ nombre }}:{% endblocktranslate %}</p>
-          <p style="margin:0 0 20px; font-size:14px;">{% blocktranslate with mes=informe.mes|date:"F Y" hogar=informe.hogar.nombre %}Te adjuntamos el informe de {{ mes }} de «{{ hogar }}».{% endblocktranslate %}</p>
+          <p style="margin:0 0 20px; font-size:14px;">{% blocktranslate with mes=periodo hogar=informe.hogar.nombre %}Te adjuntamos el informe de {{ mes }} de «{{ hogar }}».{% endblocktranslate %}</p>
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
             <tr>
               <td style="padding:12px; background:#fdecea; font-size:13px;">{% translate "Gastos" %}<br><strong style="font-size:20px;">{{ resumen.gastos|floatformat:"2g" }} €</strong></td>
@@ -25,6 +25,7 @@
           <p style="margin:24px 0 0;"><a href="{{ frontend_url }}{{ enlace }}" style="background:#1565c0; color:#ffffff; padding:10px 16px; border-radius:4px; text-decoration:none; font-size:14px;">{% translate "Ver en la app" %}</a></p>
         </td></tr>
       </table>
+      <p style="font-size:12px; color:#777; margin:16px 0 0;">{% translate "¿No quieres recibir más informes por email?" %} <a href="{{ enlace_baja }}" style="color:#777;">{% translate "Darse de baja" %}</a></p>
     </td></tr>
   </table>
 </body>

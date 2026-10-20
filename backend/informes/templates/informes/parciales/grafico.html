@@ -1,0 +1,13 @@
+{% load i18n l10n %}{# Evolución de 12 meses en SVG en línea: WeasyPrint lo dibuja como vectores (nítido al imprimir) #}
+{# localize off: con el idioma español, {{ 12.5 }} se escribiría "12,5" y el SVG quedaría roto #}
+{% localize off %}
+<svg class="grafico" viewBox="0 0 {{ grafico.ancho }} {{ grafico.alto_total }}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{% translate 'Gastos e ingresos de los últimos 12 meses' %}">
+  <line x1="0" y1="{{ grafico.alto }}" x2="{{ grafico.ancho }}" y2="{{ grafico.alto }}" stroke="#bbb" stroke-width="0.5"/>
+  {% for b in grafico.barras %}
+    <rect x="{{ b.x_gasto }}" y="{{ b.y_gasto }}" width="{{ b.ancho }}" height="{{ b.alto_gasto }}" fill="#e57373"/>
+    <rect x="{{ b.x_ingreso }}" y="{{ b.y_ingreso }}" width="{{ b.ancho }}" height="{{ b.alto_ingreso }}" fill="#81c784"/>
+    <text x="{{ b.x_texto }}" y="{{ grafico.alto_total }}" font-size="7" text-anchor="middle" fill="#666">{{ b.etiqueta }}</text>
+  {% endfor %}
+</svg>
+{% endlocalize %}
+<p class="leyenda"><span style="background:#e57373"></span>{% translate "Gastos" %} <span style="background:#81c784"></span>{% translate "Ingresos" %}</p>

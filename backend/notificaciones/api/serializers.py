@@ -23,6 +23,7 @@ class PreferenciasSerializer(serializers.Serializer):
     emails_desactivados = serializers.ListField(
         child=serializers.ChoiceField(choices=Notificacion.Tipo.choices), allow_empty=True, max_length=50
     )
+    recibir_informes = serializers.BooleanField(help_text="El PDF mensual/anual por email (módulo 78)")
 
     def validate_emails_desactivados(self, tipos):
         return sorted(set(tipos))

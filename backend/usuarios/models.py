@@ -21,6 +21,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     # Los valores son Notificacion.Tipo; se validan en la API de notificaciones, no aquí, para que
     # `usuarios` no dependa de `notificaciones`.
     emails_desactivados = ArrayField(models.CharField(max_length=30), default=list, blank=True)
+    recibir_informes = models.BooleanField(default=True)  # el PDF mensual/anual por email (módulo 78)
 
     objects = UsuarioManager()
 

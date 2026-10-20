@@ -25,6 +25,7 @@ export default class Informes {
   private readonly hogarId = computed(() => this.store.activoId()!);
   protected readonly mes = signal('');
   protected readonly enviar = signal(false);
+  protected readonly anual = signal(false);
 
   /** Se refresca solo cuando llega la notificación "informe_listo" (invalida ['hogar', h, …]). */
   protected readonly informes = injectQuery(() => ({
@@ -33,13 +34,14 @@ export default class Informes {
   }));
 
   protected async generar() {
+    const tipo = this.anual() ? 'anual' : 'mensual';
     await firstValueFrom(
-      this.api.generar(this.hogarId(), { mes: this.mes(), enviar: this.enviar() }),
+      this.api.generar(this.hogarId(), { mes: this.mes(), enviar: this.enviar(), tipo }),
     );
     this.avisos.exito('Generando el informe; te avisaremos cuando esté listo');
   }
 
   protected async descargar(i: Informe) {
-    guardarArchivo(await firstValueFrom(this.api.pdf(this.hogarId(), i.mes)));
+    guardarArchivo(await firstValueFrom(this.api.pdf(this.hogarId(), i.periodo)));
   }
 }

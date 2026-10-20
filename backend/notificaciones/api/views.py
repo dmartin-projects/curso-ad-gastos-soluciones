@@ -52,12 +52,14 @@ class NotificacionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     @action(detail=False, methods=["get", "put"], filter_backends=[], pagination_class=None)
     def preferencias(self, request, *args, **kwargs):
         """Qué tipos NO quiero recibir por email. La notificación en la app llega siempre."""
+        campos = ["emails_desactivados", "recibir_informes"]
         if request.method == "PUT":
             datos = PreferenciasSerializer(data=request.data)
             datos.is_valid(raise_exception=True)
-            request.user.emails_desactivados = datos.validated_data["emails_desactivados"]
-            request.user.save(update_fields=["emails_desactivados"])
-        return Response({"emails_desactivados": request.user.emails_desactivados})
+            for campo in campos:
+                setattr(request.user, campo, datos.validated_data[campo])
+            request.user.save(update_fields=campos)
+        return Response({campo: getattr(request.user, campo) for campo in campos})
 
     @extend_schema(responses={200: Contador})
     @action(detail=False, methods=["get"], url_path="no-leidas", filter_backends=[], pagination_class=None)

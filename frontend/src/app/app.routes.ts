@@ -9,6 +9,11 @@ export const routes: Routes = [
     canMatch: [sinSesion],
     loadComponent: () => import('./features/auth/pages/login/login'),
   },
+  // pública, con o sin sesión: llega desde el pie de un email (módulo 78)
+  {
+    path: 'baja-informes',
+    loadComponent: () => import('./features/informes/pages/baja-informes/baja-informes'),
+  },
   {
     path: '',
     canMatch: [conSesion],

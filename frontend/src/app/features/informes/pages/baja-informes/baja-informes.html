@@ -1,0 +1,30 @@
+<div class="grid min-h-full place-items-center p-4">
+  <mat-card class="w-full max-w-sm">
+    <mat-card-header><mat-card-title>Informes por email</mat-card-title></mat-card-header>
+    <mat-card-content class="mt-4">
+      @switch (estado()) {
+        @case ('hecho') {
+          <p role="status">
+            Listo: ya no recibirás los informes por email. Puedes volver a activarlos en tus
+            preferencias.
+          </p>
+        }
+        @case ('error') {
+          <p role="alert" class="text-error">
+            El enlace no es válido. Entra en la app y cámbialo en tus preferencias.
+          </p>
+        }
+        @default {
+          <p class="mb-4">¿Dejar de recibir los informes mensuales y anuales por email?</p>
+          <button
+            mat-flat-button
+            (click)="darseDeBaja()"
+            [disabled]="!token() || estado() === 'enviando'"
+          >
+            Dejar de recibirlos
+          </button>
+        }
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

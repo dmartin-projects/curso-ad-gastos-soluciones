@@ -14,14 +14,19 @@ export class InformesApi {
     return this.http.get<Informe[]>(this.base(hogarId));
   }
 
-  generar(hogarId: number, datos: { mes: string; enviar: boolean }) {
+  generar(hogarId: number, datos: { mes: string; enviar: boolean; tipo: 'mensual' | 'anual' }) {
     return this.http.post(this.base(hogarId), datos);
   }
 
   /** Por la API (con el JWT y sus permisos), no con un enlace <a href>, que no puede llevar la cabecera Authorization. */
-  pdf(hogarId: number, mes: string) {
+  pdf(hogarId: number, periodo: string) {
     return this.http
-      .get(`${this.base(hogarId)}${mes}/pdf/`, { responseType: 'blob', observe: 'response' })
-      .pipe(map((r) => archivoDe(r, `gastos-${mes}.pdf`)));
+      .get(`${this.base(hogarId)}${periodo}/pdf/`, { responseType: 'blob', observe: 'response' })
+      .pipe(map((r) => archivoDe(r, `gastos-${periodo}.pdf`)));
+  }
+
+  /** El enlace del pie del email (módulo 78): pública, sin sesión; el token firmado dice quién se da de baja. */
+  baja(token: string) {
+    return this.http.post(`/api/v1/informes/baja/${token}/`, null);
   }
 }

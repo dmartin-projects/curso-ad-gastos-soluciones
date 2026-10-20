@@ -28,16 +28,20 @@ def escenario(hogar_con_roles):
 def test_preferencias_api_y_validacion(cliente):
     u = UsuarioFactory()
     c = cliente(u)
-    assert c.get("/api/v1/notificaciones/preferencias/").data == {"emails_desactivados": []}
+    assert c.get("/api/v1/notificaciones/preferencias/").data == {"emails_desactivados": [], "recibir_informes": True}
     r = c.put(
         "/api/v1/notificaciones/preferencias/",
-        {"emails_desactivados": ["presupuesto_80", "presupuesto_80", "informe_listo"]},
+        {"emails_desactivados": ["presupuesto_80", "presupuesto_80", "informe_listo"], "recibir_informes": True},
         format="json",
     )
-    assert r.data == {"emails_desactivados": ["informe_listo", "presupuesto_80"]}  # sin repetidos
+    assert r.data["emails_desactivados"] == ["informe_listo", "presupuesto_80"]  # sin repetidos
     u.refresh_from_db()
     assert u.emails_desactivados == ["informe_listo", "presupuesto_80"]
-    r = c.put("/api/v1/notificaciones/preferencias/", {"emails_desactivados": ["spam"]}, format="json")
+    r = c.put(
+        "/api/v1/notificaciones/preferencias/",
+        {"emails_desactivados": ["spam"], "recibir_informes": True},
+        format="json",
+    )
     assert r.status_code == 400
 
 

@@ -1,14 +1,14 @@
-<h1 class="mb-1 text-2xl font-medium">Informes mensuales</h1>
+<h1 class="mb-1 text-2xl font-medium">Informes</h1>
 <p class="mb-4 text-sm text-texto-suave">
-  Se generan solos el día 1 de cada mes y os llegan por email. También puedes generarlos cuando
-  quieras.
+  El mensual se genera solo el día 1 de cada mes y el anual, el 2 de enero; os llegan por email.
+  También puedes generarlos cuando quieras.
 </p>
 <ul class="divide-y rounded-lg border">
   @for (i of informes.data() ?? []; track i.id) {
     <li class="flex items-center gap-3 p-3">
       <mat-icon>picture_as_pdf</mat-icon>
       <span class="flex-1 capitalize"
-        >{{ i.mes + '-01' | date: 'MMMM y' }}
+        >{{ i.tipo === 'anual' ? 'Año ' + i.periodo : (i.mes + '-01' | date: 'MMMM y') }}
         <span class="block text-xs normal-case text-texto-suave"
           >{{ i.automatico ? 'Automático' : 'Bajo demanda' }} ·
           {{ i.actualizado | date: 'short' }}</span
@@ -31,6 +31,9 @@
       (change)="mes.set($any($event.target).value)"
       aria-label="Mes"
     />
+    <mat-checkbox [checked]="anual()" (change)="anual.set($event.checked)"
+      >Del año completo</mat-checkbox
+    >
     <mat-checkbox [checked]="enviar()" (change)="enviar.set($event.checked)"
       >Enviar también por email</mat-checkbox
     >

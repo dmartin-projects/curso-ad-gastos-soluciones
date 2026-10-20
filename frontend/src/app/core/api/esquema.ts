@@ -718,7 +718,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/hogares/{hogar_pk}/informes/{mes}/": {
+    "/api/v1/hogares/{hogar_pk}/informes/{periodo}/": {
         parameters: {
             query?: never;
             header?: never;
@@ -735,7 +735,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/hogares/{hogar_pk}/informes/{mes}/pdf/": {
+    "/api/v1/hogares/{hogar_pk}/informes/{periodo}/pdf/": {
         parameters: {
             query?: never;
             header?: never;
@@ -1128,6 +1128,28 @@ export interface paths {
         patch: operations["hogares_partial_update"];
         trace?: never;
     };
+    "/api/v1/informes/baja/{token}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description POST /informes/baja/<token>/: la URL de `List-Unsubscribe` (baja en un clic, RFC 8058).
+         *
+         *     Sin sesión: la hace el cliente de correo, o la página de baja del frontend. Solo POST: un GET no
+         *     puede cambiar nada, porque los antivirus y los clientes de correo abren los enlaces para analizarlos.
+         */
+        post: operations["informes_baja_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/invitaciones/{token}/aceptar/": {
         parameters: {
             query?: never;
@@ -1462,9 +1484,11 @@ export interface components {
          */
         FormatoEnum: "csv" | "pdf" | "xlsx";
         GenerarInformeRequest: {
+            /** @default mensual */
+            tipo: components["schemas"]["TipoInformeEnum"];
             /**
              * Format: date
-             * @description AAAA-MM
+             * @description AAAA-MM (en un anual, cualquier mes del año)
              */
             mes: string;
             /**
@@ -1553,8 +1577,11 @@ export interface components {
         };
         Informe: {
             readonly id: number;
+            readonly tipo: components["schemas"]["TipoInformeEnum"];
             /** Format: date */
             readonly mes: string;
+            /** @description AAAA-MM (mensual) o AAAA (anual): va en la URL */
+            readonly periodo: string;
             readonly tamano: number;
             readonly automatico: boolean;
             /** Format: date-time */
@@ -2007,9 +2034,13 @@ export interface components {
         };
         Preferencias: {
             emails_desactivados: components["schemas"]["TipoNotificacionEnum"][];
+            /** @description El PDF mensual/anual por email (módulo 78) */
+            recibir_informes: boolean;
         };
         PreferenciasRequest: {
             emails_desactivados: components["schemas"]["TipoNotificacionEnum"][];
+            /** @description El PDF mensual/anual por email (módulo 78) */
+            recibir_informes: boolean;
         };
         /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
         Presupuesto: {
@@ -2188,6 +2219,12 @@ export interface components {
             /** @description Segundos */
             caduca_en: number;
         };
+        /**
+         * @description * `mensual` - Mensual
+         *     * `anual` - Anual
+         * @enum {string}
+         */
+        TipoInformeEnum: "mensual" | "anual";
         /**
          * @description * `ticket_procesado` - Ticket procesado
          *     * `ticket_revisar` - Ticket pendiente de revisión
@@ -3718,7 +3755,7 @@ export interface operations {
             header?: never;
             path: {
                 hogar_pk: string;
-                mes: string;
+                periodo: string;
             };
             cookie?: never;
         };
@@ -3740,7 +3777,7 @@ export interface operations {
             header?: never;
             path: {
                 hogar_pk: string;
-                mes: string;
+                periodo: string;
             };
             cookie?: never;
         };
@@ -4803,6 +4840,33 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Hogar"];
                 };
+            };
+        };
+    };
+    informes_baja_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No response body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

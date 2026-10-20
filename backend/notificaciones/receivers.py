@@ -191,7 +191,7 @@ def al_generar_informe(sender, informe, **kwargs):
         get_user_model().objects.filter(membresias__hogar_id=informe.hogar_id, is_active=True),
         tipo=T.INFORME_LISTO,
         titulo=_("Informe de %(mes)s disponible"),
-        contexto={"mes": f"{informe.mes:%m/%Y}"},
+        contexto={"mes": informe.periodo if informe.es_anual else f"{informe.mes:%m/%Y}"},
         hogar=informe.hogar,
         enlace=f"/hogares/{informe.hogar_id}/informes",
     )
