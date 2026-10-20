@@ -48,15 +48,38 @@ def leer_imagen(contenido: bytes) -> Lectura:
     return Lectura(texto=texto, imagen_png=_png(imagen))
 
 
+MAX_PAGINAS = 10  # una factura larga sí; un PDF de 300 páginas subido por error, no
+
+
+def _apilar(imagenes: list[Image.Image]) -> Image.Image:
+    """Las páginas una debajo de otra: una sola imagen para la IA (el total suele estar en la última)."""
+    ancho = max(i.width for i in imagenes)
+    lienzo = Image.new("RGB", (ancho, sum(i.height for i in imagenes)), "white")
+    y = 0
+    for i in imagenes:
+        lienzo.paste(i, (0, y))
+        y += i.height
+    return lienzo
+
+
 def leer_pdf(contenido: bytes) -> Lectura:
     pdf = pdfium.PdfDocument(contenido)
     try:
-        pagina = pdf[0]
-        texto = pagina.get_textpage().get_text_range()  # ticket electrónico: ya trae texto
-        imagen = pagina.render(scale=200 / 72).to_pil()  # 200 ppp
-        if len(texto.strip()) < MIN_CARACTERES:  # PDF escaneado: no hay capa de texto → OCR
-            return leer_imagen(_png(imagen))
-        return Lectura(texto=texto, imagen_png=_png(imagen))
+        textos, imagenes = [], []
+        for n in range(min(len(pdf), MAX_PAGINAS)):
+            pagina = pdf[n]
+            texto = pagina.get_textpage().get_text_range()  # ticket electrónico: ya trae texto
+            imagen = pagina.render(scale=200 / 72).to_pil()  # 200 ppp
+            if len(texto.strip()) < MIN_CARACTERES:  # página escaneada: no hay capa de texto → OCR de ESA página
+                lectura = leer_imagen(_png(imagen))
+                texto, imagen = lectura.texto, Image.open(io.BytesIO(lectura.imagen_png))
+            textos.append(texto.strip())
+            imagenes.append(imagen)
+        # Un separador visible: a la IA le ayuda saber dónde acaba cada página
+        texto = (
+            "\n\n".join(f"--- Página {n} ---\n{t}" for n, t in enumerate(textos, 1)) if len(textos) > 1 else textos[0]
+        )
+        return Lectura(texto=texto, imagen_png=_png(_apilar(imagenes[:3]) if len(imagenes) > 1 else imagenes[0]))
     finally:
         pdf.close()
 

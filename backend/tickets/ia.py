@@ -153,9 +153,10 @@ class ClienteIA:
                 "json_schema": {"name": "ticket", "strict": True, "schema": esquema(categorias)},
             },
         }
-        return validar(self._enviar(cuerpo))
+        contenido, uso = self._enviar(cuerpo)
+        return validar(contenido) | {"uso": uso}
 
-    def _enviar(self, cuerpo: dict) -> dict:
+    def _enviar(self, cuerpo: dict) -> tuple[dict, dict]:
         try:
             r = self._http.post("chat/completions", json=cuerpo)
         except httpx.TransportError as e:  # timeouts, conexión rechazada, DNS…
@@ -165,6 +166,9 @@ class ClienteIA:
         if r.is_error:  # 400/401/403/404: petición o configuración incorrectas
             raise ErrorRespuestaIA(f"HTTP {r.status_code}: {r.text[:300]}")
         try:
-            return json.loads(r.json()["choices"][0]["message"]["content"])
+            respuesta = r.json()
+            contenido = json.loads(respuesta["choices"][0]["message"]["content"])
         except (KeyError, IndexError, TypeError, ValueError) as e:
             raise ErrorRespuestaIA("La respuesta no contiene un JSON válido") from e
+        uso = respuesta.get("usage") or {}  # opcional en algunos proveedores compatibles
+        return contenido, {"entrada": uso.get("prompt_tokens", 0), "salida": uso.get("completion_tokens", 0)}

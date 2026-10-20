@@ -1423,6 +1423,11 @@ export interface components {
             /** Format: date-time */
             readonly creado: string;
         };
+        IAMes: {
+            tickets: number;
+            tokens_entrada: number;
+            tokens_salida: number;
+        };
         IdsRequest: {
             ids: number[];
         };
@@ -1959,6 +1964,8 @@ export interface components {
         };
         Resumen: {
             tickets_24h: components["schemas"]["PorEstado"][];
+            /** @description Consumo de la IA en el mes en curso (coste) */
+            ia_mes: components["schemas"]["IAMes"];
             tickets_atascados: number;
             importaciones_en_curso: number;
             importaciones_con_error_7d: number;

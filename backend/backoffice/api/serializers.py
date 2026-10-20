@@ -135,8 +135,15 @@ class PorEstadoSerializer(serializers.Serializer):
     total = serializers.IntegerField()
 
 
+class IAMesSerializer(serializers.Serializer):
+    tickets = serializers.IntegerField()
+    tokens_entrada = serializers.IntegerField()
+    tokens_salida = serializers.IntegerField()
+
+
 class ResumenSerializer(serializers.Serializer):
     tickets_24h = PorEstadoSerializer(many=True)
+    ia_mes = IAMesSerializer(help_text="Consumo de la IA en el mes en curso (coste)")
     tickets_atascados = serializers.IntegerField()
     importaciones_en_curso = serializers.IntegerField()
     importaciones_con_error_7d = serializers.IntegerField()

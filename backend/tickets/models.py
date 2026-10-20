@@ -40,6 +40,8 @@ class Ticket(ModeloConFechas):
     confianza = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
     error = models.TextField(blank=True)
     procesado_en = models.DateTimeField(null=True, blank=True)
+    tokens_entrada = models.PositiveIntegerField(default=0)  # usage.prompt_tokens (acumulado)
+    tokens_salida = models.PositiveIntegerField(default=0)  # usage.completion_tokens (acumulado)
     movimiento = models.OneToOneField(
         Movimiento, on_delete=models.SET_NULL, null=True, blank=True, related_name="ticket"
     )

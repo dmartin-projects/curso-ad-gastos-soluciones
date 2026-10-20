@@ -3826,6 +3826,19 @@ components:
       - num_miembros
       - num_movimientos
       - zona_horaria
+    IAMes:
+      type: object
+      properties:
+        tickets:
+          type: integer
+        tokens_entrada:
+          type: integer
+        tokens_salida:
+          type: integer
+      required:
+      - tickets
+      - tokens_entrada
+      - tokens_salida
     IdsRequest:
       type: object
       properties:
@@ -5032,6 +5045,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PorEstado'
+        ia_mes:
+          allOf:
+          - $ref: '#/components/schemas/IAMes'
+          description: Consumo de la IA en el mes en curso (coste)
         tickets_atascados:
           type: integer
         importaciones_en_curso:
@@ -5044,6 +5061,7 @@ components:
           type: integer
       required:
       - hogares
+      - ia_mes
       - importaciones_con_error_7d
       - importaciones_en_curso
       - tickets_24h

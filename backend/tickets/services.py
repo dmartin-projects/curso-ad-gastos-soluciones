@@ -10,6 +10,7 @@ from datetime import timedelta
 from decimal import Decimal
 
 from django.conf import settings
+from django.core.files.base import ContentFile
 from django.db import transaction
 from django.db.models import F
 from django.forms.models import model_to_dict
@@ -18,9 +19,9 @@ from django.utils import timezone
 from core.auditoria import registrar
 from core.models import RegistroAuditoria
 from finanzas.models import Movimiento
-from finanzas.servicios_comercios import reconocer_o_crear_comercio, sugerir_categoria
+from finanzas.servicios_comercios import aprender_categoria, reconocer_o_crear_comercio, sugerir_categoria
 
-from . import ocr
+from . import imagenes, ocr
 from .exceptions import EstadoNoPermitido
 from .ia import ClienteIA, breaker_ia
 from .models import LineaTicket, Ticket
@@ -79,7 +80,27 @@ def leer(ticket: Ticket) -> tuple[str, bytes | None]:
     return lectura.texto, None if lectura.es_util else lectura.imagen_png
 
 
+def optimizar_imagen(ticket: Ticket) -> bool:
+    """Fotos enormes → JPEG de 2500 px como máximo. Idempotente: un reintento ya encuentra la pequeña.
+
+    `huella_archivo` NO cambia: es la del archivo que subió el usuario, la que se compara al volver a subirlo.
+    """
+    if not ticket.tipo.startswith("image/"):
+        return False
+    with ticket.archivo.open("rb") as f:
+        reducida = imagenes.reducir(f.read())
+    if reducida is None:
+        return False
+    anterior, storage = ticket.archivo.name, ticket.archivo.storage
+    ticket.archivo.save("reducida.jpg", ContentFile(reducida), save=False)  # upload_to genera el nombre real
+    ticket.tipo = "image/jpeg"
+    Ticket.objects.filter(pk=ticket.pk).update(archivo=ticket.archivo.name, tipo=ticket.tipo)
+    storage.delete(anterior)  # después de apuntar al nuevo: si falla, sobra un archivo, pero no falta ninguno
+    return True
+
+
 def procesar(ticket: Ticket) -> Ticket:
+    optimizar_imagen(ticket)
     texto, imagen = leer(ticket)
     categorias = list(ticket.hogar.categorias.values_list("nombre", flat=True))
     with ClienteIA.desde_settings() as cliente:
@@ -142,6 +163,9 @@ def aplicar(ticket_id: int, datos: dict) -> Ticket:
             creado_por=ticket.subido_por,
         )
 
+    uso = datos.pop("uso", None) or {}  # lo añade ClienteIA; los tests que llaman a aplicar() directo no lo traen
+    ticket.tokens_entrada += uso.get("entrada", 0)  # se acumula: reprocesar también cuesta
+    ticket.tokens_salida += uso.get("salida", 0)
     ticket.datos_ia = datos
     ticket.confianza = Decimal(str(round(datos["confianza"], 2)))
     ticket.estado = E.REVISAR if motivos else E.PROCESADO
@@ -192,6 +216,7 @@ def confirmar(ticket: Ticket, *, datos: dict, usuario) -> Ticket:
             **campos,
         )
         registrar(mov, RegistroAuditoria.Accion.CREAR, usuario)
+    aprender_categoria(mov.comercio, mov.categoria)
     ticket.movimiento = mov
     ticket.estado = E.PROCESADO
     ticket.save(update_fields=["movimiento", "estado", "actualizado"])

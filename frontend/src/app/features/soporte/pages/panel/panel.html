@@ -23,6 +23,10 @@
       {{ e.clave }} {{ e.total }}{{ $last ? '' : ' · ' }}
     }
   </p>
+  <p class="text-sm text-texto-suave">
+    IA este mes: {{ r.ia_mes.tickets }} tickets · {{ r.ia_mes.tokens_entrada | number }} tokens de
+    entrada · {{ r.ia_mes.tokens_salida | number }} de salida
+  </p>
 }
 
 <h2 class="mt-6 mb-2 text-lg font-medium">Tickets</h2>

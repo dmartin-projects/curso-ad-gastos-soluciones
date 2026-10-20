@@ -4,11 +4,12 @@ Las acciones llaman a los mismos servicios que la API de los usuarios (mismas re
 y quedan registradas en la auditoría con el usuario de soporte que las hizo.
 """
 
-from datetime import timedelta
+from datetime import datetime, time, timedelta
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Sum
+from django.db.models.functions import Coalesce
 from django.forms.models import model_to_dict
 from django.utils import timezone
 from django_celery_beat.models import PeriodicTask
@@ -64,7 +65,14 @@ class ResumenView(APIView):
             en_curso=Count("id", filter=Q(estado__in=["pendiente", "analizando", "importando"])),
             con_error=Count("id", filter=Q(estado="error", creado__gte=ahora - timedelta(days=7))),
         )
+        inicio_mes = timezone.make_aware(datetime.combine(timezone.localdate().replace(day=1), time.min))
+        ia_mes = Ticket.objects.filter(procesado_en__gte=inicio_mes).aggregate(
+            tickets=Count("id"),
+            tokens_entrada=Coalesce(Sum("tokens_entrada"), 0),
+            tokens_salida=Coalesce(Sum("tokens_salida"), 0),
+        )
         datos = {
+            "ia_mes": ia_mes,
             "tickets_24h": [{"clave": f["estado"], "total": f["total"]} for f in por_estado],
             "tickets_atascados": Ticket.objects.filter(_ticket_atascado()).count(),
             "importaciones_en_curso": importaciones_qs["en_curso"],
