@@ -4,7 +4,7 @@ from django.db import IntegrityError, connection, transaction
 from django.db.migrations.executor import MigrationExecutor
 
 from conftest import CategoriaFactory, CuentaFactory, HogarFactory, MovimientoFactory
-from finanzas.models import Comercio, Movimiento
+from finanzas.models import Movimiento
 
 
 @pytest.fixture
@@ -54,21 +54,31 @@ def test_api_tampoco_acepta_categoria_ajena(cliente, hogar_con_roles):
 
 @pytest.mark.django_db(transaction=True)
 def test_migracion_asigna_comercios():
+    antes = [("finanzas", "0003_categoria_mismo_hogar")]
     executor = MigrationExecutor(connection)
-    executor.migrate([("finanzas", "0003_categoria_mismo_hogar")])  # estado ANTES de la migración de datos
-    hogar = HogarFactory()
-    cuenta = CuentaFactory(hogar=hogar)
-    mercadona = Comercio.objects.create(nombre="Mercadona")
-    coincide = MovimientoFactory(hogar=hogar, cuenta=cuenta, concepto="MERCADONA, S.A. 1234", comercio=None)
-    parecido = MovimientoFactory(hogar=hogar, cuenta=cuenta, concepto="MERCADONA MADRID", comercio=None)
-    otro = Comercio.objects.create(nombre="Lidl")
-    ya_tenia = MovimientoFactory(hogar=hogar, cuenta=cuenta, concepto="Mercadona", comercio=otro)
+    executor.migrate(antes)  # la BD, como estaba ANTES de la migración de datos
+    # ⚠️ Modelos HISTÓRICOS, no los de models.py ni las factories: las tablas aún no tienen las columnas
+    # de migraciones posteriores, y los modelos actuales (y sus señales) las consultarían.
+    apps = executor.loader.project_state(antes).apps
+    Hogar, Cuenta = apps.get_model("hogares", "Hogar"), apps.get_model("finanzas", "Cuenta")
+    Comercio, Movimiento = apps.get_model("finanzas", "Comercio"), apps.get_model("finanzas", "Movimiento")
+    hogar = Hogar.objects.create(nombre="Casa")
+    cuenta = Cuenta.objects.create(hogar=hogar, nombre="Común")
+    # el modelo histórico no tiene el save() que normaliza: se rellena a mano
+    mercadona = Comercio.objects.create(nombre="Mercadona", nombre_normalizado="mercadona")
+    lidl = Comercio.objects.create(nombre="Lidl", nombre_normalizado="lidl")
+
+    def mov(concepto, comercio=None):
+        return Movimiento.objects.create(
+            hogar=hogar, cuenta=cuenta, fecha="2026-10-01", importe=-1, concepto=concepto, comercio=comercio
+        ).pk
+
+    coincide, parecido, ya_tenia = mov("MERCADONA, S.A. 1234"), mov("MERCADONA MADRID"), mov("Mercadona", lidl)
 
     executor = MigrationExecutor(connection)  # el grafo cambió: hay que recargarlo
     executor.migrate(executor.loader.graph.leaf_nodes())
 
-    for m in (coincide, parecido, ya_tenia):
-        m.refresh_from_db()
-    assert coincide.comercio == mercadona  # coincidencia exacta tras normalizar
-    assert parecido.comercio is None  # "mercadona madrid" ≠ "mercadona": nada de aproximaciones
-    assert ya_tenia.comercio == otro  # no pisa lo que ya estaba
+    comercio = dict(Movimiento.objects.values_list("pk", "comercio_id"))  # vale el histórico: solo leemos ids
+    assert comercio[coincide] == mercadona.pk  # coincidencia exacta tras normalizar
+    assert comercio[parecido] is None  # "mercadona madrid" ≠ "mercadona": nada de aproximaciones
+    assert comercio[ya_tenia] == lidl.pk  # no pisa lo que ya estaba

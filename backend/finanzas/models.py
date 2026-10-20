@@ -128,6 +128,20 @@ class Movimiento(ModeloConFechas):
     def es_gasto(self) -> bool:
         return self.importe < 0
 
+    @classmethod
+    def from_db(cls, db, field_names, values, **kwargs):
+        """Recuerda la fecha con la que se cargó: si se edita, el mes ANTERIOR también cambia (módulo 76)."""
+        # **kwargs: Django 6.1 añadió fetch_mode=…; reenviar lo que llegue evita romperse con la próxima
+        instancia = super().from_db(db, field_names, values, **kwargs)
+        instancia._fecha_cargada = instancia.__dict__.get("fecha")  # None si se cargó con only()/defer() sin fecha
+        return instancia
+
+    def meses_afectados(self) -> set:
+        meses = {self.fecha.replace(day=1)}
+        if (antes := getattr(self, "_fecha_cargada", None)) is not None:
+            meses.add(antes.replace(day=1))
+        return meses
+
     def clean(self):
         # Defensa en Python (formularios, full_clean, backoffice). La garantía real la da la BD:
         # FK compuesta (categoria_id, hogar_id) de la migración 0003.
@@ -146,6 +160,7 @@ class Presupuesto(ModeloConFechas):
     mes = models.DateField(_("mes"))  # siempre día 1
     importe = models.DecimalField(_("importe"), max_digits=10, decimal_places=2)
     alerta_enviada = models.BooleanField(default=False, editable=False)
+    aviso_enviado = models.BooleanField(default=False, editable=False)  # el del 80 %
 
     objects = PresupuestoQuerySet.as_manager()
 

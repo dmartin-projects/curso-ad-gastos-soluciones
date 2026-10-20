@@ -153,6 +153,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "importaciones.tasks.caducar_vistas_previas",
         "schedule": crontab(minute=15, hour=4),
     },
+    "limpiar-notificaciones-leidas": {
+        "task": "notificaciones.tasks.limpiar_notificaciones_leidas",
+        "schedule": crontab(minute=45, hour=3, day_of_week=0),  # domingos
+    },
     "limpiar-resultados-de-tareas": {
         "task": "core.tasks.limpiar_resultados_de_tareas",
         "schedule": crontab(minute=30, hour=3),

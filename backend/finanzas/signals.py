@@ -25,7 +25,8 @@ def al_crear_hogar(sender, hogar, **kwargs):
 @receiver([post_save, post_delete], sender=Movimiento, dispatch_uid="finanzas_movimiento_cambiado")
 def al_cambiar_movimiento(sender, instance, **kwargs):
     """Cambios de uno en uno (API, backoffice, tickets) → la misma señal que los cambios en bloque."""
-    hogar_id, meses = instance.hogar_id, {instance.fecha.replace(day=1)}
+    hogar_id, meses = instance.hogar_id, instance.meses_afectados()
+    instance._fecha_cargada = instance.fecha  # el siguiente save() de esta misma instancia parte de aquí
     transaction.on_commit(lambda: movimientos_cambiados.send(sender=Movimiento, hogar_id=hogar_id, meses=meses))
 
 

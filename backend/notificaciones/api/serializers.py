@@ -17,3 +17,12 @@ class LeerSerializer(serializers.Serializer):
 class TicketWsSerializer(serializers.Serializer):
     ticket = serializers.CharField()
     caduca_en = serializers.IntegerField(help_text="Segundos")
+
+
+class PreferenciasSerializer(serializers.Serializer):
+    emails_desactivados = serializers.ListField(
+        child=serializers.ChoiceField(choices=Notificacion.Tipo.choices), allow_empty=True, max_length=50
+    )
+
+    def validate_emails_desactivados(self, tipos):
+        return sorted(set(tipos))

@@ -9,7 +9,7 @@ from notificaciones import services
 from notificaciones.middleware import DURACION_TICKET, crear_ticket
 from notificaciones.models import Notificacion
 
-from .serializers import LeerSerializer, NotificacionSerializer, TicketWsSerializer
+from .serializers import LeerSerializer, NotificacionSerializer, PreferenciasSerializer, TicketWsSerializer
 
 
 class PaginacionNotificaciones(PaginacionCursor):
@@ -46,6 +46,18 @@ class NotificacionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         datos = LeerSerializer(data=request.data)
         datos.is_valid(raise_exception=True)
         return Response({"actualizadas": services.marcar_leidas(request.user, datos.validated_data.get("ids"))})
+
+    @extend_schema(methods=["GET"], responses={200: PreferenciasSerializer})
+    @extend_schema(methods=["PUT"], request=PreferenciasSerializer, responses={200: PreferenciasSerializer})
+    @action(detail=False, methods=["get", "put"], filter_backends=[], pagination_class=None)
+    def preferencias(self, request, *args, **kwargs):
+        """Qué tipos NO quiero recibir por email. La notificación en la app llega siempre."""
+        if request.method == "PUT":
+            datos = PreferenciasSerializer(data=request.data)
+            datos.is_valid(raise_exception=True)
+            request.user.emails_desactivados = datos.validated_data["emails_desactivados"]
+            request.user.save(update_fields=["emails_desactivados"])
+        return Response({"emails_desactivados": request.user.emails_desactivados})
 
     @extend_schema(responses={200: Contador})
     @action(detail=False, methods=["get"], url_path="no-leidas", filter_backends=[], pagination_class=None)

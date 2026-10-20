@@ -10,7 +10,7 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 from core.agrupar import agrupar
-from finanzas.servicios_presupuestos import presupuesto_superado
+from finanzas.servicios_presupuestos import presupuesto_casi_agotado, presupuesto_superado
 from finanzas.signals import exportacion_lista, movimientos_cambiados
 from hogares.models import Membresia
 from importaciones.models import Importacion
@@ -141,6 +141,27 @@ def al_superar_presupuesto(sender, presupuesto, **kwargs):
         hogar=p.hogar,
         enlace=f"/hogares/{p.hogar_id}/presupuestos?mes={p.mes:%Y-%m}",
         email=True,
+    )
+
+
+@receiver(presupuesto_casi_agotado, dispatch_uid="notif_presupuesto_80")
+def al_acercarse_al_presupuesto(sender, presupuesto, **kwargs):
+    p = presupuesto
+    notificar(
+        get_user_model().objects.filter(membresias__hogar_id=p.hogar_id, is_active=True),
+        tipo=T.PRESUPUESTO_80,
+        titulo=_("Presupuesto de %(categoria)s al %(porcentaje)s %%"),
+        mensaje=_("Lleváis %(gastado)s € de %(importe)s € en %(mes)s."),
+        contexto={
+            "categoria": p.categoria.nombre,
+            "porcentaje": int(abs(p.gastado) * 100 / p.importe),
+            "gastado": abs(p.gastado),
+            "importe": p.importe,
+            "mes": f"{p.mes:%m/%Y}",
+        },
+        hogar=p.hogar,
+        enlace=f"/hogares/{p.hogar_id}/presupuestos?mes={p.mes:%Y-%m}",
+        email=True,  # quien no lo quiera, lo desactiva en sus preferencias (ejercicio 1)
     )
 
 

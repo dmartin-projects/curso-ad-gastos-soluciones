@@ -16,6 +16,7 @@ class Notificacion(ModeloConFechas):
         IMPORTACION_COMPLETADA = "importacion_completada", _("Importación completada")
         IMPORTACION_ERROR = "importacion_error", _("Error en una importación")
         PRESUPUESTO_SUPERADO = "presupuesto_superado", _("Presupuesto superado")
+        PRESUPUESTO_80 = "presupuesto_80", _("Presupuesto al 80 %")
         INFORME_LISTO = "informe_listo", _("Informe mensual disponible")
         EXPORTACION_LISTA = "exportacion_lista", _("Exportación lista")
 

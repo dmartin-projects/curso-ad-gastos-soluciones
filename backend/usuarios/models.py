@@ -1,6 +1,7 @@
 # usuarios/models.py
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
 
@@ -16,6 +17,10 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     fecha_alta = models.DateTimeField(default=timezone.now)
     idioma = models.CharField(max_length=10, choices=settings.LANGUAGES, default="es")
     zona_horaria = models.CharField(max_length=50, default="Europe/Madrid")
+    # Tipos de notificación que NO quiere recibir por email (lista negra: un tipo nuevo llega por defecto).
+    # Los valores son Notificacion.Tipo; se validan en la API de notificaciones, no aquí, para que
+    # `usuarios` no dependa de `notificaciones`.
+    emails_desactivados = ArrayField(models.CharField(max_length=30), default=list, blank=True)
 
     objects = UsuarioManager()
 

@@ -1,4 +1,5 @@
 import logging
+from datetime import timedelta
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -73,7 +74,8 @@ def notificar(usuarios, *, tipo, titulo, mensaje="", contexto=None, hogar=None, 
             from .tasks import enviar_email_notificacion
 
             for n in nuevas:
-                enviar_email_notificacion.enqueue(n.pk)
+                if n.tipo not in n.usuario.emails_desactivados:  # la campana siempre; el email, si lo quiere
+                    enviar_email_notificacion.enqueue(n.pk)
 
     transaction.on_commit(_al_confirmar)
     return nuevas
@@ -89,3 +91,19 @@ def marcar_leidas(usuario, ids=None) -> int:
 def avisar_cambio_de_grupos(usuario_id: int) -> None:
     """La membresía cambió: el consumer se cierra para que el cliente reconecte con los grupos nuevos."""
     emitir_a_usuario(usuario_id, "grupos.cambiados", {})
+
+
+def limpiar_leidas(dias: int = 90, lote: int = 5000) -> int:
+    """Borra las leídas antiguas por lotes: DELETE … WHERE id IN (SELECT id … LIMIT n), sin traer filas a Python.
+
+    Por lotes para no bloquear la tabla ni generar una transacción enorme si hay millones.
+    """
+    limite = timezone.now() - timedelta(days=dias)
+    total = 0
+    while True:
+        ids = Notificacion.objects.filter(leida=True, leida_en__lt=limite).values("pk")[:lote]
+        # Sin señales ni FKs que apunten a Notificacion, Django hace un "fast delete": una sola consulta
+        borradas, _ = Notificacion.objects.filter(pk__in=ids).delete()
+        total += borradas
+        if borradas < lote:
+            return total

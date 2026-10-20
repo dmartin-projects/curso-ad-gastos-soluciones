@@ -6,7 +6,7 @@ from django.utils import translation
 from django.utils.translation import gettext as _
 
 from .models import Notificacion
-from .services import emitir_a_hogar
+from .services import emitir_a_hogar, limpiar_leidas
 
 
 @task(queue_name="emails")  # django.tasks (módulo 26): un email sencillo no necesita Celery
@@ -21,3 +21,8 @@ def enviar_email_notificacion(notificacion_id: int) -> None:
 def emitir_evento_hogar(hogar_id: int, evento: str) -> None:
     """Se encola con `agrupar` (debounce): un aviso por ventana, aunque cambien 500 movimientos."""
     emitir_a_hogar(hogar_id, evento)
+
+
+@shared_task(ignore_result=True)
+def limpiar_notificaciones_leidas() -> int:
+    return limpiar_leidas(dias=90)
