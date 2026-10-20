@@ -23,6 +23,20 @@ SECURE_REFERRER_POLICY = "same-origin"
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
 JWT_REFRESH_COOKIE["secure"] = True  # módulo 35
 
+# ── Base de datos: pool en la web (ASGI) ──
+# Con gunicorn + UvicornWorker cada petición síncrona corre en un hilo, y con CONN_MAX_AGE cada hilo se
+# queda SU conexión abierta hasta 60 s: con carga, PostgreSQL responde "too many clients" (medido en el
+# módulo 83: un 20 % de errores con 8 clientes). La documentación de Django lo dice: con ASGI, nada de
+# conexiones persistentes; un pool. Solo en la web (DB_POOL_MAX en compose): los workers de Celery son
+# procesos de un hilo, donde CONN_MAX_AGE va bien, y un pool (con su hilo) no se lleva bien con fork().
+if POOL := env.int("DB_POOL_MAX", default=0):
+    DATABASES["default"]["CONN_MAX_AGE"] = 0  # obligatorio con pool
+    DATABASES["default"]["CONN_HEALTH_CHECKS"] = False
+    DATABASES["default"]["OPTIONS"] = {
+        **DATABASES["default"].get("OPTIONS", {}),
+        "pool": {"min_size": 1, "max_size": POOL, "timeout": 10},  # si se agota, espera hasta 10 s
+    }
+
 # ── Archivos: S3 compatible (Cloudflare R2 u Oracle Object Storage, módulo 68) con URLs firmadas ──
 STORAGES = {
     "default": {

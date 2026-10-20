@@ -6,6 +6,8 @@
 
 {$DOMINIO} {
 	encode zstd gzip
+	# La CSP: la genera infra/csp.mjs en el build con los hashes de autoCsp (cambian con cada versión de index.html)
+	import /etc/caddy/csp.caddy
 
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
@@ -13,8 +15,6 @@
 		Referrer-Policy "same-origin"
 		X-Frame-Options "DENY"
 		Permissions-Policy "geolocation=(), microphone=()"
-		# 'self' incluye wss:// del mismo dominio; img-src https: para las URLs firmadas de R2 (fotos de tickets)
-		Content-Security-Policy "default-src 'self'; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
 		-Server
 	}
 

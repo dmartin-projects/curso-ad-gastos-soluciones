@@ -56,9 +56,12 @@
                 "scripts": true,
                 "styles": {
                   "minify": true,
-                  "inlineCritical": false
+                  "inlineCritical": true
                 },
                 "fonts": true
+              },
+              "security": {
+                "autoCsp": true
               },
               "serviceWorker": "ngsw-config.json"
             },

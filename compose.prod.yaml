@@ -36,6 +36,8 @@ services:
   web:
     <<: *backend
     depends_on: *tras-migrar
+    environment:
+      DB_POOL_MAX: "4" # pool de conexiones por proceso (prod.py): ASGI + CONN_MAX_AGE agota PostgreSQL
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8000/health/ready/"]
       interval: 30s
@@ -84,7 +86,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes: [pgdata:/var/lib/postgresql/data]
+    # PGDATA_DIR=/mnt/datos/pgdata en .env: los datos en el volumen de bloque (ejercicio 1); sin ella, el volumen pgdata
+    volumes: ["${PGDATA_DIR:-pgdata}:/var/lib/postgresql/data"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s

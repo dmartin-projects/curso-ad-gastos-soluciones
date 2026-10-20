@@ -66,12 +66,7 @@
       "files": [
         {
           "name": "ticket",
-          "accept": [
-            "image/jpeg",
-            "image/png",
-            "image/webp",
-            "application/pdf"
-          ]
+          "accept": ["image/jpeg", "image/png", "image/webp", "application/pdf"]
         }
       ]
     }

@@ -184,3 +184,70 @@ jobs:
             frontend/playwright-report/
             frontend/test-results/
           retention-days: 7
+
+  produccion: # módulo 83, ejercicio 4: la configuración de producción de verdad, en cada pull request
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GHCR_OWNER: ci
+      VERSION: ci
+      COMPOSE: docker compose -f compose.prod.yaml -f compose.ci.yaml
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+
+      # Las mismas imágenes que publica release.yml (solo amd64 y sin subirlas); la caché es la suya
+      - uses: docker/build-push-action@v6
+        with:
+          context: backend
+          load: true
+          tags: ghcr.io/ci/gastos-backend:ci
+          cache-from: type=gha,scope=backend
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/proxy.Dockerfile
+          load: true
+          tags: ghcr.io/ci/gastos-proxy:ci
+          cache-from: type=gha,scope=proxy
+
+      - name: Producción en local (DOMINIO=localhost)
+        run: |
+          infra/ci/env.sh > .env
+          echo "127.0.0.1 s3" | sudo tee -a /etc/hosts   # las URLs firmadas apuntan a http://s3:9000
+          $COMPOSE up -d --wait --wait-timeout 300
+
+      - name: Datos de prueba
+        run: |
+          $COMPOSE exec -T web python manage.py shell -c \
+            "from django.core.files.storage import default_storage as s; s.connection.meta.client.create_bucket(Bucket=s.bucket_name)"
+          $COMPOSE exec -T web python manage.py seed --movimientos 50
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Navegador
+        working-directory: frontend
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Recorrido contra producción
+        working-directory: frontend
+        run: npx playwright test -c playwright.produccion.config.ts
+
+      - name: Logs e informe si algo falla
+        if: failure()
+        run: $COMPOSE logs --no-color > compose.log
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: produccion
+          path: |
+            compose.log
+            frontend/playwright-report/
+            frontend/test-results/
+          retention-days: 7

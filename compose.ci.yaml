@@ -1,0 +1,18 @@
+# compose.ci.yaml — SOLO para probar compose.prod.yaml en el CI (o en tu máquina), módulo 83, ejercicio 4:
+#   docker compose -f compose.prod.yaml -f compose.ci.yaml up -d --wait
+# Añade dobles de los servicios externos; todo lo demás (imágenes, Caddy, RabbitMQ, ajustes) es el de producción.
+services:
+  s3:
+    build: { context: infra/ci, dockerfile: dobles.Dockerfile }
+    image: gastos-dobles:ci
+    command: ["python", "-m", "moto.server", "-H", "0.0.0.0", "-p", "9000"]
+    # las URLs firmadas apuntan a http://s3:9000: el navegador del test las resuelve con /etc/hosts
+    ports: ["9000:9000"]
+  smtp:
+    image: gastos-dobles:ci
+    depends_on: [s3] # misma imagen: que la construya s3 una sola vez
+    command: ["python", "-m", "aiosmtpd", "-n", "-l", "0.0.0.0:1025"]
+  ia:
+    image: gastos-dobles:ci
+    depends_on: [s3]
+    command: ["python", "/ia_falsa.py"]
