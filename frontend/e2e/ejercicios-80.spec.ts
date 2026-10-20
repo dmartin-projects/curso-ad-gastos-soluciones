@@ -1,14 +1,12 @@
 import { readFile } from 'node:fs/promises';
 
-import { expect, test } from '@playwright/test';
-
-import { DEMO, entrar, vigilarConsola } from './ayuda';
+import { DEMO, entrar, expect, sinViolaciones, test, vigilarConsola } from './ayuda';
 
 test.describe('Módulo 80: ejercicios', () => {
   test('cambiar la categoría en línea, optimista y con vuelta atrás si falla', async ({ page }) => {
     await entrar(page); // (sin vigilarConsola: el 500 provocado al final escribe un error en la consola)
     await page.goto('/hogares/1/movimientos');
-    const fila = page.getByRole('button', { name: /^\d+ \w+/ }).first(); // la primera fila de la lista
+    const fila = page.locator('[data-fila]').first(); // la primera fila de la lista
     const chip = fila.getByRole('button', { name: /^Categoría:/ });
     await expect(chip).toBeVisible();
 
@@ -64,6 +62,7 @@ test.describe('Módulo 80: ejercicios', () => {
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).toBeHidden();
 
+    await sinViolaciones(page);
     await page.keyboard.press('/');
     const buscar = page.getByRole('searchbox', { name: 'Buscar' });
     await expect(buscar).toBeFocused();

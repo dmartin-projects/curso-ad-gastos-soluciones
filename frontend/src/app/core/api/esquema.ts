@@ -1388,6 +1388,11 @@ export interface components {
             /** Es de ingresos */
             es_ingreso?: boolean;
         };
+        CategoriaSoporte: {
+            id: number;
+            nombre: string;
+            padre: number | null;
+        };
         Cola: {
             nombre: string;
             /** @description Workers que consumen de esta cola */
@@ -1592,6 +1597,7 @@ export interface components {
             /** Format: date-time */
             readonly creado: string;
             readonly miembros: components["schemas"]["MiembroSoporte"][];
+            readonly categorias: components["schemas"]["CategoriaSoporte"][];
         };
         HogarRequest: {
             nombre: string;
@@ -2909,6 +2915,7 @@ export interface operations {
                 revisado?: boolean;
                 /** @description Un término de búsqueda. */
                 search?: string;
+                sin_categoria?: boolean;
             };
             header?: never;
             path?: never;

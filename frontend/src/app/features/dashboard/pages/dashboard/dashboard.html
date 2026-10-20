@@ -9,7 +9,7 @@
     <mat-icon>chevron_right</mat-icon>
   </button>
   @if (resumen.isFetching()) {
-    <mat-progress-bar mode="indeterminate" class="!w-24" />
+    <mat-progress-bar mode="indeterminate" class="!w-24" aria-label="Actualizando" />
   }
 </div>
 
@@ -110,6 +110,7 @@
             mode="determinate"
             [value]="p.porcentaje"
             [class.excedido]="p.porcentaje >= 100"
+            [attr.aria-label]="'Gastado de ' + p.categoria"
           />
         </div>
       } @empty {

@@ -12,6 +12,8 @@ import { filter, map } from 'rxjs';
 
 import { AuthStore } from '../../auth/auth-store';
 import { Campana } from '../../notificaciones/campana/campana';
+import { Tema } from '../../tema/tema';
+import { AvisoConexion } from '../../tiempo-real/aviso-conexion/aviso-conexion';
 import { Sincronizacion } from '../../tiempo-real/sincronizacion';
 import { HogarStore } from '../../hogar/hogar-store';
 
@@ -38,6 +40,7 @@ const SECCIONES = [
     MatButtonModule,
     MatMenuModule,
     Campana,
+    AvisoConexion,
   ],
   templateUrl: './shell.html',
 })
@@ -46,6 +49,13 @@ export default class Shell {
   protected readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
   protected readonly secciones = SECCIONES;
+  protected readonly tema = inject(Tema);
+  protected readonly iconosTema = {
+    sistema: 'brightness_auto',
+    claro: 'light_mode',
+    oscuro: 'dark_mode',
+  };
+  protected readonly nombresTema = { sistema: 'del sistema', claro: 'claro', oscuro: 'oscuro' };
   protected readonly hogar = this.store.activo;
   protected readonly movil = toSignal(
     inject(BreakpointObserver)

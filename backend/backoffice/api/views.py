@@ -6,6 +6,7 @@ y quedan registradas en la auditoría con el usuario de soporte que las hizo.
 
 from datetime import datetime, time, timedelta
 
+import django_filters
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
@@ -161,7 +162,10 @@ class ImportacionSoporteViewSet(viewsets.ReadOnlyModelViewSet):
 
 class HogarSoporteViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = PERSONAL
-    permisos_por_accion = {"list": ["hogares.view_hogar"], "retrieve": ["hogares.view_hogar", "hogares.view_membresia"]}
+    permisos_por_accion = {
+        "list": ["hogares.view_hogar"],
+        "retrieve": ["hogares.view_hogar", "hogares.view_membresia", "finanzas.view_categoria"],
+    }
     search_fields = ["nombre", "=id", "membresias__usuario__email"]
     ordering_fields = ["creado", "num_movimientos"]
     ordering = ["-creado"]
@@ -171,7 +175,7 @@ class HogarSoporteViewSet(viewsets.ReadOnlyModelViewSet):
             num_miembros=contar(Membresia, "hogar"), num_movimientos=contar(Movimiento, "hogar")
         )
         if self.action == "retrieve":
-            qs = qs.prefetch_related("membresias__usuario")
+            qs = qs.prefetch_related("membresias__usuario", "categorias")
         return qs.distinct() if self.request.query_params.get("search") else qs  # el JOIN de la búsqueda duplica
 
     def get_serializer_class(self):
@@ -230,6 +234,14 @@ class UsuarioSoporteViewSet(mixins.UpdateModelMixin, viewsets.ReadOnlyModelViewS
         registrar(usuario, M, self.request.user, antes=antes)
 
 
+class MovimientoSoporteFilter(django_filters.FilterSet):
+    sin_categoria = django_filters.BooleanFilter(field_name="categoria", lookup_expr="isnull")  # módulo 81
+
+    class Meta:
+        model = Movimiento
+        fields = ["hogar", "revisado", "origen", "categoria"]
+
+
 class MovimientoSoporteViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = s.MovimientoSoporteSerializer
     permission_classes = PERSONAL
@@ -238,7 +250,7 @@ class MovimientoSoporteViewSet(viewsets.ReadOnlyModelViewSet):
         "retrieve": ["finanzas.view_movimiento"],
         "recategorizar": ["finanzas.change_movimiento"],
     }
-    filterset_fields = ["hogar", "revisado", "origen", "categoria"]
+    filterset_class = MovimientoSoporteFilter
     search_fields = ["concepto", "comercio__nombre"]
     ordering = ["-fecha", "-id"]
     queryset = Movimiento.objects.select_related("categoria")

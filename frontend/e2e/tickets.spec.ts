@@ -1,6 +1,4 @@
-import { expect, test } from '@playwright/test';
-
-import { entrar, vigilarConsola } from './ayuda';
+import { entrar, expect, sinViolaciones, test, vigilarConsola } from './ayuda';
 
 test('subir la foto de un ticket: OCR + IA y el gasto aparece solo, sin recargar', async ({
   page,
@@ -19,8 +17,10 @@ test('subir la foto de un ticket: OCR + IA y el gasto aparece solo, sin recargar
   await expect(ticket).toContainText('-4,85 €');
   // y la notificación llega por el WebSocket (los tests comparten BD: no se cuenta, se busca el aviso)
   await expect(page.getByText('Ticket de Mercadona procesado')).toBeVisible();
+  await sinViolaciones(page);
 
   await ticket.click();
   await expect(page.getByRole('img', { name: 'Foto del ticket' })).toBeVisible();
+  await sinViolaciones(page);
   sinErrores();
 });

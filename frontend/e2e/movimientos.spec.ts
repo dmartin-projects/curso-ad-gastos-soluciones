@@ -1,14 +1,15 @@
-import { expect, test } from '@playwright/test';
-
-import { entrar, vigilarConsola } from './ayuda';
+import { entrar, expect, sinViolaciones, test, vigilarConsola } from './ayuda';
 
 test('crear un gasto y encontrarlo con la búsqueda', async ({ page }) => {
   const sinErrores = vigilarConsola(page);
   await entrar(page);
   await page.getByRole('link', { name: 'Movimientos' }).click();
 
+  await sinViolaciones(page); // la lista
   await page.getByRole('button', { name: 'Nuevo' }).click();
   const dialogo = page.getByRole('dialog');
+  await expect(dialogo.getByLabel('Concepto')).toBeVisible();
+  await sinViolaciones(page); // el diálogo abierto (foco atrapado, etiquetas)
   await dialogo.getByLabel('Importe (€)').fill('18.40');
   await dialogo.getByLabel('Concepto').fill('Cena cumpleaños');
   await dialogo.getByRole('combobox', { name: /Cuenta/ }).click();
@@ -19,7 +20,7 @@ test('crear un gasto y encontrarlo con la búsqueda', async ({ page }) => {
 
   await page.getByRole('searchbox', { name: 'Buscar' }).fill('cumpleaños');
   await expect(page).toHaveURL(/q=cumplea/); // el filtro vive en la URL
-  const fila = page.getByRole('button', { name: /Cena cumpleaños/ });
+  const fila = page.locator('[data-fila]', { hasText: 'Cena cumpleaños' }); // la fila (no es un botón: módulo 82)
   await expect(fila).toContainText('-18,40 €');
   await expect(fila).toContainText('Restaurantes');
   sinErrores();

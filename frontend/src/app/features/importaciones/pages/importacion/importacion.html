@@ -7,14 +7,14 @@
 
   @switch (imp.estado) {
     @case ('pendiente') {
-      <mat-progress-bar mode="indeterminate" />
+      <mat-progress-bar mode="indeterminate" aria-label="En cola" />
     }
     @case ('analizando') {
-      <mat-progress-bar mode="indeterminate" />
+      <mat-progress-bar mode="indeterminate" aria-label="Analizando el extracto" />
     }
     @case ('importando') {
       <!-- el progreso llega por WebSocket (importacion_progreso) y se escribe en la caché: sin peticiones -->
-      <mat-progress-bar mode="determinate" [value]="imp.progreso" />
+      <mat-progress-bar mode="determinate" [value]="imp.progreso" aria-label="Importando" />
       <p class="mt-1 text-sm" aria-live="polite">{{ imp.progreso }} %</p>
     }
     @case ('error') {

@@ -18,6 +18,7 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/auth.interceptor';
 import { AuthStore } from './core/auth/auth-store';
 import { cabecerasInterceptor } from './core/http/cabeceras';
+import { Tema } from './core/tema/tema';
 import { erroresInterceptor } from './core/http/errores';
 import { provideServiceWorker } from '@angular/service-worker';
 
@@ -25,6 +26,7 @@ registerLocaleData(localeEs);
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideAppInitializer(() => void inject(Tema)), // el modo guardado, antes de pintar (módulo 81)
     provideBrowserGlobalErrorListeners(),
     provideRouter(
       routes,
@@ -50,7 +52,8 @@ export const appConfig: ApplicationConfig = {
       inject(MatIconRegistry).setDefaultFontSetClass('material-symbols-outlined');
       return inject(AuthStore).restaurarSesion(); // F5 no cierra la sesión: la cookie de refresh la recupera
     }),
-    provideServiceWorker('ngsw-worker.js', {
+    // sw-gastos.js = ngsw-worker.js + el share_target del manifest (módulo 81)
+    provideServiceWorker('sw-gastos.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',
     }),

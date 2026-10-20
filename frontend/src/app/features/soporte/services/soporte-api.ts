@@ -5,6 +5,7 @@ import {
   HogarDetalleSoporte,
   HogarSoporte,
   ImportacionSoporte,
+  MovimientoSoporte,
   Pagina,
   RegistroAuditoria,
   ResultadoLote,
@@ -42,6 +43,12 @@ export class SoporteApi {
   }
   hogar(id: number) {
     return this.http.get<HogarDetalleSoporte>(`${B}/hogares/${id}/`);
+  }
+  movimientos(params: Params) {
+    return this.http.get<Pagina<MovimientoSoporte>>(`${B}/movimientos/`, { params });
+  }
+  recategorizar(ids: number[], categoria: number) {
+    return this.http.post<ResultadoLote>(`${B}/movimientos/recategorizar/`, { ids, categoria });
   }
   usuarios(params: Params) {
     return this.http.get<Pagina<UsuarioSoporte>>(`${B}/usuarios/`, { params });

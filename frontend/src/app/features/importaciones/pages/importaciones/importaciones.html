@@ -29,7 +29,7 @@
       <mat-icon>upload_file</mat-icon> Elegir archivo
     </button>
     @if (subir.isPending()) {
-      <mat-progress-bar mode="indeterminate" class="w-full" />
+      <mat-progress-bar mode="indeterminate" class="w-full" aria-label="Subiendo el extracto" />
     }
     @if (error()) {
       <p role="alert" class="w-full text-sm text-error">{{ error() }}</p>
@@ -57,7 +57,12 @@
           </span>
         </span>
         @if (i.estado === 'importando') {
-          <mat-progress-bar class="!w-24" mode="determinate" [value]="i.progreso" />
+          <mat-progress-bar
+            class="!w-24"
+            mode="determinate"
+            [value]="i.progreso"
+            [attr.aria-label]="'Progreso de ' + i.nombre_original"
+          />
         }
       </a>
     </li>

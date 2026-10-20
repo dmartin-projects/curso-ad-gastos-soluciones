@@ -12,7 +12,11 @@
         %)</span
       >
     </div>
-    <mat-progress-bar mode="determinate" [value]="p.porcentaje" />
+    <mat-progress-bar
+      mode="determinate"
+      [value]="p.porcentaje"
+      [attr.aria-label]="'Gastado de ' + nombre(p.categoria)"
+    />
   </div>
 } @empty {
   <p class="text-texto-suave">No hay presupuestos para este mes.</p>

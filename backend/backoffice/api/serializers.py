@@ -70,11 +70,19 @@ class MiembroSoporteSerializer(serializers.Serializer):
     rol = serializers.CharField()
 
 
+class CategoriaSoporteSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    nombre = serializers.CharField()
+    padre = serializers.IntegerField(source="padre_id", allow_null=True)
+
+
 class HogarDetalleSoporteSerializer(HogarSoporteSerializer):
     miembros = MiembroSoporteSerializer(source="membresias", many=True, read_only=True)
+    # para recategorizar desde la ficha (módulo 81): las categorías de ESTE hogar
+    categorias = CategoriaSoporteSerializer(many=True, read_only=True)
 
     class Meta(HogarSoporteSerializer.Meta):
-        fields = [*HogarSoporteSerializer.Meta.fields, "miembros"]
+        fields = [*HogarSoporteSerializer.Meta.fields, "miembros", "categorias"]
         read_only_fields = fields
 
 

@@ -9,6 +9,7 @@ import { injectQuery, QueryClient } from '@tanstack/angular-query-experimental';
 import { lastValueFrom } from 'rxjs';
 
 import { Ticket } from '../../../../core/api/tipos';
+import { ArchivoCompartido } from '../../../../core/compartir/archivo-compartido';
 import { opcionesCuentas } from '../../../../core/hogar/consultas';
 import { HogarStore } from '../../../../core/hogar/hogar-store';
 import { HogaresApi } from '../../../../core/hogar/hogares-api';
@@ -35,6 +36,8 @@ import { TicketsApi } from '../../services/tickets-api';
   templateUrl: './tickets.html',
 })
 export default class Tickets {
+  /** Si se llega desde "compartir" (módulo 81), la foto compartida espera confirmación. */
+  protected readonly compartido = inject(ArchivoCompartido).tomar();
   protected readonly store = inject(HogarStore);
   private readonly api = inject(TicketsApi);
   private readonly hogaresApi = inject(HogaresApi);

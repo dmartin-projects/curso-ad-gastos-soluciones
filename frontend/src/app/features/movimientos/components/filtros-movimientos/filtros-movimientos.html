@@ -50,10 +50,13 @@
     <mat-button-toggle value="gasto">Gastos</mat-button-toggle>
     <mat-button-toggle value="ingreso">Ingresos</mat-button-toggle>
   </mat-button-toggle-group>
-  <mat-chip-option
-    [selected]="!!valor().pendientes"
-    (selectionChange)="cambiar({ pendientes: $event.selected || undefined })"
-  >
-    Por revisar
-  </mat-chip-option>
+  <!-- una opción (role="option") necesita su listbox alrededor: si no, axe lo marca como crítico -->
+  <mat-chip-listbox aria-label="Revisión">
+    <mat-chip-option
+      [selected]="!!valor().pendientes"
+      (selectionChange)="cambiar({ pendientes: $event.selected || undefined })"
+    >
+      Por revisar
+    </mat-chip-option>
+  </mat-chip-listbox>
 </div>

@@ -2,6 +2,7 @@
 @if (store.puedeEditar()) {
   <app-subir-ticket
     [cuentas]="cuentas.data() ?? []"
+    [compartido]="compartido"
     [progreso]="progreso()"
     [errorSubida]="errorSubida()"
     (subir)="subir($event)"

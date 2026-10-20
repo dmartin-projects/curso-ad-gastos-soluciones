@@ -1,5 +1,6 @@
 # usuarios/api/serializers.py
 from django.contrib.auth import get_user_model, password_validation
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 
 Usuario = get_user_model()
@@ -13,13 +14,20 @@ class RegistroSerializer(serializers.ModelSerializer):
         fields = ["email", "nombre", "apellidos", "password"]
 
     def validate_email(self, email):
-        return Usuario.objects.normalize_email(email).lower()
+        email = Usuario.objects.normalize_email(email).lower()
+        # El UniqueValidator del campo compara ANTES de pasar a minúsculas: "Ana@x.com" no choca con
+        # "ana@x.com" y el INSERT acabaría en IntegrityError (500). Igual que en el módulo 35.
+        if Usuario.objects.filter(email__iexact=email).exists():
+            raise serializers.ValidationError("Ya hay una cuenta con ese email.")
+        return email
 
     def validate(self, datos):
-        # los AUTH_PASSWORD_VALIDATORS de Django (longitud, comunes, parecida al email…)
-        password_validation.validate_password(
-            datos["password"], user=Usuario(**{k: v for k, v in datos.items() if k != "password"})
-        )
+        # los AUTH_PASSWORD_VALIDATORS de Django (longitud, comunes, parecida al email…), en el campo password
+        sin_password = {k: v for k, v in datos.items() if k != "password"}
+        try:
+            password_validation.validate_password(datos["password"], user=Usuario(**sin_password))
+        except DjangoValidationError as error:
+            raise serializers.ValidationError({"password": list(error.messages)}) from error
         return datos
 
     def create(self, validated_data):

@@ -24,6 +24,11 @@ export const routes: Routes = [
         path: 'hogares',
         loadComponent: () => import('./features/hogares/pages/lista-hogares/lista-hogares'),
       },
+      // share_target del manifest (módulo 81): llega aquí tras pasar por el service worker
+      {
+        path: 'compartir',
+        loadComponent: () => import('./features/tickets/pages/compartir/compartir'),
+      },
       {
         path: 'hogares/:hogarId',
         canActivate: [hogarGuard],

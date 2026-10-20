@@ -57,5 +57,23 @@
   "description": "Control de gastos compartidos: tickets, extractos y presupuestos.",
   "lang": "es",
   "theme_color": "#005cbb",
-  "background_color": "#fdfbff"
+  "background_color": "#fdfbff",
+  "share_target": {
+    "action": "/compartir",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "ticket",
+          "accept": [
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+            "application/pdf"
+          ]
+        }
+      ]
+    }
+  }
 }

@@ -37,11 +37,22 @@
   <span class="text-sm text-texto-suave"
     >…o arrastra aquí el ticket (JPEG, PNG, WebP o PDF, hasta 10 MB)</span
   >
+  @if (pendiente(); as p) {
+    <div class="flex w-full items-center gap-2 rounded bg-superficie-alta p-2" role="status">
+      <mat-icon>share</mat-icon>
+      <span class="min-w-0 flex-1 truncate">Compartido: {{ p.name }}</span>
+      <button mat-flat-button type="button" [disabled]="!cuenta()" (click)="subirPendiente()">
+        Subir
+      </button>
+      <button mat-button type="button" (click)="pendiente.set(null)">Descartar</button>
+    </div>
+  }
   @if (progreso() !== null) {
     <mat-progress-bar
       class="w-full"
       [mode]="progreso()! < 100 ? 'determinate' : 'indeterminate'"
       [value]="progreso()"
+      aria-label="Subida del ticket"
     />
     <span class="text-sm" aria-live="polite">{{
       progreso()! < 100 ? 'Subiendo ' + progreso() + ' %' : 'Guardando…'

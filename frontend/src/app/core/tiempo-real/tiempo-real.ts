@@ -13,7 +13,9 @@ import {
   repeat,
   retry,
   share,
+  Subject,
   switchMap,
+  takeUntil,
   tap,
   timer,
 } from 'rxjs';
@@ -59,14 +61,23 @@ export class TiempoReal {
     return this.http.post<{ ticket: string }>('/api/v1/notificaciones/ws-ticket/', null);
   }).pipe(
     switchMap(({ ticket }) => {
+      const cerrado = new Subject<void>();
       const socket = webSocket<MensajeWs | { accion: 'ping' }>({
         url: `${urlBase()}/notificaciones/?ticket=${ticket}`,
         openObserver: { next: () => this._estado.set('conectado') },
-        closeObserver: { next: () => this._estado.set('desconectado') },
+        closeObserver: {
+          next: () => {
+            this._estado.set('desconectado');
+            cerrado.next();
+          },
+        },
       });
+      // ⚠️ El latido muere con el socket (takeUntil). Si no, merge() nunca completaría — interval no
+      // termina — y tras un cierre limpio del servidor (4000, 4401) repeat() no llegaría a reconectar.
       const latido = interval(25_000).pipe(
         tap(() => socket.next({ accion: 'ping' })),
         ignoreElements(),
+        takeUntil(cerrado),
       );
       return merge(socket, latido) as Observable<MensajeWs>;
     }),

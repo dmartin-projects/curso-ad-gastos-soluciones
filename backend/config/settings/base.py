@@ -167,6 +167,9 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
+# core/agrupar.py: debounce de tareas repetidas (módulo 76). Solo se desactiva en E2E.
+AGRUPAR_TAREAS = True
+
 TASKS = {"default": {"BACKEND": "django_tasks_db.DatabaseBackend", "QUEUES": ["default", "emails"]}}
 
 # ── DRF ──

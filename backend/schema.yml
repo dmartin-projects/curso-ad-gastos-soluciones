@@ -602,6 +602,10 @@ paths:
         description: Un término de búsqueda.
         schema:
           type: string
+      - in: query
+        name: sin_categoria
+        schema:
+          type: boolean
       tags:
       - backoffice
       security:
@@ -3776,6 +3780,20 @@ components:
           title: Es de ingresos
       required:
       - nombre
+    CategoriaSoporte:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        padre:
+          type: integer
+          nullable: true
+      required:
+      - id
+      - nombre
+      - padre
     Cola:
       type: object
       properties:
@@ -4289,7 +4307,13 @@ components:
           items:
             $ref: '#/components/schemas/MiembroSoporte'
           readOnly: true
+        categorias:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoriaSoporte'
+          readOnly: true
       required:
+      - categorias
       - creado
       - id
       - miembros

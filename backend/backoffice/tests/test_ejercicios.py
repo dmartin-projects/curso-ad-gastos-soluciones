@@ -180,3 +180,26 @@ def test_grupo_administracion(cliente):
     assert admin.get(URL + "tickets/").status_code == 403
     assert admin.post(URL + "tickets/reprocesar/", {"ids": [t.pk]}).status_code == 403
     assert not admin.usuario.is_superuser
+
+
+# ── Módulo 81, ejercicio 3: sin categoría y recategorizar desde la ficha ──
+def test_ficha_con_categorias_y_filtro_sin_categoria(cliente):
+    from conftest import CategoriaFactory
+
+    hogar = HogarFactory()
+    cuenta = CuentaFactory(hogar=hogar)
+    super_ = CategoriaFactory(hogar=hogar, nombre="Súper")
+    CategoriaFactory(hogar=HogarFactory(), nombre="De otro hogar")
+    sin = [MovimientoFactory(cuenta=cuenta, categoria=None) for _ in range(2)]
+    MovimientoFactory(cuenta=cuenta, categoria=super_)
+    MovimientoFactory(categoria=None)  # de otro hogar
+    c = personal(cliente, "Soporte")
+
+    ficha = c.get(f"{URL}hogares/{hogar.pk}/").data
+    assert [x["nombre"] for x in ficha["categorias"]] == ["Súper"]
+    r = c.get(URL + "movimientos/", {"hogar": hogar.pk, "sin_categoria": "true"})
+    assert {m["id"] for m in r.data["results"]} == {m.pk for m in sin}
+
+    r = c.post(URL + "movimientos/recategorizar/", {"ids": [m.pk for m in sin], "categoria": super_.pk})
+    assert r.data == {"hechos": 2, "omitidos": 0}
+    assert c.get(URL + "movimientos/", {"hogar": hogar.pk, "sin_categoria": "true"}).data["count"] == 0

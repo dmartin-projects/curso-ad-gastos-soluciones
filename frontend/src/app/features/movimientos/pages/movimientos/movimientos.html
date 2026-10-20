@@ -20,7 +20,7 @@
 />
 
 @if (movimientos.isFetching() && !movimientos.isFetchingNextPage()) {
-  <mat-progress-bar mode="indeterminate" class="mt-2" />
+  <mat-progress-bar mode="indeterminate" class="mt-2" aria-label="Cargando movimientos" />
 }
 
 @if (movimientos.isError()) {
@@ -34,34 +34,42 @@
     class="mt-3 h-[calc(100dvh-15rem)]"
     (scrolledIndexChange)="alDesplazar()"
   >
+    <!--
+      Sin botones dentro de botones (axe: nested-interactive, módulo 82). La fila NO es interactiva:
+      el concepto es un <button> cuyo ::before se estira sobre toda la fila (patrón "stretched link"),
+      y el chip de categoría y el menú de acciones, por encima (relative z-10), son botones hermanos.
+    -->
     <div
       *cdkVirtualFor="let m of filas(); trackBy: porId"
-      role="button"
-      tabindex="0"
-      class="grid h-16 cursor-pointer grid-cols-[4.5rem_1fr_auto] items-center gap-3 border-b px-2 hover:bg-superficie-alta"
-      (click)="abrirFormulario(m)"
-      (keydown.enter)="abrirFormulario(m)"
+      data-fila
+      class="relative grid h-16 grid-cols-[4.5rem_1fr_auto] items-center gap-3 border-b px-2 hover:bg-superficie-alta"
     >
       <span class="text-sm text-texto-suave">{{ m.fecha | date: 'd MMM' }}</span>
       <span class="min-w-0">
-        <span class="block truncate"
-          >{{ m.concepto }}
-          @if (!m.revisado) {
-            <mat-icon class="!size-4 !text-base align-middle text-error" aria-label="Por revisar"
-              >error</mat-icon
-            >
-          }
-        </span>
+        @if (store.puedeEditar()) {
+          <button
+            type="button"
+            class="block w-full truncate text-left before:absolute before:inset-0 before:content-['']"
+            (click)="abrirFormulario(m)"
+          >
+            {{ m.concepto }}
+            @if (!m.revisado) {
+              <mat-icon class="!size-4 !text-base align-middle text-error" aria-label="Por revisar"
+                >error</mat-icon
+              >
+            }
+          </button>
+        } @else {
+          <span class="block truncate">{{ m.concepto }}</span>
+        }
         <span class="flex items-center gap-1 truncate text-xs text-texto-suave">
           @if (store.puedeEditar()) {
             <!-- editar en línea: un menú con las categorías, sin abrir el formulario (módulo 80) -->
             <button
               type="button"
-              class="flex items-center gap-1 rounded px-1 hover:bg-superficie-alta"
+              class="relative z-10 flex items-center gap-1 rounded px-1 hover:bg-superficie-alta"
               [matMenuTriggerFor]="menuCategorias"
               [matMenuTriggerData]="{ m }"
-              (click)="$event.stopPropagation()"
-              (keydown.enter)="$event.stopPropagation()"
               [attr.aria-label]="
                 'Categoría: ' + (m.categoria_nombre ?? 'sin categoría') + '. Cambiar'
               "
@@ -88,9 +96,9 @@
         @if (store.esAdmin()) {
           <button
             mat-icon-button
+            class="relative z-10"
             [matMenuTriggerFor]="acciones"
             [matMenuTriggerData]="{ m }"
-            (click)="$event.stopPropagation()"
             aria-label="Acciones"
           >
             <mat-icon>more_vert</mat-icon>

@@ -16,6 +16,48 @@
       </li>
     }
   </ul>
+  <h3 class="mt-6 font-medium">
+    Movimientos sin categoría ({{ sinCategoria.data()?.count ?? '…' }})
+  </h3>
+  @if (sinCategoria.data()?.results?.length) {
+    <div class="my-2 flex flex-wrap items-center gap-2">
+      <select
+        class="rounded border px-2 py-1"
+        aria-label="Categoría destino"
+        [value]="destino() ?? ''"
+        (change)="destino.set(+$any($event.target).value || null)"
+      >
+        <option value="">Elige categoría…</option>
+        @for (c of h.categorias; track c.id) {
+          <option [value]="c.id">{{ c.padre ? '· ' : '' }}{{ c.nombre }}</option>
+        }
+      </select>
+      <button
+        mat-flat-button
+        [disabled]="!destino() || !seleccion().length || recategorizar.isPending()"
+        (click)="recategorizar.mutate()"
+      >
+        Recategorizar ({{ seleccion().length }})
+      </button>
+    </div>
+    <ul class="divide-y">
+      @for (m of sinCategoria.data()!.results; track m.id) {
+        <li class="flex items-center gap-3 py-1">
+          <mat-checkbox
+            [checked]="seleccion().includes(m.id)"
+            (change)="alternar(m.id)"
+            [aria-label]="'Seleccionar ' + m.concepto"
+          />
+          <span class="w-24 text-sm text-texto-suave">{{ m.fecha | date: 'shortDate' }}</span>
+          <span class="min-w-0 flex-1 truncate">{{ m.concepto }}</span>
+          <app-importe [valor]="m.importe" />
+        </li>
+      }
+    </ul>
+  } @else if (sinCategoria.isSuccess()) {
+    <p class="text-sm text-texto-suave">Todos sus movimientos tienen categoría.</p>
+  }
+
   <a mat-stroked-button class="mt-4" routerLink="../../auditoria" [queryParams]="{ q: h.nombre }"
     ><mat-icon>history</mat-icon> Ver su actividad en la auditoría</a
   >

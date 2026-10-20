@@ -29,12 +29,15 @@ const MAXIMO = 10 * 1024 * 1024;
 })
 export class SubirTicket {
   readonly cuentas = input.required<Cuenta[]>();
+  /** Foto llegada por "compartir" (módulo 81): no se sube sola; el usuario elige la cuenta y confirma. */
+  readonly compartido = input<File | null>(null);
   readonly progreso = input<number | null>(null); // null: no hay subida en marcha
   readonly errorSubida = input<string | null>(null); // lo que contestó la API
   readonly subir = output<TicketParaSubir>();
 
   /** linkedSignal: por defecto la primera cuenta; el usuario puede cambiarla; si cambian las cuentas, se recalcula. */
   protected readonly cuenta = linkedSignal<number | null>(() => this.cuentas()[0]?.id ?? null);
+  protected readonly pendiente = linkedSignal(() => this.compartido());
   protected readonly subiendo = computed(() => this.progreso() !== null);
   private readonly errorArchivo = signal<string | null>(null);
   protected readonly error = computed(() => this.errorArchivo() ?? this.errorSubida());
@@ -46,9 +49,18 @@ export class SubirTicket {
     this.elegir(e.dataTransfer?.files ?? null);
   }
 
+  protected subirPendiente() {
+    const archivo = this.pendiente();
+    this.pendiente.set(null);
+    if (archivo) this.pedirSubida(archivo);
+  }
+
   protected elegir(archivos: FileList | null) {
     const archivo = archivos?.[0];
-    if (!archivo) return;
+    if (archivo) this.pedirSubida(archivo);
+  }
+
+  private pedirSubida(archivo: File) {
     if (!this.cuenta()) return this.errorArchivo.set('Elige primero la cuenta.');
     // validación en el cliente = mejor experiencia; la de verdad es la del servidor (firmas, módulo 74)
     if (!TIPOS.includes(archivo.type)) return this.errorArchivo.set('Sube una foto o un PDF.');

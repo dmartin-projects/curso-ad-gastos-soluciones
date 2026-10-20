@@ -43,6 +43,13 @@
         >
       </mat-menu>
       <span class="flex-1"></span>
+      <button
+        mat-icon-button
+        (click)="tema.siguiente()"
+        [attr.aria-label]="'Tema: ' + nombresTema[tema.modo()] + '. Cambiar'"
+      >
+        <mat-icon>{{ iconosTema[tema.modo()] }}</mat-icon>
+      </button>
       <app-campana />
       <button mat-icon-button [matMenuTriggerFor]="cuenta" aria-label="Mi cuenta">
         <mat-icon>account_circle</mat-icon>
@@ -63,5 +70,6 @@
     <main class="mx-auto w-full max-w-5xl flex-1 p-4">
       <router-outlet />
     </main>
+    <app-aviso-conexion />
   </mat-sidenav-content>
 </mat-sidenav-container>

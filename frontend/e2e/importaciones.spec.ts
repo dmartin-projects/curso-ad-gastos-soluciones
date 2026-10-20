@@ -1,6 +1,4 @@
-import { expect, test } from '@playwright/test';
-
-import { entrar, vigilarConsola } from './ayuda';
+import { entrar, expect, sinViolaciones, test, vigilarConsola } from './ayuda';
 
 test('importar un extracto: vista previa, confirmar y movimientos creados', async ({ page }) => {
   const sinErrores = vigilarConsola(page);
@@ -13,6 +11,7 @@ test('importar un extracto: vista previa, confirmar y movimientos creados', asyn
   await expect(page.getByText('Lista para revisar')).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText('3 de 3')).toBeVisible();
   await expect(page.getByText('LIBRERIA PARIS')).toBeVisible();
+  await sinViolaciones(page); // la vista previa
 
   await page.getByRole('button', { name: /Importar 3 movimientos/ }).click();
   await expect(page.getByText('Completada', { exact: false }).first()).toBeVisible({
@@ -20,7 +19,10 @@ test('importar un extracto: vista previa, confirmar y movimientos creados', asyn
   });
 
   await page.getByRole('link', { name: 'Movimientos' }).click();
-  await expect(page.getByRole('button', { name: /TRANSFERENCIA DE ANA/ })).toContainText(
+  // Buscarlo: la lista es virtual (solo hay en el DOM las filas visibles) y el seed pone fechas
+  // aleatorias, así que el 6 de octubre puede quedar fuera de la pantalla según el día
+  await page.getByRole('searchbox', { name: 'Buscar' }).fill('transferencia de ana');
+  await expect(page.locator('[data-fila]', { hasText: 'TRANSFERENCIA DE ANA' })).toContainText(
     '150,00 €',
   );
   sinErrores();

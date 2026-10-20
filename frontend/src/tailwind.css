@@ -8,8 +8,9 @@
   --color-texto: var(--mat-sys-on-surface);
   --color-texto-suave: var(--mat-sys-on-surface-variant);
   --color-error: var(--mat-sys-error);
-  --color-gasto: oklch(0.55 0.19 27);
-  --color-ingreso: oklch(0.55 0.14 150);
+  /* light-dark(): legible (contraste ≥ 4,5:1, WCAG AA) sobre el fondo claro Y sobre el oscuro (módulo 82) */
+  --color-gasto: light-dark(oklch(0.5 0.19 27), oklch(0.78 0.13 27));
+  --color-ingreso: light-dark(oklch(0.46 0.12 150), oklch(0.8 0.14 150));
 }
 
 /* Tailwind 4 pinta los bordes con currentColor (negro): mejor el color de contorno suave del tema */
