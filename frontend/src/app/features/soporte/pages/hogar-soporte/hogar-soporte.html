@@ -1,0 +1,22 @@
+<a mat-button routerLink=".."><mat-icon>arrow_back</mat-icon> Hogares</a>
+@if (hogar.data(); as h) {
+  <h2 class="mt-2 text-xl font-medium">
+    {{ h.nombre }} <span class="text-sm text-texto-suave">#{{ h.id }}</span>
+  </h2>
+  <p class="text-texto-suave">
+    {{ h.num_movimientos }} movimientos · alta {{ h.creado | date: 'longDate' }} ·
+    {{ h.zona_horaria }}
+  </p>
+  <h3 class="mt-4 font-medium">Miembros</h3>
+  <ul class="divide-y">
+    @for (m of h.miembros; track m.usuario) {
+      <li class="flex justify-between py-2">
+        <span>{{ m.email }}</span
+        ><span class="text-texto-suave">{{ m.rol }}</span>
+      </li>
+    }
+  </ul>
+  <a mat-stroked-button class="mt-4" routerLink="../../auditoria" [queryParams]="{ q: h.nombre }"
+    ><mat-icon>history</mat-icon> Ver su actividad en la auditoría</a
+  >
+}

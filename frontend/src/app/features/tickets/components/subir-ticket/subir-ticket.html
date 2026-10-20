@@ -1,0 +1,53 @@
+<div
+  class="flex flex-wrap items-center gap-3 rounded-xl border-2 border-dashed p-4"
+  [class.border-primario]="arrastrando()"
+  (dragover)="$event.preventDefault(); arrastrando.set(true)"
+  (dragleave)="arrastrando.set(false)"
+  (drop)="soltar($event)"
+>
+  <mat-form-field subscriptSizing="dynamic" class="w-48">
+    <mat-label>Cuenta</mat-label>
+    <select
+      matNativeControl
+      [value]="cuenta() ?? ''"
+      (change)="cuenta.set(+$any($event.target).value)"
+    >
+      @for (c of cuentas(); track c.id) {
+        <option [value]="c.id">{{ c.nombre }}</option>
+      }
+    </select>
+  </mat-form-field>
+  <!-- capture="environment": en el móvil abre directamente la cámara trasera -->
+  <input
+    #selector
+    type="file"
+    accept="image/*,application/pdf"
+    capture="environment"
+    hidden
+    (change)="elegir(selector.files); selector.value = ''"
+  />
+  <button
+    mat-flat-button
+    type="button"
+    [disabled]="subiendo() || !cuenta()"
+    (click)="selector.click()"
+  >
+    <mat-icon>photo_camera</mat-icon> Hacer foto o elegir archivo
+  </button>
+  <span class="text-sm text-texto-suave"
+    >…o arrastra aquí el ticket (JPEG, PNG, WebP o PDF, hasta 10 MB)</span
+  >
+  @if (progreso() !== null) {
+    <mat-progress-bar
+      class="w-full"
+      [mode]="progreso()! < 100 ? 'determinate' : 'indeterminate'"
+      [value]="progreso()"
+    />
+    <span class="text-sm" aria-live="polite">{{
+      progreso()! < 100 ? 'Subiendo ' + progreso() + ' %' : 'Guardando…'
+    }}</span>
+  }
+  @if (error()) {
+    <p role="alert" class="w-full text-sm text-error">{{ error() }}</p>
+  }
+</div>

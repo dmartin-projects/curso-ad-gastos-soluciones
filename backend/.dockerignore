@@ -1,0 +1,14 @@
+# backend/.dockerignore
+.venv
+__pycache__/
+*.pyc
+.env
+.env.*
+media/
+media-e2e/
+staticfiles/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.git

@@ -1,0 +1,58 @@
+<div class="flex flex-wrap items-center gap-2">
+  <mat-form-field class="grow basis-64" subscriptSizing="dynamic">
+    <mat-icon matPrefix>search</mat-icon>
+    <input
+      matInput
+      type="search"
+      placeholder="Buscar concepto o comercio"
+      aria-label="Buscar"
+      [value]="valor().q ?? ''"
+      (input)="busqueda.next($any($event.target).value)"
+    />
+  </mat-form-field>
+  <mat-form-field class="w-44" subscriptSizing="dynamic">
+    <mat-label>Categoría</mat-label>
+    <mat-select
+      [value]="valor().categoria ?? null"
+      (selectionChange)="cambiar({ categoria: $event.value ?? undefined })"
+    >
+      <mat-option [value]="null">Todas</mat-option>
+      @for (c of categorias(); track c.id) {
+        <mat-option [value]="c.id">{{ c.padre ? '· ' : '' }}{{ c.nombre }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field class="w-40" subscriptSizing="dynamic">
+    <mat-label>Desde</mat-label>
+    <input
+      matInput
+      type="date"
+      [value]="valor().desde ?? ''"
+      (change)="cambiar({ desde: $any($event.target).value || undefined })"
+    />
+  </mat-form-field>
+  <mat-form-field class="w-40" subscriptSizing="dynamic">
+    <mat-label>Hasta</mat-label>
+    <input
+      matInput
+      type="date"
+      [value]="valor().hasta ?? ''"
+      (change)="cambiar({ hasta: $any($event.target).value || undefined })"
+    />
+  </mat-form-field>
+  <mat-button-toggle-group
+    [value]="valor().tipo ?? ''"
+    (change)="cambiar({ tipo: $event.value || undefined })"
+    aria-label="Tipo"
+  >
+    <mat-button-toggle value="">Todo</mat-button-toggle>
+    <mat-button-toggle value="gasto">Gastos</mat-button-toggle>
+    <mat-button-toggle value="ingreso">Ingresos</mat-button-toggle>
+  </mat-button-toggle-group>
+  <mat-chip-option
+    [selected]="!!valor().pendientes"
+    (selectionChange)="cambiar({ pendientes: $event.selected || undefined })"
+  >
+    Por revisar
+  </mat-chip-option>
+</div>

@@ -1,0 +1,176 @@
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:                                   # cancela ejecuciones viejas de la misma rama
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    services:                                  # contenedores auxiliares durante el job
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: gastos
+          POSTGRES_USER: gastos
+          POSTGRES_PASSWORD: gastos
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U gastos" --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+
+    env:
+      DJANGO_SETTINGS_MODULE: config.settings.test
+      DATABASE_URL: postgres://gastos:gastos@localhost:5432/gastos
+      REDIS_URL: redis://localhost:6379/1
+      DJANGO_SECRET_KEY: ci-no-es-secreto
+      JWT_SIGNING_KEY: ci-no-es-secreto
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Sistema (WeasyPrint, Tesseract, gettext)
+        working-directory: .
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libpango-1.0-0 libpangoft2-1.0-0 tesseract-ocr tesseract-ocr-spa gettext
+
+      - name: Dependencias
+        run: uv sync --locked
+
+      - name: Lint y formato
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+
+      - name: Migraciones al día
+        run: uv run python manage.py makemigrations --check --dry-run
+
+      - name: Tests
+        run: uv run pytest -n auto --cov --cov-report=xml --cov-fail-under=85
+
+      - name: Esquema OpenAPI sin avisos y sin cambios sin commitear
+        run: |
+          uv run python manage.py spectacular --file schema.yml --validate --fail-on-warn
+          git diff --exit-code schema.yml
+
+      - name: check --deploy con ajustes de producción
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings.prod
+          DJANGO_ALLOWED_HOSTS: gastos.example.com
+          IA_API_KEY: ci
+          BANCO_WEBHOOK_SECRET: ci
+          SENTRY_DSN: ""
+        run: uv run python manage.py check --deploy --fail-level WARNING
+
+      - name: Auditoría de dependencias
+        run: uvx pip-audit --strict
+        continue-on-error: true                 # informa sin bloquear (decide tu política)
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci
+      - run: npx prettier --check .                           # formato
+      - name: fronteras (reglas de dependencia entre features, core y shared, módulo 80)
+        run: npm run lint
+      - run: npx openapi-typescript@7 ../backend/schema.yml -o src/app/core/api/esquema.ts
+      - run: git diff --exit-code src/app/core/api/esquema.ts    # tipos sincronizados con la API (módulo 80)
+      - run: npx ng test --watch=false
+      - run: npx ng build --configuration production          # falla si se superan los budgets (módulo 57)
+      - run: npm audit --audit-level=high
+        continue-on-error: true
+  e2e:
+    needs: [backend, frontend]                 # solo si lo rápido ya pasa: E2E es lo más lento
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: gastos_e2e                # el nombre que usa config.settings.e2e
+          POSTGRES_USER: gastos
+          POSTGRES_PASSWORD: gastos
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U gastos" --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:                                   # backend de resultados de Celery (el chord de importaciones)
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+
+    env:
+      DATABASE_URL: postgres://gastos:gastos@localhost:5432/gastos_e2e
+      DJANGO_SECRET_KEY: ci-no-es-secreto
+      JWT_SIGNING_KEY: ci-no-es-secreto
+      CELERY_RESULT_BACKEND: redis://localhost:6379/0
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sistema (Tesseract para el OCR real)
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-spa
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Backend preparado
+        working-directory: backend
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings.e2e
+        run: |
+          uv sync --locked
+          uv run python manage.py migrate --noinput
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Frontend y navegador
+        working-directory: frontend
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Playwright
+        working-directory: frontend
+        run: npx playwright test               # arranca runserver (con preparar_e2e) y ng serve él solo
+
+      - name: Informe y trazas si algo falla
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            frontend/playwright-report/
+            frontend/test-results/
+          retention-days: 7

@@ -1,0 +1,83 @@
+<div class="mb-3 flex items-center justify-between gap-2">
+  <h1 class="text-2xl font-medium">Movimientos</h1>
+  @if (store.puedeEditar()) {
+    <button mat-flat-button (click)="abrirFormulario()"><mat-icon>add</mat-icon> Nuevo</button>
+  }
+</div>
+
+<app-filtros-movimientos
+  [valor]="filtros()"
+  [categorias]="categorias.data() ?? []"
+  (cambio)="filtrar($event)"
+/>
+
+@if (movimientos.isFetching() && !movimientos.isFetchingNextPage()) {
+  <mat-progress-bar mode="indeterminate" class="mt-2" />
+}
+
+@if (movimientos.isError()) {
+  <p role="alert" class="mt-4 text-error">No se han podido cargar los movimientos.</p>
+} @else if (movimientos.isSuccess() && filas().length === 0) {
+  <p class="mt-8 text-center text-texto-suave">No hay movimientos con estos filtros.</p>
+} @else {
+  <!-- Solo se pintan las filas visibles (más unas pocas): 10 000 movimientos = ~20 nodos en el DOM (módulo 55) -->
+  <cdk-virtual-scroll-viewport
+    itemSize="64"
+    class="mt-3 h-[calc(100dvh-15rem)]"
+    (scrolledIndexChange)="alDesplazar()"
+  >
+    <div
+      *cdkVirtualFor="let m of filas(); trackBy: porId"
+      role="button"
+      tabindex="0"
+      class="grid h-16 cursor-pointer grid-cols-[4.5rem_1fr_auto] items-center gap-3 border-b px-2 hover:bg-superficie-alta"
+      (click)="abrirFormulario(m)"
+      (keydown.enter)="abrirFormulario(m)"
+    >
+      <span class="text-sm text-texto-suave">{{ m.fecha | date: 'd MMM' }}</span>
+      <span class="min-w-0">
+        <span class="block truncate"
+          >{{ m.concepto }}
+          @if (!m.revisado) {
+            <mat-icon class="!size-4 !text-base align-middle text-error" aria-label="Por revisar"
+              >error</mat-icon
+            >
+          }
+        </span>
+        <span class="flex items-center gap-1 truncate text-xs text-texto-suave">
+          @if (m.categoria_nombre) {
+            <span
+              class="inline-block size-2 rounded-full"
+              [style.background]="m.categoria_color"
+            ></span>
+            {{ m.categoria_nombre }} ·
+          }
+          {{ m.cuenta_nombre }}
+        </span>
+      </span>
+      <span class="flex items-center">
+        <app-importe [valor]="m.importe" />
+        @if (store.esAdmin()) {
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="acciones"
+            [matMenuTriggerData]="{ m }"
+            (click)="$event.stopPropagation()"
+            aria-label="Acciones"
+          >
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        }
+      </span>
+    </div>
+    @if (movimientos.isFetchingNextPage()) {
+      <p class="py-4 text-center text-sm text-texto-suave">Cargando más…</p>
+    }
+  </cdk-virtual-scroll-viewport>
+}
+
+<mat-menu #acciones="matMenu">
+  <ng-template matMenuContent let-m="m">
+    <button mat-menu-item (click)="borrar(m)"><mat-icon>delete</mat-icon> Borrar</button>
+  </ng-template>
+</mat-menu>

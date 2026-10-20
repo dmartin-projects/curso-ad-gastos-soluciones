@@ -1,0 +1,83 @@
+@if (resumen.data(); as r) {
+  <section class="grid grid-cols-2 gap-3 md:grid-cols-4" aria-label="Salud del sistema">
+    <mat-card class="p-4" [class.!bg-red-50]="r.tickets_atascados > 0">
+      <span class="text-sm text-texto-suave">Tickets atascados</span
+      ><span class="block text-3xl">{{ r.tickets_atascados }}</span>
+    </mat-card>
+    <mat-card class="p-4"
+      ><span class="text-sm text-texto-suave">Importaciones en curso</span
+      ><span class="block text-3xl">{{ r.importaciones_en_curso }}</span></mat-card
+    >
+    <mat-card class="p-4"
+      ><span class="text-sm text-texto-suave">Importaciones con error (7 d)</span
+      ><span class="block text-3xl">{{ r.importaciones_con_error_7d }}</span></mat-card
+    >
+    <mat-card class="p-4"
+      ><span class="text-sm text-texto-suave">Hogares · usuarios activos</span
+      ><span class="block text-3xl">{{ r.hogares }} · {{ r.usuarios_activos }}</span></mat-card
+    >
+  </section>
+  <p class="mt-2 text-sm text-texto-suave">
+    Tickets 24 h:
+    @for (e of r.tickets_24h; track e.clave) {
+      {{ e.clave }} {{ e.total }}{{ $last ? '' : ' · ' }}
+    }
+  </p>
+}
+
+<h2 class="mt-6 mb-2 text-lg font-medium">Tickets</h2>
+<div class="flex flex-wrap items-center gap-2">
+  <mat-chip-listbox
+    [value]="filtro()"
+    (change)="filtro.set($event.value ?? 'atascado'); seleccion.set([])"
+    aria-label="Filtro"
+  >
+    <mat-chip-option value="atascado">Atascados</mat-chip-option>
+    <mat-chip-option value="error">Con error</mat-chip-option>
+    <mat-chip-option value="revisar">En revisión</mat-chip-option>
+  </mat-chip-listbox>
+  <span class="flex-1"></span>
+  <button
+    mat-flat-button
+    [disabled]="!seleccion().length || reprocesar.isPending()"
+    (click)="reprocesar.mutate(seleccion())"
+  >
+    <mat-icon>refresh</mat-icon> Reprocesar ({{ seleccion().length }})
+  </button>
+</div>
+<ul class="mt-2 divide-y">
+  @for (t of tickets.data()?.results ?? []; track t.id) {
+    <li class="flex items-center gap-3 py-2">
+      <mat-checkbox
+        [checked]="seleccion().includes(t.id)"
+        (change)="alternar(t.id)"
+        [aria-label]="'Seleccionar ticket ' + t.id"
+      />
+      <span class="w-16 text-sm text-texto-suave">#{{ t.id }}</span>
+      <span class="min-w-0 flex-1">
+        <span class="block truncate">{{ t.hogar_nombre }} · {{ t.subido_por ?? '—' }}</span>
+        <span class="block truncate text-xs text-texto-suave"
+          >{{ t.actualizado | date: 'short' }} · {{ t.intentos }} intentos · {{ t.error }}</span
+        >
+      </span>
+      <app-estado-ticket [estado]="t.estado" />
+    </li>
+  } @empty {
+    <li class="py-4 text-texto-suave">Nada por aquí. 🎉</li>
+  }
+</ul>
+
+<h2 class="mt-6 mb-2 text-lg font-medium">Importaciones con error</h2>
+<ul class="divide-y">
+  @for (i of importaciones.data()?.results ?? []; track i.id) {
+    <li class="flex items-center gap-3 py-2">
+      <span class="min-w-0 flex-1 truncate"
+        >{{ i.hogar_nombre }} · {{ i.nombre_original }}
+        <span class="block text-xs text-error">{{ i.error }}</span></span
+      >
+      <button mat-stroked-button (click)="deshacer(i.id)">Deshacer</button>
+    </li>
+  } @empty {
+    <li class="py-4 text-texto-suave">Ninguna.</li>
+  }
+</ul>

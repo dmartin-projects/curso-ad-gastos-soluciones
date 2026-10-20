@@ -1,0 +1,34 @@
+<h1 class="mb-4 text-2xl font-medium">Mis hogares</h1>
+<div class="grid gap-4 sm:grid-cols-2">
+  @for (h of store.hogares(); track h.id) {
+    <a
+      mat-stroked-button
+      class="!h-auto !justify-start !p-4 text-left"
+      [routerLink]="['/hogares', h.id]"
+    >
+      <span class="block text-lg">{{ h.nombre }}</span>
+      <span class="block text-sm text-texto-suave"
+        >{{ h.num_miembros }} miembros · {{ h.mi_rol }}</span
+      >
+    </a>
+  } @empty {
+    <p class="text-texto-suave">Aún no perteneces a ningún hogar. Crea el primero:</p>
+  }
+</div>
+
+<mat-card class="mt-6 max-w-md">
+  <mat-card-content>
+    <form [formRoot]="f" class="flex items-start gap-2">
+      <mat-form-field class="flex-1" subscriptSizing="dynamic">
+        <mat-label>Nuevo hogar</mat-label>
+        <input matInput [formField]="f.nombre" placeholder="Piso Ruzafa" />
+        @for (e of f.nombre().errors(); track e.kind) {
+          <mat-error>{{ e.message }}</mat-error>
+        }
+      </mat-form-field>
+      <button mat-flat-button type="submit" class="mt-2" [disabled]="f().submitting()">
+        <mat-icon>add_home</mat-icon> Crear
+      </button>
+    </form>
+  </mat-card-content>
+</mat-card>

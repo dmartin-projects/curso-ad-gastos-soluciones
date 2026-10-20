@@ -1,0 +1,14 @@
+<h1 class="mb-2 text-2xl font-medium">Soporte</h1>
+<nav mat-tab-nav-bar [tabPanel]="panel" mat-stretch-tabs="false">
+  @for (p of pestanas; track p.ruta) {
+    <a
+      mat-tab-link
+      [routerLink]="p.ruta"
+      routerLinkActive
+      #rla="routerLinkActive"
+      [active]="rla.isActive"
+      >{{ p.texto }}</a
+    >
+  }
+</nav>
+<mat-tab-nav-panel #panel class="block pt-4"><router-outlet /></mat-tab-nav-panel>

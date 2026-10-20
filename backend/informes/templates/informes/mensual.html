@@ -1,0 +1,93 @@
+{% load i18n %}<!doctype html>
+<html lang="{{ LANGUAGE_CODE|default:'es' }}">
+<head>
+<meta charset="utf-8">
+<title>{% translate "Informe mensual" %} · {{ hogar.nombre }}</title>
+<style>
+  @page {
+    size: A4;
+    margin: 2cm 1.6cm;
+    /* el texto de la cabecera sale del propio documento (string-set): nunca se mete un dato del usuario en el CSS */
+    @top-left { content: string(cabecera); font: 8pt "DejaVu Sans", sans-serif; color: #777; }
+    @bottom-right { content: "{% translate 'Página' %} " counter(page) " / " counter(pages); font: 8pt "DejaVu Sans", sans-serif; color: #777; }
+  }
+  body { font-family: "DejaVu Sans", sans-serif; font-size: 9.5pt; color: #222; }
+  h1 { font-size: 18pt; margin: 0 0 4pt; }
+  h2 { font-size: 12pt; margin: 18pt 0 6pt; border-bottom: 1px solid #ddd; padding-bottom: 3pt; }
+  .sub { color: #666; margin: 0 0 14pt; }
+  .cabecera { string-set: cabecera content(); }
+  .tarjetas { width: 100%; border-collapse: separate; border-spacing: 6pt 0; margin: 0 -6pt; }
+  .tarjetas td { background: #f4f6f8; padding: 8pt; width: 25%; }
+  .tarjetas .cifra { font-size: 14pt; font-weight: bold; display: block; }
+  table.datos { width: 100%; border-collapse: collapse; }
+  table.datos th, table.datos td { text-align: left; padding: 3pt 4pt; border-bottom: 1px solid #eee; }
+  table.datos .num { text-align: right; white-space: nowrap; }
+  .barra { height: 7pt; background: #e0e0e0; }
+  .barra span { display: block; height: 7pt; }
+  .excedido { color: #c62828; font-weight: bold; }
+  .grupo { break-inside: avoid; }        /* no partir una categoría corta entre dos páginas */
+  thead { display: table-header-group; }  /* la cabecera de la tabla se repite en cada página */
+</style>
+</head>
+<body>
+  <h1>{% translate "Informe mensual" %}</h1>
+  <p class="sub cabecera">{{ hogar.nombre }} · {{ resumen.mes|date:"F Y"|capfirst }}</p>
+
+  <table class="tarjetas"><tr>
+    <td>{% translate "Gastos" %}<span class="cifra">{{ resumen.gastos|floatformat:"2g" }} €</span></td>
+    <td>{% translate "Ingresos" %}<span class="cifra">{{ resumen.ingresos|floatformat:"2g" }} €</span></td>
+    <td>{% translate "Balance" %}<span class="cifra">{{ resumen.balance|floatformat:"2g" }} €</span></td>
+    <td>{% translate "Frente al mes anterior" %}<span class="cifra">
+      {% if resumen.variacion is None %}—{% else %}{% if resumen.variacion > 0 %}+{% endif %}{{ resumen.variacion|floatformat:1 }} %{% endif %}
+    </span></td>
+  </tr></table>
+
+  <h2>{% translate "Gasto por categoría" %}</h2>
+  <table class="datos">
+    <thead><tr><th>{% translate "Categoría" %}</th><th style="width:45%"></th><th class="num">{% translate "Importe" %}</th><th class="num">%</th></tr></thead>
+    {% for c in resumen.por_categoria %}
+      <tr>
+        <td>{{ c.nombre }}</td>
+        <td><div class="barra"><span style="width: {{ c.porcentaje|stringformat:'.1f' }}%; background: {{ c.color }}"></span></div></td>
+        <td class="num">{{ c.total|floatformat:"2g" }} €</td>
+        <td class="num">{{ c.porcentaje|floatformat:1 }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="4">{% translate "Sin gastos este mes." %}</td></tr>
+    {% endfor %}
+  </table>
+
+  {% if resumen.presupuestos %}
+    <h2>{% translate "Presupuestos" %}</h2>
+    <table class="datos">
+      <thead><tr><th>{% translate "Categoría" %}</th><th class="num">{% translate "Presupuesto" %}</th><th class="num">{% translate "Gastado" %}</th><th class="num">%</th></tr></thead>
+      {% for p in resumen.presupuestos %}
+        <tr{% if p.porcentaje >= 100 %} class="excedido"{% endif %}>
+          <td>{{ p.categoria }}</td>
+          <td class="num">{{ p.importe|floatformat:"2g" }} €</td>
+          <td class="num">{{ p.gastado|floatformat:"2g" }} €</td>
+          <td class="num">{{ p.porcentaje }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+
+  <h2>{% translate "Movimientos" %}</h2>
+  {% regroup movimientos by categoria as grupos %}
+  {% for grupo in grupos %}
+    <div class="grupo">
+      <h3>{{ grupo.grouper|default_if_none:_("Sin categoría") }}</h3>
+      <table class="datos">
+        <thead><tr><th style="width:16%">{% translate "Fecha" %}</th><th>{% translate "Concepto" %}</th><th>{% translate "Cuenta" %}</th><th class="num">{% translate "Importe" %}</th></tr></thead>
+        {% for m in grupo.list %}
+          <tr><td>{{ m.fecha|date:"SHORT_DATE_FORMAT" }}</td><td>{{ m.concepto }}</td><td>{{ m.cuenta.nombre }}</td><td class="num">{{ m.importe|floatformat:"2g" }} €</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+  {% empty %}
+    <p>{% translate "No hay movimientos este mes." %}</p>
+  {% endfor %}
+
+  <p class="sub" style="margin-top: 20pt">{% blocktranslate with fecha=generado|date:"DATETIME_FORMAT" %}Generado el {{ fecha }}.{% endblocktranslate %}</p>
+</body>
+</html>

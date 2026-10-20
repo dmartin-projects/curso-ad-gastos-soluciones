@@ -1,0 +1,9 @@
+# Contexto = raíz del proyecto: solo hace falta frontend/ (sin dependencias ni builds locales) e infra/
+backend
+**/node_modules
+**/.angular
+**/dist
+frontend/test-results
+frontend/playwright-report
+.git
+.github

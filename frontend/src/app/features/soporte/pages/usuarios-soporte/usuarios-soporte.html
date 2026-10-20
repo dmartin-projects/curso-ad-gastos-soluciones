@@ -1,0 +1,32 @@
+<app-buscador placeholder="Email o nombre" (buscar)="busqueda.set($event); pagina.set(1)" />
+<ul class="mt-2 divide-y">
+  @for (u of usuarios.data()?.results ?? []; track u.id) {
+    <li class="flex items-center gap-3 py-2">
+      <span class="min-w-0 flex-1">
+        <span class="block truncate"
+          >{{ u.email }}
+          @if (u.is_staff) {
+            <span class="text-xs text-primario">personal</span>
+          }
+        </span>
+        <span class="block text-xs text-texto-suave"
+          >{{ u.nombre }} {{ u.apellidos }} · alta {{ u.fecha_alta | date: 'shortDate' }} · último
+          acceso {{ (u.last_login | date: 'short') ?? 'nunca' }}</span
+        >
+      </span>
+      <!-- la API decide si puedes: el grupo Soporte recibe 403 y el interruptor vuelve a su sitio -->
+      <mat-slide-toggle
+        [checked]="u.is_active"
+        (change)="activar.mutate({ usuario: u, activo: $event.checked })"
+        >Activo</mat-slide-toggle
+      >
+    </li>
+  }
+</ul>
+<mat-paginator
+  [length]="usuarios.data()?.count ?? 0"
+  [pageSize]="20"
+  [pageIndex]="pagina() - 1"
+  (page)="paginar($event)"
+  hidePageSize
+/>

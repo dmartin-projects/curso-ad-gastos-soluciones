@@ -1,0 +1,22 @@
+<p class="mb-2 text-sm text-texto-suave">
+  Tareas de Celery Beat (módulo 78). Pausar una no la borra: Beat deja de lanzarla hasta que la
+  reactives.
+</p>
+<ul class="divide-y">
+  @for (t of tareas.data() ?? []; track t.id) {
+    <li class="flex items-center gap-3 py-2">
+      <span class="min-w-0 flex-1">
+        <span class="block">{{ t.name }}</span>
+        <span class="block text-xs text-texto-suave"
+          >{{ t.horario }} · {{ t.task }} · última:
+          {{ (t.last_run_at | date: 'short') ?? 'nunca' }} ({{ t.total_run_count }})</span
+        >
+      </span>
+      <mat-slide-toggle
+        [checked]="t.enabled"
+        (change)="cambiar.mutate({ id: t.id, activa: $event.checked })"
+        >Activa</mat-slide-toggle
+      >
+    </li>
+  }
+</ul>

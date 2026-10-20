@@ -1,0 +1,39 @@
+<h1 class="mb-1 text-2xl font-medium">Informes mensuales</h1>
+<p class="mb-4 text-sm text-texto-suave">
+  Se generan solos el día 1 de cada mes y os llegan por email. También puedes generarlos cuando
+  quieras.
+</p>
+<ul class="divide-y rounded-lg border">
+  @for (i of informes.data() ?? []; track i.id) {
+    <li class="flex items-center gap-3 p-3">
+      <mat-icon>picture_as_pdf</mat-icon>
+      <span class="flex-1 capitalize"
+        >{{ i.mes + '-01' | date: 'MMMM y' }}
+        <span class="block text-xs normal-case text-texto-suave"
+          >{{ i.automatico ? 'Automático' : 'Bajo demanda' }} ·
+          {{ i.actualizado | date: 'short' }}</span
+        >
+      </span>
+      <button mat-stroked-button (click)="descargar(i)">
+        <mat-icon>download</mat-icon> Descargar
+      </button>
+    </li>
+  } @empty {
+    <li class="p-3 text-texto-suave">Todavía no hay informes.</li>
+  }
+</ul>
+@if (store.puedeEditar()) {
+  <div class="mt-6 flex flex-wrap items-center gap-3">
+    <input
+      type="month"
+      class="rounded border px-2 py-1"
+      [value]="mes()"
+      (change)="mes.set($any($event.target).value)"
+      aria-label="Mes"
+    />
+    <mat-checkbox [checked]="enviar()" (change)="enviar.set($event.checked)"
+      >Enviar también por email</mat-checkbox
+    >
+    <button mat-flat-button (click)="generar()" [disabled]="!mes()">Generar</button>
+  </div>
+}

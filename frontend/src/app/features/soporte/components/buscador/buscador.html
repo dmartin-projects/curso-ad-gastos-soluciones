@@ -1,0 +1,10 @@
+<mat-form-field class="w-full max-w-md" subscriptSizing="dynamic">
+  <mat-icon matPrefix>search</mat-icon>
+  <input
+    matInput
+    type="search"
+    [placeholder]="placeholder()"
+    [attr.aria-label]="placeholder()"
+    (input)="texto.next($any($event.target).value)"
+  />
+</mat-form-field>

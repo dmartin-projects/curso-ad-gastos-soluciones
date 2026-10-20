@@ -1,0 +1,128 @@
+# compose.prod.yaml — producción en una sola VM (módulos 64, 68 y 83)
+x-backend: &backend
+  image: ghcr.io/${GHCR_OWNER}/gastos-backend:${VERSION:-latest}
+  env_file: .env
+  restart: unless-stopped
+  depends_on:
+    db: { condition: service_healthy }
+    redis: { condition: service_started }
+    rabbitmq: { condition: service_healthy }
+  healthcheck:
+    disable: true # la imagen trae el de la web (curl :8000); los demás procesos no escuchan en ese puerto
+  logging:
+    driver: json-file
+    options: { max-size: "10m", max-file: "3" }
+
+# Los procesos que usan la BD esperan a las migraciones. Sin esto, en el PRIMER despliegue beat y
+# tasks-worker arrancan antes que migrate, fallan con "relation … does not exist" y solo se
+# recuperan porque restart: unless-stopped los relanza (comprobado con docker compose up).
+x-tras-migrar: &tras-migrar
+  migrate: { condition: service_completed_successfully }
+  redis: { condition: service_started }
+  rabbitmq: { condition: service_healthy }
+
+x-celery-ping: &celery-ping
+  test: ["CMD-SHELL", "celery -A config inspect ping -d celery@$$HOSTNAME --timeout 10 || exit 1"]
+  interval: 60s
+  timeout: 20s
+  retries: 3
+
+services:
+  migrate:
+    <<: *backend
+    command: ["python", "manage.py", "migrate", "--noinput"]
+    restart: "no"
+
+  web:
+    <<: *backend
+    depends_on: *tras-migrar
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health/ready/"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+    expose: ["8000"]
+    deploy:
+      resources:
+        limits: { memory: 1g }
+
+  worker: # importaciones, presupuestos, informes (cola "default")
+    <<: *backend
+    depends_on: *tras-migrar
+    command: ["celery", "-A", "config", "worker", "-l", "info", "-Q", "default", "-c", "2", "-n", "default@%h"]
+    healthcheck:
+      <<: *celery-ping
+      test: ["CMD-SHELL", "celery -A config inspect ping -d default@$$HOSTNAME --timeout 10 || exit 1"]
+
+  worker-ocr: # tickets: Tesseract + IA (cola "ocr"), uno a uno y reciclado cada 50
+    <<: *backend
+    depends_on: *tras-migrar
+    command: ["celery", "-A", "config", "worker", "-l", "info", "-Q", "ocr", "-c", "1",
+              "--max-tasks-per-child", "50", "-n", "ocr@%h"]
+    healthcheck:
+      <<: *celery-ping
+      test: ["CMD-SHELL", "celery -A config inspect ping -d ocr@$$HOSTNAME --timeout 10 || exit 1"]
+    deploy:
+      resources:
+        limits: { memory: 2g }
+
+  beat: # UNO solo: informes del día 1 y limpieza nocturna (módulo 78)
+    <<: *backend
+    depends_on: *tras-migrar
+    command: ["celery", "-A", "config", "beat", "-l", "info",
+              "--scheduler", "django_celery_beat.schedulers:DatabaseScheduler"]
+
+  tasks-worker: # django.tasks: los correos (módulo 26)
+    <<: *backend
+    depends_on: *tras-migrar
+    command: ["python", "manage.py", "db_worker", "--queue-name", "*", "--no-reload"]
+
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      retries: 10
+    shm_size: 256mb
+
+  redis: # caché, channel layer y resultados de Celery
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
+    volumes: [redisdata:/data]
+
+  rabbitmq: # el broker de Celery
+    image: rabbitmq:4-alpine
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes: [rabbitdata:/var/lib/rabbitmq]
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 30s
+      retries: 5
+
+  proxy: # Caddy + la SPA (infra/proxy.Dockerfile); el único que publica puertos
+    image: ghcr.io/${GHCR_OWNER}/gastos-proxy:${VERSION:-latest}
+    restart: unless-stopped
+    environment:
+      DOMINIO: ${DOMINIO}
+      ACME_EMAIL: ${ACME_EMAIL}
+    ports: ["80:80", "443:443", "443:443/udp"] # 443/udp: HTTP/3
+    volumes: [caddydata:/data, caddyconfig:/config]
+    depends_on:
+      web: { condition: service_healthy }
+
+volumes:
+  pgdata:
+  redisdata:
+  rabbitdata:
+  caddydata:
+  caddyconfig:

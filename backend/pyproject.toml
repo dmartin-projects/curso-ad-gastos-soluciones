@@ -1,0 +1,74 @@
+[project]
+name = "gastos"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "celery>=5.6.3",
+    "channels-redis>=4.3.0",
+    "channels[daphne]>=4.3.2",
+    "django>=6.1,<6.2",
+    "django-celery-beat>=2.9.0",
+    "django-environ>=0.14.0",
+    "django-filter>=26.2",
+    "django-storages[s3]>=1.14.6",
+    "django-tasks-db>=0.13.0",
+    "djangorestframework>=3.18.3",
+    "djangorestframework-simplejwt>=5.5.1",
+    "drf-spectacular>=0.30.0",
+    "gunicorn>=26.2.0",
+    "httpx>=0.28.1",
+    "pillow>=13.0.0",
+    "psycopg[binary,pool]>=3.3.6",
+    "pypdfium2>=5.14.0",
+    "pytesseract>=0.3.13",
+    "python-json-logger>=4.2.0",
+    "redis[hiredis]>=8.1.0",
+    "sentry-sdk>=2.72.0",
+    "tenacity>=9.2.1",
+    "uvicorn-worker>=0.4.0",
+    "uvicorn[standard]>=0.54.0",
+    "weasyprint>=70.0",
+    "whitenoise>=6.12.0",
+]
+
+[dependency-groups]
+dev = [
+    "factory-boy>=3.3.3",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "pytest-cov>=7.1.0",
+    "pytest-django>=4.14.0",
+    "pytest-mock>=3.17.0",
+    "pytest-xdist>=3.8.0",
+    "respx>=0.23.1",
+    "ruff>=0.17.1",
+    "time-machine>=3.5.1",
+]
+
+[tool.ruff]
+line-length = 120
+extend-exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "DJ"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"config/settings/*.py" = ["F403", "F405"]
+
+[tool.uv]
+# django-celery-beat 2.9 declara Django<6.1 aunque funciona con 6.1 (comprobado con sus migraciones,
+# el admin y Beat). Sin esta línea, uv "resuelve" bajando a la 2.1.0 de 2020, que no tiene ese límite.
+override-dependencies = ["django>=6.1,<6.2"]
+
+[tool.coverage.run]
+source = ["."]
+omit = ["*/migrations/*", "*/tests/*", "conftest.py", "manage.py", "config/asgi.py", "config/wsgi.py", "config/settings/*", "config/urls_e2e.py", ".venv/*"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 85  # RNF8 (módulo 70)
+show_missing = true
+skip_covered = true

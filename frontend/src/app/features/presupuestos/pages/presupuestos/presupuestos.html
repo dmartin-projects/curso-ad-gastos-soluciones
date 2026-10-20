@@ -1,0 +1,44 @@
+<h1 class="mb-4 text-2xl font-medium">
+  Presupuestos de {{ mesActual() + '-01' | date: 'MMMM y' }}
+</h1>
+@for (p of presupuestos.data() ?? []; track p.id) {
+  <div class="mb-4">
+    <div class="flex justify-between">
+      <span>{{ nombre(p.categoria) }}</span>
+      <span class="tabular-nums"
+        >{{ -p.gastado | number: '1.2-2' }} / {{ +p.importe | number: '1.2-2' }} € ({{
+          p.porcentaje
+        }}
+        %)</span
+      >
+    </div>
+    <mat-progress-bar mode="determinate" [value]="p.porcentaje" />
+  </div>
+} @empty {
+  <p class="text-texto-suave">No hay presupuestos para este mes.</p>
+}
+
+@if (store.esAdmin()) {
+  <mat-card class="mt-6 max-w-lg p-4">
+    <form [formRoot]="f" class="flex flex-wrap items-start gap-2">
+      <mat-form-field class="flex-1">
+        <mat-label>Categoría</mat-label>
+        <mat-select [formField]="f.categoria">
+          @for (c of categoriasGasto(); track c.id) {
+            <mat-option [value]="c.id">{{ c.nombre }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="w-32">
+        <mat-label>Límite (€)</mat-label>
+        <input matInput type="number" [formField]="f.importe" />
+      </mat-form-field>
+      <button mat-flat-button type="submit" class="mt-2" [disabled]="f().submitting()">
+        Añadir
+      </button>
+      @for (e of f().errors(); track $index) {
+        <p role="alert" class="w-full text-sm text-error">{{ e.message }}</p>
+      }
+    </form>
+  </mat-card>
+}

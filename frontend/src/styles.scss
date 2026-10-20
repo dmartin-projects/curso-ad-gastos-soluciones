@@ -1,0 +1,31 @@
+@use '@angular/material' as mat;
+
+html {
+  color-scheme: light dark; /* sigue la preferencia del sistema */
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$orange-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--mat-sys-body-large-font);
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}

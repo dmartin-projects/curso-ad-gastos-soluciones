@@ -1,0 +1,112 @@
+<a mat-button routerLink=".." class="mb-2"><mat-icon>arrow_back</mat-icon> Importaciones</a>
+@if (importacion.data(); as imp) {
+  <h1 class="text-2xl font-medium">{{ imp.nombre_original }}</h1>
+  <p class="mb-4 text-texto-suave">
+    {{ estados[imp.estado] }} · subido el {{ imp.creado | date: 'short' }}
+  </p>
+
+  @switch (imp.estado) {
+    @case ('pendiente') {
+      <mat-progress-bar mode="indeterminate" />
+    }
+    @case ('analizando') {
+      <mat-progress-bar mode="indeterminate" />
+    }
+    @case ('importando') {
+      <!-- el progreso llega por WebSocket (importacion_progreso) y se escribe en la caché: sin peticiones -->
+      <mat-progress-bar mode="determinate" [value]="imp.progreso" />
+      <p class="mt-1 text-sm" aria-live="polite">{{ imp.progreso }} %</p>
+    }
+    @case ('error') {
+      <p role="alert" class="text-error">{{ imp.error }}</p>
+    }
+  }
+
+  @if (resumen(); as r) {
+    <div class="my-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <mat-card class="p-3"
+        ><span class="text-xs text-texto-suave">Periodo</span
+        ><span class="block"
+          >{{ r.desde | date: 'shortDate' }} – {{ r.hasta | date: 'shortDate' }}</span
+        ></mat-card
+      >
+      <mat-card class="p-3"
+        ><span class="text-xs text-texto-suave">Gastos</span
+        ><app-importe class="block" [valor]="r.gastos"
+      /></mat-card>
+      <mat-card class="p-3"
+        ><span class="text-xs text-texto-suave">Ingresos</span
+        ><app-importe class="block" [valor]="r.ingresos"
+      /></mat-card>
+      <mat-card class="p-3"
+        ><span class="text-xs text-texto-suave">A importar</span
+        ><span class="block">{{ r.a_importar }} de {{ imp.total_filas }}</span></mat-card
+      >
+    </div>
+  }
+  @for (a of avisos(); track $index) {
+    <p class="text-sm text-amber-700">
+      <mat-icon class="!size-4 !text-base align-middle">warning</mat-icon> Línea {{ a.linea }}:
+      {{ a.mensaje }}
+    </p>
+  }
+
+  @if (['vista_previa', 'completada'].includes(imp.estado)) {
+    <mat-tab-group
+      class="mt-4"
+      (selectedIndexChange)="cambiarPestana($event)"
+      mat-stretch-tabs="false"
+    >
+      @for (p of pestanas; track p.accion) {
+        <mat-tab [label]="p.texto" />
+      }
+    </mat-tab-group>
+    @if (pestana() === 'conciliar' && imp.estado === 'vista_previa') {
+      <p class="mt-2 text-sm text-texto-suave">
+        Estas filas coinciden con gastos que ya tenías (de un ticket o apuntados a mano) y no se
+        duplicarán. Marca las que en realidad sean gastos distintos.
+      </p>
+    }
+    <ul class="mt-2 divide-y">
+      @for (f of filas.data()?.results ?? []; track f.id) {
+        <li class="flex items-center gap-3 py-2">
+          @if (pestana() === 'conciliar' && imp.estado === 'vista_previa') {
+            <mat-checkbox
+              [checked]="separar().has(f.id)"
+              (change)="alternar(f.id)"
+              aria-label="Importar como gasto nuevo"
+            />
+          }
+          <span class="w-20 text-sm text-texto-suave">{{ f.fecha | date: 'd MMM' }}</span>
+          <span class="min-w-0 flex-1 truncate"
+            >{{ f.concepto }}
+            @if (f.coincide_con_concepto) {
+              <span class="block text-xs text-texto-suave">= {{ f.coincide_con_concepto }}</span>
+            }
+          </span>
+          <app-importe [valor]="f.importe" />
+        </li>
+      }
+    </ul>
+    <mat-paginator
+      [length]="filas.data()?.count ?? 0"
+      [pageSize]="50"
+      [pageIndex]="pagina() - 1"
+      (page)="paginar($event)"
+      hidePageSize
+    />
+  }
+
+  <div class="mt-4 flex gap-2">
+    @if (imp.estado === 'vista_previa' && store.puedeEditar()) {
+      <button mat-flat-button (click)="confirmar.mutate()" [disabled]="confirmar.isPending()">
+        <mat-icon>done</mat-icon> Importar {{ resumen()?.a_importar }} movimientos
+      </button>
+    }
+    @if (['completada', 'error'].includes(imp.estado) && store.esAdmin()) {
+      <button mat-stroked-button (click)="deshacer()">
+        <mat-icon>undo</mat-icon> Deshacer importación
+      </button>
+    }
+  </div>
+}

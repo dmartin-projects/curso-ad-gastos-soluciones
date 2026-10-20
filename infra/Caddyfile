@@ -1,0 +1,58 @@
+# infra/Caddyfile — el proxy del proyecto (módulos 65 y 83)
+# DOMINIO y ACME_EMAIL llegan como variables de entorno del contenedor (compose.prod.yaml)
+{
+	email {$ACME_EMAIL}
+}
+
+{$DOMINIO} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "same-origin"
+		X-Frame-Options "DENY"
+		Permissions-Policy "geolocation=(), microphone=()"
+		# 'self' incluye wss:// del mismo dominio; img-src https: para las URLs firmadas de R2 (fotos de tickets)
+		Content-Security-Policy "default-src 'self'; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+		-Server
+	}
+
+	# API, WebSockets y sondas → Django (no hay /admin: el backoffice está en la app, módulo 79)
+	@django path /api/* /ws/* /health/*
+	handle @django {
+		request_body {
+			max_size 12MB # tickets de hasta 10 MB (módulo 74) + la envoltura multipart
+		}
+		reverse_proxy web:8000 {
+			header_up X-Request-ID {http.request.uuid}
+		}
+	}
+
+	# La SPA de Angular (y sus fuentes, en /fuentes)
+	root * /srv/frontend
+
+	# main-NLPK26ND.js, chunk-C-wDPNTR.js, roboto-latin-400-normal-LOX3CHMS.woff2: el nombre cambia con el contenido
+	@conHash {
+		path_regexp -[0-9A-Za-z_-]{8}\.(js|css|woff2?)$
+		file
+	}
+	handle @conHash {
+		header Cache-Control "public, max-age=31536000, immutable"
+		file_server
+	}
+	# Uno con hash que no existe (un chunk de la versión anterior, pedido por una pestaña abierta antes del
+	# despliegue): 404 de verdad, NUNCA index.html, o el navegador intentaría ejecutar HTML como JavaScript
+	@hashPerdido path_regexp -[0-9A-Za-z_-]{8}\.(js|css|woff2?)$
+	handle @hashPerdido {
+		respond 404
+	}
+
+	# Todo lo demás (index.html, también cuando responde a /hogares/3/tickets; ngsw.json; el manifest…)
+	# se revalida siempre: es lo que dice QUÉ versión cargar
+	handle {
+		header Cache-Control "no-cache"
+		try_files {path} /index.html
+		file_server
+	}
+}

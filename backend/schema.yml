@@ -1,0 +1,5224 @@
+openapi: 3.0.3
+info:
+  title: API Gastos
+  version: 1.0.0
+paths:
+  /api/v1/auth/cambiar-password/:
+    post:
+      operationId: auth_cambiar_password_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CambiarPasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CambiarPasswordRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/login/:
+    post:
+      operationId: auth_login_create
+      description: 'Base para login/refresh/registro: no autentica la petición, pero
+        responde 401 (no 403).'
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access'
+          description: ''
+  /api/v1/auth/logout/:
+    post:
+      operationId: auth_logout_create
+      description: 'Base para login/refresh/registro: no autentica la petición, pero
+        responde 401 (no 403).'
+      tags:
+      - auth
+      security:
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/v1/auth/me/:
+    get:
+      operationId: auth_me_retrieve
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: ''
+    put:
+      operationId: auth_me_update
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: ''
+    patch:
+      operationId: auth_me_partial_update
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUsuarioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUsuarioRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: ''
+  /api/v1/auth/recuperar-password/:
+    post:
+      operationId: auth_recuperar_password_create
+      description: 'Base para login/refresh/registro: no autentica la petición, pero
+        responde 401 (no 403).'
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmailRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detalle'
+          description: ''
+  /api/v1/auth/recuperar-password/confirmar/:
+    post:
+      operationId: auth_recuperar_password_confirmar_create
+      description: 'Base para login/refresh/registro: no autentica la petición, pero
+        responde 401 (no 403).'
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NuevaPasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NuevaPasswordRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/v1/auth/refresh/:
+    post:
+      operationId: auth_refresh_create
+      description: 'Base para login/refresh/registro: no autentica la petición, pero
+        responde 401 (no 403).'
+      tags:
+      - auth
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Access'
+          description: ''
+  /api/v1/auth/registro/:
+    post:
+      operationId: auth_registro_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistroRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegistroRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Registro'
+          description: ''
+  /api/v1/auth/verificar-email/:
+    post:
+      operationId: auth_verificar_email_create
+      description: 'Base para login/refresh/registro: no autentica la petición, pero
+        responde 401 (no 403).'
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnlaceTokenRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EnlaceTokenRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/v1/backoffice/auditoria/:
+    get:
+      operationId: backoffice_auditoria_list
+      description: 'Solo lectura, también para el superusuario: una auditoría que
+        se puede editar no sirve.'
+      parameters:
+      - in: query
+        name: accion
+        schema:
+          type: string
+          enum:
+          - borrar
+          - crear
+          - modificar
+        description: |-
+          * `crear` - Crear
+          * `modificar` - Modificar
+          * `borrar` - Borrar
+      - in: query
+        name: modelo
+        schema:
+          type: string
+        description: app.modelo, p. ej. finanzas.movimiento
+      - in: query
+        name: object_id
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - backoffice
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAuditoriaList'
+          description: ''
+  /api/v1/backoffice/auditoria/{id}/:
+    get:
+      operationId: backoffice_auditoria_retrieve
+      description: 'Solo lectura, también para el superusuario: una auditoría que
+        se puede editar no sirve.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este registro auditoria.
+        required: true
+      tags:
+      - backoffice
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auditoria'
+          description: ''
+  /api/v1/backoffice/hogares/:
+    get:
+      operationId: backoffice_hogares_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - backoffice
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHogarSoporteList'
+          description: ''
+  /api/v1/backoffice/hogares/{id}/:
+    get:
+      operationId: backoffice_hogares_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este hogar.
+        required: true
+      tags:
+      - backoffice
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HogarDetalleSoporte'
+          description: ''
+  /api/v1/backoffice/importaciones/:
+    get:
+      operationId: backoffice_importaciones_list
+      parameters:
+      - in: query
+        name: estado
+        schema:
+          type: string
+          enum:
+          - analizando
+          - completada
+          - deshecha
+          - error
+          - importando
+          - pendiente
+          - vista_previa
+        description: |-
+          * `pendiente` - Pendiente
+          * `analizando` - Analizando
+          * `vista_previa` - Vista previa
+          * `importando` - Importando
+          * `completada` - Completada
+          * `error` - Error
+          * `deshecha` - Deshecha
+      - in: query
+        name: hogar
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - backoffice
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedImportacionSoporteList'
+          description: ''
+  /api/v1/backoffice/importaciones/{id}/:
+    get:
+      operationId: backoffice_importaciones_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este importación.
+        required: true
+      tags:
+      - backoffice
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportacionSoporte'
+          description: ''
+  /api/v1/backoffice/importaciones/{id}/deshacer/:
+    post:
+      operationId: backoffice_importaciones_deshacer_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este importación.
+        required: true
+      tags:
+      - backoffice
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportacionSoporte'
+          description: ''
+  /api/v1/backoffice/movimientos/:
+    get:
+      operationId: backoffice_movimientos_list
+      parameters:
+      - in: query
+        name: categoria
+        schema:
+          type: integer
+      - in: query
+        name: hogar
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - in: query
+        name: origen
+        schema:
+          type: string
+          enum:
+          - extracto
+          - manual
+          - ticket
+        description: |-
+          * `manual` - Manual
+          * `ticket` - Ticket
+          * `extracto` - Extracto bancario
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - in: query
+        name: revisado
+        schema:
+          type: boolean
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - backoffice
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMovimientoSoporteList'
+          description: ''
+  /api/v1/backoffice/movimientos/{id}/:
+    get:
+      operationId: backoffice_movimientos_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este movimiento.
+        required: true
+      tags:
+      - backoffice
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovimientoSoporte'
+          description: ''
+  /api/v1/backoffice/movimientos/recategorizar/:
+    post:
+      operationId: backoffice_movimientos_recategorizar_create
+      tags:
+      - backoffice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecategorizarSoporteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RecategorizarSoporteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultadoLote'
+          description: ''
+  /api/v1/backoffice/resumen/:
+    get:
+      operationId: backoffice_resumen_retrieve
+      description: 'La primera pantalla de soporte: ¿va todo bien?'
+      tags:
+      - backoffice
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resumen'
+          description: ''
+  /api/v1/backoffice/tareas/:
+    get:
+      operationId: backoffice_tareas_list
+      description: 'Las tareas de Celery Beat (DatabaseScheduler): verlas y pausarlas/reanudarlas.'
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - backoffice
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TareaProgramada'
+          description: ''
+  /api/v1/backoffice/tareas/{id}/:
+    get:
+      operationId: backoffice_tareas_retrieve
+      description: 'Las tareas de Celery Beat (DatabaseScheduler): verlas y pausarlas/reanudarlas.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este tarea periódica.
+        required: true
+      tags:
+      - backoffice
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TareaProgramada'
+          description: ''
+    patch:
+      operationId: backoffice_tareas_partial_update
+      description: 'Las tareas de Celery Beat (DatabaseScheduler): verlas y pausarlas/reanudarlas.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este tarea periódica.
+        required: true
+      tags:
+      - backoffice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTareaProgramadaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTareaProgramadaRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TareaProgramada'
+          description: ''
+  /api/v1/backoffice/tickets/:
+    get:
+      operationId: backoffice_tickets_list
+      parameters:
+      - in: query
+        name: atascado
+        schema:
+          type: boolean
+        description: Más de 15 min sin terminar
+      - in: query
+        name: estado
+        schema:
+          type: string
+          enum:
+          - error
+          - pendiente
+          - procesado
+          - procesando
+          - revisar
+        description: |-
+          * `pendiente` - Pendiente
+          * `procesando` - Procesando
+          * `revisar` - Pendiente de revisión
+          * `procesado` - Procesado
+          * `error` - Error
+      - in: query
+        name: hogar
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - backoffice
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTicketSoporteList'
+          description: ''
+  /api/v1/backoffice/tickets/{id}/:
+    get:
+      operationId: backoffice_tickets_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este ticket.
+        required: true
+      tags:
+      - backoffice
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketSoporte'
+          description: ''
+  /api/v1/backoffice/tickets/reprocesar/:
+    post:
+      operationId: backoffice_tickets_reprocesar_create
+      description: Reprocesa varios tickets (los que no estén en error o en revisión
+        se omiten).
+      tags:
+      - backoffice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/IdsRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultadoLote'
+          description: ''
+  /api/v1/backoffice/usuarios/:
+    get:
+      operationId: backoffice_usuarios_list
+      description: Ver usuarios; activar o desactivar (solo quien tenga usuarios.change_usuario,
+        no el grupo Soporte).
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - in: query
+        name: is_staff
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - backoffice
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUsuarioSoporteList'
+          description: ''
+  /api/v1/backoffice/usuarios/{id}/:
+    get:
+      operationId: backoffice_usuarios_retrieve
+      description: Ver usuarios; activar o desactivar (solo quien tenga usuarios.change_usuario,
+        no el grupo Soporte).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este usuario.
+        required: true
+      tags:
+      - backoffice
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioSoporte'
+          description: ''
+    patch:
+      operationId: backoffice_usuarios_partial_update
+      description: Ver usuarios; activar o desactivar (solo quien tenga usuarios.change_usuario,
+        no el grupo Soporte).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este usuario.
+        required: true
+      tags:
+      - backoffice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUsuarioSoporteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUsuarioSoporteRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioSoporte'
+          description: ''
+  /api/v1/comercios/:
+    get:
+      operationId: comercios_list
+      description: 'Autocompletado de comercios (global): /comercios/?search=merca'
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - comercios
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedComercioList'
+          description: ''
+  /api/v1/hogares/:
+    get:
+      operationId: hogares_list
+      description: Mis hogares. Crear lo puede cualquiera; editar y borrar, solo administradores.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHogarList'
+          description: ''
+    post:
+      operationId: hogares_create
+      description: Mis hogares. Crear lo puede cualquiera; editar y borrar, solo administradores.
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HogarRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HogarRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hogar'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/categorias/:
+    get:
+      operationId: hogares_categorias_list
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Categoria'
+          description: ''
+    post:
+      operationId: hogares_categorias_create
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoriaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CategoriaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/categorias/{id}/:
+    get:
+      operationId: hogares_categorias_retrieve
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este categoría.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+          description: ''
+    put:
+      operationId: hogares_categorias_update
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este categoría.
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoriaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CategoriaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+          description: ''
+    patch:
+      operationId: hogares_categorias_partial_update
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este categoría.
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoriaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoriaRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+          description: ''
+    delete:
+      operationId: hogares_categorias_destroy
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este categoría.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/hogares/{hogar_pk}/categorias/reordenar/:
+    post:
+      operationId: hogares_categorias_reordenar_create
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReordenarRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReordenarRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/hogares/{hogar_pk}/cuentas/:
+    get:
+      operationId: hogares_cuentas_list
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cuenta'
+          description: ''
+    post:
+      operationId: hogares_cuentas_create
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CuentaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CuentaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cuenta'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/cuentas/{id}/:
+    get:
+      operationId: hogares_cuentas_retrieve
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este cuenta.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cuenta'
+          description: ''
+    put:
+      operationId: hogares_cuentas_update
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este cuenta.
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CuentaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CuentaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cuenta'
+          description: ''
+    patch:
+      operationId: hogares_cuentas_partial_update
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este cuenta.
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCuentaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCuentaRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cuenta'
+          description: ''
+    delete:
+      operationId: hogares_cuentas_destroy
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este cuenta.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/hogares/{hogar_pk}/dashboard/:
+    get:
+      operationId: hogares_dashboard_retrieve
+      description: Resumen del mes. Cacheado por hogar y versión; responde 304 si
+        el cliente ya tiene la versión actual.
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: mes
+        schema:
+          type: string
+          format: date
+        description: AAAA-MM (por defecto, el actual)
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dashboard'
+          description: ''
+        '304':
+          description: No response body
+  /api/v1/hogares/{hogar_pk}/importaciones/:
+    get:
+      operationId: hogares_importaciones_list
+      description: 'Extractos bancarios: subir (202) → vista previa → confirmar (202)
+        → progreso → completada.'
+      parameters:
+      - in: query
+        name: cuenta
+        schema:
+          type: integer
+      - in: query
+        name: estado
+        schema:
+          type: string
+          enum:
+          - analizando
+          - completada
+          - deshecha
+          - error
+          - importando
+          - pendiente
+          - vista_previa
+        description: |-
+          * `pendiente` - Pendiente
+          * `analizando` - Analizando
+          * `vista_previa` - Vista previa
+          * `importando` - Importando
+          * `completada` - Completada
+          * `error` - Error
+          * `deshecha` - Deshecha
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedImportacionList'
+          description: ''
+    post:
+      operationId: hogares_importaciones_create
+      description: 'Extractos bancarios: subir (202) → vista previa → confirmar (202)
+        → progreso → completada.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubirImportacionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubirImportacionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Importacion'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/importaciones/{id}/:
+    get:
+      operationId: hogares_importaciones_retrieve
+      description: 'Extractos bancarios: subir (202) → vista previa → confirmar (202)
+        → progreso → completada.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este importación.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Importacion'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/importaciones/{id}/confirmar/:
+    post:
+      operationId: hogares_importaciones_confirmar_create
+      description: 'Extractos bancarios: subir (202) → vista previa → confirmar (202)
+        → progreso → completada.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este importación.
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmarImportacionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConfirmarImportacionRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Importacion'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/importaciones/{id}/deshacer/:
+    post:
+      operationId: hogares_importaciones_deshacer_create
+      description: 'Extractos bancarios: subir (202) → vista previa → confirmar (202)
+        → progreso → completada.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este importación.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Importacion'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/importaciones/{id}/filas/:
+    get:
+      operationId: hogares_importaciones_filas_retrieve
+      description: 'La vista previa: cada fila con lo que se hará con ella (?accion=crear|duplicada|conciliar).'
+      parameters:
+      - in: query
+        name: accion
+        schema:
+          type: string
+          enum:
+          - conciliar
+          - crear
+          - duplicada
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este importación.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilaImportacion'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/informes/:
+    get:
+      operationId: hogares_informes_list
+      description: 'Informes mensuales en PDF: /informes/ · /informes/2026-10/ · /informes/2026-10/pdf/'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Informe'
+          description: ''
+    post:
+      operationId: hogares_informes_create
+      description: Genera (o regenera) un informe bajo demanda, en segundo plano.
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerarInformeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GenerarInformeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InformeEncolado'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/informes/{mes}/:
+    get:
+      operationId: hogares_informes_retrieve
+      description: 'Informes mensuales en PDF: /informes/ · /informes/2026-10/ · /informes/2026-10/pdf/'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: mes
+        schema:
+          type: string
+          pattern: ^\d{4}-\d{2}$
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Informe'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/informes/{mes}/pdf/:
+    get:
+      operationId: hogares_informes_pdf_retrieve
+      description: 'Informes mensuales en PDF: /informes/ · /informes/2026-10/ · /informes/2026-10/pdf/'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: mes
+        schema:
+          type: string
+          pattern: ^\d{4}-\d{2}$
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: El PDF
+  /api/v1/hogares/{hogar_pk}/miembros/:
+    get:
+      operationId: hogares_miembros_list
+      description: '/hogares/{h}/miembros/: ver (todos), cambiar rol y expulsar (admin).'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Miembro'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/miembros/{id}/:
+    put:
+      operationId: hogares_miembros_update
+      description: '/hogares/{h}/miembros/: ver (todos), cambiar rol y expulsar (admin).'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este membresía.
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MiembroRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MiembroRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Miembro'
+          description: ''
+    patch:
+      operationId: hogares_miembros_partial_update
+      description: '/hogares/{h}/miembros/: ver (todos), cambiar rol y expulsar (admin).'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este membresía.
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMiembroRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMiembroRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Miembro'
+          description: ''
+    delete:
+      operationId: hogares_miembros_destroy
+      description: '/hogares/{h}/miembros/: ver (todos), cambiar rol y expulsar (admin).'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este membresía.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/hogares/{hogar_pk}/miembros/invitar/:
+    post:
+      operationId: hogares_miembros_invitar_create
+      description: '/hogares/{h}/miembros/: ver (todos), cambiar rol y expulsar (admin).'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitarRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InvitarRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitacion'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/movimientos/:
+    get:
+      operationId: hogares_movimientos_list
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: query
+        name: categoria
+        schema:
+          type: array
+          items:
+            type: integer
+        explode: true
+        style: form
+      - in: query
+        name: cuenta
+        schema:
+          type: array
+          items:
+            type: integer
+        explode: true
+        style: form
+      - name: cursor
+        required: false
+        in: query
+        description: El valor del cursor de paginación.
+        schema:
+          type: string
+      - in: query
+        name: etiqueta
+        schema:
+          type: string
+      - in: query
+        name: fecha_after
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: fecha_before
+        schema:
+          type: string
+          format: date
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: query
+        name: importe_max
+        schema:
+          type: number
+      - in: query
+        name: importe_min
+        schema:
+          type: number
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - in: query
+        name: origen
+        schema:
+          type: string
+          enum:
+          - extracto
+          - manual
+          - ticket
+        description: |-
+          * `manual` - Manual
+          * `ticket` - Ticket
+          * `extracto` - Extracto bancario
+      - in: query
+        name: revisado
+        schema:
+          type: boolean
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      - in: query
+        name: sin_categoria
+        schema:
+          type: boolean
+      - in: query
+        name: tipo
+        schema:
+          type: string
+          enum:
+          - gasto
+          - ingreso
+        description: |-
+          * `gasto` - Gastos
+          * `ingreso` - Ingresos
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMovimientoList'
+          description: ''
+    post:
+      operationId: hogares_movimientos_create
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovimientoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MovimientoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movimiento'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/movimientos/{id}/:
+    get:
+      operationId: hogares_movimientos_retrieve
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este movimiento.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movimiento'
+          description: ''
+    put:
+      operationId: hogares_movimientos_update
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este movimiento.
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovimientoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MovimientoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movimiento'
+          description: ''
+    patch:
+      operationId: hogares_movimientos_partial_update
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este movimiento.
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMovimientoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMovimientoRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movimiento'
+          description: ''
+    delete:
+      operationId: hogares_movimientos_destroy
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este movimiento.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/hogares/{hogar_pk}/movimientos/exportar/:
+    get:
+      operationId: hogares_movimientos_exportar_retrieve
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            text/csv:
+              schema:
+                type: string
+          description: ''
+  /api/v1/hogares/{hogar_pk}/movimientos/recategorizar/:
+    post:
+      operationId: hogares_movimientos_recategorizar_create
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecategorizarRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RecategorizarRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  actualizados:
+                    type: integer
+          description: ''
+  /api/v1/hogares/{hogar_pk}/presupuestos/:
+    get:
+      operationId: hogares_presupuestos_list
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: query
+        name: mes
+        schema:
+          type: string
+        description: Mes en formato AAAA-MM
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Presupuesto'
+          description: ''
+    post:
+      operationId: hogares_presupuestos_create
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PresupuestoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PresupuestoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Presupuesto'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/presupuestos/{id}/:
+    get:
+      operationId: hogares_presupuestos_retrieve
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este presupuesto.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Presupuesto'
+          description: ''
+    put:
+      operationId: hogares_presupuestos_update
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este presupuesto.
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PresupuestoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PresupuestoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Presupuesto'
+          description: ''
+    patch:
+      operationId: hogares_presupuestos_partial_update
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este presupuesto.
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPresupuestoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPresupuestoRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Presupuesto'
+          description: ''
+    delete:
+      operationId: hogares_presupuestos_destroy
+      description: 'Base de los recursos anidados en /hogares/{h}/…: permisos por
+        rol, contexto y hogar automáticos.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este presupuesto.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/hogares/{hogar_pk}/tickets/:
+    get:
+      operationId: hogares_tickets_list
+      description: 'Tickets del hogar. Subir responde 202: el procesado (OCR + IA)
+        ocurre en segundo plano.'
+      parameters:
+      - in: query
+        name: cuenta
+        schema:
+          type: integer
+      - in: query
+        name: estado
+        schema:
+          type: string
+          enum:
+          - error
+          - pendiente
+          - procesado
+          - procesando
+          - revisar
+        description: |-
+          * `pendiente` - Pendiente
+          * `procesando` - Procesando
+          * `revisar` - Pendiente de revisión
+          * `procesado` - Procesado
+          * `error` - Error
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTicketList'
+          description: ''
+    post:
+      operationId: hogares_tickets_create
+      description: 'Tickets del hogar. Subir responde 202: el procesado (OCR + IA)
+        ocurre en segundo plano.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubirTicketRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubirTicketRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/tickets/{id}/:
+    get:
+      operationId: hogares_tickets_retrieve
+      description: 'Tickets del hogar. Subir responde 202: el procesado (OCR + IA)
+        ocurre en segundo plano.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este ticket.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+          description: ''
+    delete:
+      operationId: hogares_tickets_destroy
+      description: 'Tickets del hogar. Subir responde 202: el procesado (OCR + IA)
+        ocurre en segundo plano.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este ticket.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/hogares/{hogar_pk}/tickets/{id}/archivo/:
+    get:
+      operationId: hogares_tickets_archivo_retrieve
+      description: 'URL temporal del archivo (firmada en S3/R2: caduca sola). Un <img>
+        no puede enviar el JWT.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este ticket.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UrlArchivo'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/tickets/{id}/confirmar/:
+    post:
+      operationId: hogares_tickets_confirmar_create
+      description: 'Tickets del hogar. Subir responde 202: el procesado (OCR + IA)
+        ocurre en segundo plano.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este ticket.
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmarTicketRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConfirmarTicketRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+          description: ''
+  /api/v1/hogares/{hogar_pk}/tickets/{id}/reprocesar/:
+    post:
+      operationId: hogares_tickets_reprocesar_create
+      description: 'Tickets del hogar. Subir responde 202: el procesado (OCR + IA)
+        ocurre en segundo plano.'
+      parameters:
+      - in: path
+        name: hogar_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este ticket.
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReprocesarTicketRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReprocesarTicketRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+          description: ''
+  /api/v1/hogares/{id}/:
+    get:
+      operationId: hogares_retrieve
+      description: Mis hogares. Crear lo puede cualquiera; editar y borrar, solo administradores.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este hogar.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hogar'
+          description: ''
+    put:
+      operationId: hogares_update
+      description: Mis hogares. Crear lo puede cualquiera; editar y borrar, solo administradores.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este hogar.
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HogarRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HogarRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hogar'
+          description: ''
+    patch:
+      operationId: hogares_partial_update
+      description: Mis hogares. Crear lo puede cualquiera; editar y borrar, solo administradores.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este hogar.
+        required: true
+      tags:
+      - hogares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedHogarRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedHogarRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hogar'
+          description: ''
+    delete:
+      operationId: hogares_destroy
+      description: Mis hogares. Crear lo puede cualquiera; editar y borrar, solo administradores.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este hogar.
+        required: true
+      tags:
+      - hogares
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/invitaciones/{token}/aceptar/:
+    post:
+      operationId: invitaciones_aceptar_create
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      tags:
+      - invitaciones
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Miembro'
+          description: ''
+  /api/v1/notificaciones/:
+    get:
+      operationId: notificaciones_list
+      description: Las notificaciones del usuario autenticado (de todos sus hogares).
+        ?leida=false para las pendientes.
+      parameters:
+      - name: cursor
+        required: false
+        in: query
+        description: El valor del cursor de paginación.
+        schema:
+          type: string
+      - in: query
+        name: hogar
+        schema:
+          type: integer
+      - in: query
+        name: leida
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Qué campo usar para ordenar los resultados.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      - in: query
+        name: tipo
+        schema:
+          type: string
+          enum:
+          - importacion_completada
+          - importacion_error
+          - importacion_lista
+          - informe_listo
+          - presupuesto_superado
+          - ticket_error
+          - ticket_procesado
+          - ticket_revisar
+        description: |-
+          * `ticket_procesado` - Ticket procesado
+          * `ticket_revisar` - Ticket pendiente de revisión
+          * `ticket_error` - Error al procesar un ticket
+          * `importacion_lista` - Importación lista para revisar
+          * `importacion_completada` - Importación completada
+          * `importacion_error` - Error en una importación
+          * `presupuesto_superado` - Presupuesto superado
+          * `informe_listo` - Informe mensual disponible
+      tags:
+      - notificaciones
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNotificacionList'
+          description: ''
+  /api/v1/notificaciones/{id}/leer/:
+    post:
+      operationId: notificaciones_leer_create
+      description: Las notificaciones del usuario autenticado (de todos sus hogares).
+        ?leida=false para las pendientes.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este notificación.
+        required: true
+      tags:
+      - notificaciones
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/notificaciones/leer-todas/:
+    post:
+      operationId: notificaciones_leer_todas_create
+      description: Sin `ids`, marca todas; con `ids`, solo esas.
+      tags:
+      - notificaciones
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeerRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LeerRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Actualizadas'
+          description: ''
+  /api/v1/notificaciones/no-leidas/:
+    get:
+      operationId: notificaciones_no_leidas_retrieve
+      description: Las notificaciones del usuario autenticado (de todos sus hogares).
+        ?leida=false para las pendientes.
+      tags:
+      - notificaciones
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contador'
+          description: ''
+  /api/v1/notificaciones/ws-ticket/:
+    post:
+      operationId: notificaciones_ws_ticket_create
+      description: 'Ticket de un solo uso para abrir el WebSocket: el JWT nunca viaja
+        en la URL.'
+      tags:
+      - notificaciones
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketWs'
+          description: ''
+components:
+  schemas:
+    Access:
+      type: object
+      properties:
+        access:
+          type: string
+      required:
+      - access
+    Actualizadas:
+      type: object
+      properties:
+        actualizadas:
+          type: integer
+      required:
+      - actualizadas
+    Auditoria:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        fecha:
+          type: string
+          format: date-time
+          readOnly: true
+        usuario:
+          type: string
+          format: email
+          readOnly: true
+        accion:
+          allOf:
+          - $ref: '#/components/schemas/AuditoriaAccionEnum'
+          readOnly: true
+        modelo:
+          type: string
+          readOnly: true
+        object_id:
+          type: string
+          readOnly: true
+        representacion:
+          type: string
+          readOnly: true
+        cambios:
+          readOnly: true
+      required:
+      - accion
+      - cambios
+      - fecha
+      - id
+      - modelo
+      - object_id
+      - representacion
+      - usuario
+    AuditoriaAccionEnum:
+      enum:
+      - crear
+      - modificar
+      - borrar
+      type: string
+      description: |-
+        * `crear` - Crear
+        * `modificar` - Modificar
+        * `borrar` - Borrar
+    CambiarPasswordRequest:
+      type: object
+      properties:
+        actual:
+          type: string
+          writeOnly: true
+          minLength: 1
+        nueva:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - actual
+      - nueva
+    Categoria:
+      type: object
+      description: 'Limita los campos relacionados al hogar de la URL: no se puede
+        apuntar a datos de otro hogar (módulo 33).'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          maxLength: 60
+        padre:
+          type: integer
+          nullable: true
+        color:
+          type: string
+          maxLength: 7
+        icono:
+          type: string
+          maxLength: 40
+        orden:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        es_ingreso:
+          type: boolean
+          title: Es de ingresos
+      required:
+      - id
+      - nombre
+    CategoriaDashboard:
+      type: object
+      properties:
+        categoria:
+          type: integer
+          nullable: true
+        nombre:
+          type: string
+        color:
+          type: string
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        porcentaje:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,1})?$
+      required:
+      - categoria
+      - color
+      - nombre
+      - porcentaje
+      - total
+    CategoriaRequest:
+      type: object
+      description: 'Limita los campos relacionados al hogar de la URL: no se puede
+        apuntar a datos de otro hogar (módulo 33).'
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 60
+        padre:
+          type: integer
+          nullable: true
+        color:
+          type: string
+          minLength: 1
+          maxLength: 7
+        icono:
+          type: string
+          maxLength: 40
+        orden:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        es_ingreso:
+          type: boolean
+          title: Es de ingresos
+      required:
+      - nombre
+    Comercio:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          maxLength: 120
+      required:
+      - id
+      - nombre
+    ComercioDashboard:
+      type: object
+      properties:
+        comercio:
+          type: integer
+        nombre:
+          type: string
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        veces:
+          type: integer
+      required:
+      - comercio
+      - nombre
+      - total
+      - veces
+    ComercioRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 120
+      required:
+      - nombre
+    ConfirmarImportacionRequest:
+      type: object
+      properties:
+        separar:
+          type: array
+          items:
+            type: integer
+          maxItems: 5000
+    ConfirmarTicketRequest:
+      type: object
+      description: 'Limita los campos relacionados al hogar de la URL: no se puede
+        apuntar a datos de otro hogar (módulo 33).'
+      properties:
+        fecha:
+          type: string
+          format: date
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        concepto:
+          type: string
+          minLength: 1
+          maxLength: 255
+        categoria:
+          type: integer
+          nullable: true
+      required:
+      - concepto
+      - fecha
+      - total
+    Contador:
+      type: object
+      properties:
+        no_leidas:
+          type: integer
+      required:
+      - no_leidas
+    Cuenta:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          maxLength: 80
+        tipo:
+          $ref: '#/components/schemas/CuentaTipoEnum'
+        iban:
+          type: string
+          maxLength: 34
+        activa:
+          type: boolean
+        saldo:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+          readOnly: true
+      required:
+      - id
+      - nombre
+      - saldo
+    CuentaRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 80
+        tipo:
+          $ref: '#/components/schemas/CuentaTipoEnum'
+        iban:
+          type: string
+          maxLength: 34
+        activa:
+          type: boolean
+      required:
+      - nombre
+    CuentaTipoEnum:
+      enum:
+      - banco
+      - tarjeta
+      - efectivo
+      type: string
+      description: |-
+        * `banco` - Cuenta bancaria
+        * `tarjeta` - Tarjeta
+        * `efectivo` - Efectivo
+    Dashboard:
+      type: object
+      properties:
+        mes:
+          type: string
+          format: date
+        gastos:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        ingresos:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        num_movimientos:
+          type: integer
+        gastos_mes_anterior:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        variacion:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,1})?$
+          nullable: true
+        por_categoria:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoriaDashboard'
+        acumulado:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiaDashboard'
+        evolucion:
+          type: array
+          items:
+            $ref: '#/components/schemas/MesDashboard'
+        top_comercios:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComercioDashboard'
+        presupuestos:
+          type: array
+          items:
+            $ref: '#/components/schemas/PresupuestoDashboard'
+        pendientes_revision:
+          type: integer
+      required:
+      - acumulado
+      - balance
+      - evolucion
+      - gastos
+      - gastos_mes_anterior
+      - ingresos
+      - mes
+      - num_movimientos
+      - pendientes_revision
+      - por_categoria
+      - presupuestos
+      - top_comercios
+      - variacion
+    Detalle:
+      type: object
+      properties:
+        detail:
+          type: string
+      required:
+      - detail
+    DiaDashboard:
+      type: object
+      properties:
+        fecha:
+          type: string
+          format: date
+        gasto:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        acumulado:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - acumulado
+      - fecha
+      - gasto
+    EmailRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+      required:
+      - email
+    EnlaceTokenRequest:
+      type: object
+      properties:
+        uid:
+          type: string
+          minLength: 1
+        token:
+          type: string
+          minLength: 1
+      required:
+      - token
+      - uid
+    EstadoImportacionEnum:
+      enum:
+      - pendiente
+      - analizando
+      - vista_previa
+      - importando
+      - completada
+      - error
+      - deshecha
+      type: string
+      description: |-
+        * `pendiente` - Pendiente
+        * `analizando` - Analizando
+        * `vista_previa` - Vista previa
+        * `importando` - Importando
+        * `completada` - Completada
+        * `error` - Error
+        * `deshecha` - Deshecha
+    EstadoTicketEnum:
+      enum:
+      - pendiente
+      - procesando
+      - revisar
+      - procesado
+      - error
+      type: string
+      description: |-
+        * `pendiente` - Pendiente
+        * `procesando` - Procesando
+        * `revisar` - Pendiente de revisión
+        * `procesado` - Procesado
+        * `error` - Error
+    FilaImportacion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        numero:
+          type: integer
+          readOnly: true
+        fecha:
+          type: string
+          format: date
+          readOnly: true
+        concepto:
+          type: string
+          readOnly: true
+        importe:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        accion:
+          allOf:
+          - $ref: '#/components/schemas/FilaImportacionAccionEnum'
+          readOnly: true
+        coincide_con:
+          type: integer
+          readOnly: true
+          nullable: true
+        coincide_con_concepto:
+          type: string
+          readOnly: true
+        movimiento:
+          type: integer
+          readOnly: true
+          nullable: true
+      required:
+      - accion
+      - coincide_con
+      - coincide_con_concepto
+      - concepto
+      - fecha
+      - id
+      - importe
+      - movimiento
+      - numero
+    FilaImportacionAccionEnum:
+      enum:
+      - crear
+      - duplicada
+      - conciliar
+      type: string
+      description: |-
+        * `crear` - Crear
+        * `duplicada` - Ya existe
+        * `conciliar` - Coincide con un gasto existente
+    FormatoEnum:
+      enum:
+      - csv
+      - pdf
+      type: string
+      description: |-
+        * `csv` - CSV
+        * `pdf` - PDF
+    GenerarInformeRequest:
+      type: object
+      properties:
+        mes:
+          type: string
+          format: date
+          description: AAAA-MM
+        enviar:
+          type: boolean
+          default: false
+          description: Enviarlo también por email a los miembros
+      required:
+      - mes
+    Hogar:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          maxLength: 100
+        moneda:
+          type: string
+          maxLength: 3
+        zona_horaria:
+          type: string
+          maxLength: 50
+        mi_rol:
+          type: string
+          readOnly: true
+        num_miembros:
+          type: integer
+          readOnly: true
+        creado:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - creado
+      - id
+      - mi_rol
+      - nombre
+      - num_miembros
+    HogarDetalleSoporte:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          readOnly: true
+        zona_horaria:
+          type: string
+          readOnly: true
+        num_miembros:
+          type: integer
+          readOnly: true
+        num_movimientos:
+          type: integer
+          readOnly: true
+        creado:
+          type: string
+          format: date-time
+          readOnly: true
+        miembros:
+          type: array
+          items:
+            $ref: '#/components/schemas/MiembroSoporte'
+          readOnly: true
+      required:
+      - creado
+      - id
+      - miembros
+      - nombre
+      - num_miembros
+      - num_movimientos
+      - zona_horaria
+    HogarRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 100
+        moneda:
+          type: string
+          minLength: 1
+          maxLength: 3
+        zona_horaria:
+          type: string
+          minLength: 1
+          maxLength: 50
+      required:
+      - nombre
+    HogarSoporte:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          readOnly: true
+        zona_horaria:
+          type: string
+          readOnly: true
+        num_miembros:
+          type: integer
+          readOnly: true
+        num_movimientos:
+          type: integer
+          readOnly: true
+        creado:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - creado
+      - id
+      - nombre
+      - num_miembros
+      - num_movimientos
+      - zona_horaria
+    IdsRequest:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+          maxItems: 500
+      required:
+      - ids
+    Importacion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        estado:
+          allOf:
+          - $ref: '#/components/schemas/EstadoImportacionEnum'
+          readOnly: true
+        cuenta:
+          type: integer
+          readOnly: true
+        nombre_original:
+          type: string
+          readOnly: true
+        formato:
+          allOf:
+          - $ref: '#/components/schemas/FormatoEnum'
+          readOnly: true
+        total_filas:
+          type: integer
+          readOnly: true
+        procesadas:
+          type: integer
+          readOnly: true
+        progreso:
+          type: integer
+          readOnly: true
+        creados:
+          type: integer
+          readOnly: true
+        conciliados:
+          type: integer
+          readOnly: true
+        duplicados:
+          type: integer
+          readOnly: true
+        resumen:
+          readOnly: true
+        avisos:
+          readOnly: true
+        error:
+          type: string
+          readOnly: true
+        creado:
+          type: string
+          format: date-time
+          readOnly: true
+        terminado_en:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - avisos
+      - conciliados
+      - creado
+      - creados
+      - cuenta
+      - duplicados
+      - error
+      - estado
+      - formato
+      - id
+      - nombre_original
+      - procesadas
+      - progreso
+      - resumen
+      - terminado_en
+      - total_filas
+    ImportacionSoporte:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        hogar:
+          type: integer
+          readOnly: true
+        hogar_nombre:
+          type: string
+          readOnly: true
+        nombre_original:
+          type: string
+          readOnly: true
+        estado:
+          allOf:
+          - $ref: '#/components/schemas/EstadoImportacionEnum'
+          readOnly: true
+        progreso:
+          type: integer
+          readOnly: true
+        total_filas:
+          type: integer
+          readOnly: true
+        creados:
+          type: integer
+          readOnly: true
+        conciliados:
+          type: integer
+          readOnly: true
+        duplicados:
+          type: integer
+          readOnly: true
+        error:
+          type: string
+          readOnly: true
+        creado:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - conciliados
+      - creado
+      - creados
+      - duplicados
+      - error
+      - estado
+      - hogar
+      - hogar_nombre
+      - id
+      - nombre_original
+      - progreso
+      - total_filas
+    Informe:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        mes:
+          type: string
+          format: date
+          readOnly: true
+        tamano:
+          type: integer
+          readOnly: true
+        automatico:
+          type: boolean
+          readOnly: true
+        creado:
+          type: string
+          format: date-time
+          readOnly: true
+        actualizado:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - actualizado
+      - automatico
+      - creado
+      - id
+      - mes
+      - tamano
+    InformeEncolado:
+      type: object
+      properties:
+        mes:
+          type: string
+        estado:
+          type: string
+      required:
+      - estado
+      - mes
+    Invitacion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        rol:
+          $ref: '#/components/schemas/RolEnum'
+        caduca:
+          type: string
+          format: date-time
+        aceptada:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - email
+      - id
+    InvitarRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        rol:
+          allOf:
+          - $ref: '#/components/schemas/RolEnum'
+          default: miembro
+      required:
+      - email
+    LeerRequest:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+          maxItems: 500
+    LineaTicket:
+      type: object
+      properties:
+        orden:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        descripcion:
+          type: string
+          maxLength: 200
+        cantidad:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,3})?$
+        precio_unitario:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        importe:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+      required:
+      - descripcion
+      - importe
+      - orden
+      - precio_unitario
+    MesDashboard:
+      type: object
+      properties:
+        mes:
+          type: string
+          format: date
+        gastos:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        ingresos:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - gastos
+      - ingresos
+      - mes
+    Miembro:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        nombre:
+          type: string
+          readOnly: true
+        rol:
+          $ref: '#/components/schemas/RolEnum'
+        creado:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - creado
+      - email
+      - id
+      - nombre
+    MiembroRequest:
+      type: object
+      properties:
+        rol:
+          $ref: '#/components/schemas/RolEnum'
+    MiembroSoporte:
+      type: object
+      properties:
+        usuario:
+          type: integer
+        email:
+          type: string
+          format: email
+        rol:
+          type: string
+      required:
+      - email
+      - rol
+      - usuario
+    Movimiento:
+      type: object
+      description: 'Limita los campos relacionados al hogar de la URL: no se puede
+        apuntar a datos de otro hogar (módulo 33).'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        fecha:
+          type: string
+          format: date
+        importe:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        concepto:
+          type: string
+          maxLength: 255
+        cuenta:
+          type: integer
+        cuenta_nombre:
+          type: string
+          readOnly: true
+        categoria:
+          type: integer
+          nullable: true
+        categoria_nombre:
+          type: string
+          readOnly: true
+        categoria_color:
+          type: string
+          readOnly: true
+        comercio:
+          allOf:
+          - $ref: '#/components/schemas/Comercio'
+          readOnly: true
+        etiquetas:
+          type: array
+          items:
+            type: string
+            maxLength: 30
+        notas:
+          type: string
+        origen:
+          allOf:
+          - $ref: '#/components/schemas/OrigenEnum'
+          readOnly: true
+        revisado:
+          type: boolean
+        num_adjuntos:
+          type: integer
+          readOnly: true
+          default: 0
+        creado:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - categoria_color
+      - categoria_nombre
+      - comercio
+      - concepto
+      - creado
+      - cuenta
+      - cuenta_nombre
+      - fecha
+      - id
+      - importe
+      - num_adjuntos
+      - origen
+    MovimientoDeTicket:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        fecha:
+          type: string
+          format: date
+        importe:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        concepto:
+          type: string
+          maxLength: 255
+        categoria:
+          type: integer
+          nullable: true
+        revisado:
+          type: boolean
+      required:
+      - concepto
+      - fecha
+      - id
+      - importe
+    MovimientoRequest:
+      type: object
+      description: 'Limita los campos relacionados al hogar de la URL: no se puede
+        apuntar a datos de otro hogar (módulo 33).'
+      properties:
+        fecha:
+          type: string
+          format: date
+        importe:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        concepto:
+          type: string
+          minLength: 1
+          maxLength: 255
+        cuenta:
+          type: integer
+        categoria:
+          type: integer
+          nullable: true
+        etiquetas:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 30
+        notas:
+          type: string
+        revisado:
+          type: boolean
+      required:
+      - concepto
+      - cuenta
+      - fecha
+      - importe
+    MovimientoSoporte:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        hogar:
+          type: integer
+          readOnly: true
+        fecha:
+          type: string
+          format: date
+          readOnly: true
+        importe:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        concepto:
+          type: string
+          readOnly: true
+        categoria:
+          type: integer
+          readOnly: true
+          nullable: true
+        categoria_nombre:
+          type: string
+          readOnly: true
+        origen:
+          allOf:
+          - $ref: '#/components/schemas/OrigenEnum'
+          readOnly: true
+        revisado:
+          type: boolean
+          readOnly: true
+      required:
+      - categoria
+      - categoria_nombre
+      - concepto
+      - fecha
+      - hogar
+      - id
+      - importe
+      - origen
+      - revisado
+    Notificacion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        tipo:
+          allOf:
+          - $ref: '#/components/schemas/NotificacionTipoEnum'
+          readOnly: true
+        titulo:
+          type: string
+          readOnly: true
+        mensaje:
+          type: string
+          readOnly: true
+        enlace:
+          type: string
+          readOnly: true
+        hogar:
+          type: integer
+          readOnly: true
+          nullable: true
+        datos:
+          readOnly: true
+        leida:
+          type: boolean
+          readOnly: true
+        creado:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - creado
+      - datos
+      - enlace
+      - hogar
+      - id
+      - leida
+      - mensaje
+      - tipo
+      - titulo
+    NotificacionTipoEnum:
+      enum:
+      - ticket_procesado
+      - ticket_revisar
+      - ticket_error
+      - importacion_lista
+      - importacion_completada
+      - importacion_error
+      - presupuesto_superado
+      - informe_listo
+      type: string
+      description: |-
+        * `ticket_procesado` - Ticket procesado
+        * `ticket_revisar` - Ticket pendiente de revisión
+        * `ticket_error` - Error al procesar un ticket
+        * `importacion_lista` - Importación lista para revisar
+        * `importacion_completada` - Importación completada
+        * `importacion_error` - Error en una importación
+        * `presupuesto_superado` - Presupuesto superado
+        * `informe_listo` - Informe mensual disponible
+    NuevaPasswordRequest:
+      type: object
+      properties:
+        uid:
+          type: string
+          minLength: 1
+        token:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
+      required:
+      - password
+      - token
+      - uid
+    OrigenEnum:
+      enum:
+      - manual
+      - ticket
+      - extracto
+      type: string
+      description: |-
+        * `manual` - Manual
+        * `ticket` - Ticket
+        * `extracto` - Extracto bancario
+    PaginatedAuditoriaList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Auditoria'
+        total_pages:
+          type: integer
+        page:
+          type: integer
+        page_size:
+          type: integer
+    PaginatedComercioList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Comercio'
+        total_pages:
+          type: integer
+        page:
+          type: integer
+        page_size:
+          type: integer
+    PaginatedHogarList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Hogar'
+        total_pages:
+          type: integer
+        page:
+          type: integer
+        page_size:
+          type: integer
+    PaginatedHogarSoporteList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/HogarSoporte'
+        total_pages:
+          type: integer
+        page:
+          type: integer
+        page_size:
+          type: integer
+    PaginatedImportacionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Importacion'
+        total_pages:
+          type: integer
+        page:
+          type: integer
+        page_size:
+          type: integer
+    PaginatedImportacionSoporteList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportacionSoporte'
+        total_pages:
+          type: integer
+        page:
+          type: integer
+        page_size:
+          type: integer
+    PaginatedMovimientoList:
+      type: object
+      required:
+      - results
+      properties:
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?cursor=cD00ODY%3D"
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?cursor=cj0xJnA9NDg3
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Movimiento'
+    PaginatedMovimientoSoporteList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MovimientoSoporte'
+        total_pages:
+          type: integer
+        page:
+          type: integer
+        page_size:
+          type: integer
+    PaginatedNotificacionList:
+      type: object
+      required:
+      - results
+      properties:
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?cursor=cD00ODY%3D"
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?cursor=cj0xJnA9NDg3
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notificacion'
+    PaginatedTicketList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ticket'
+        total_pages:
+          type: integer
+        page:
+          type: integer
+        page_size:
+          type: integer
+    PaginatedTicketSoporteList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketSoporte'
+        total_pages:
+          type: integer
+        page:
+          type: integer
+        page_size:
+          type: integer
+    PaginatedUsuarioSoporteList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UsuarioSoporte'
+        total_pages:
+          type: integer
+        page:
+          type: integer
+        page_size:
+          type: integer
+    PatchedCategoriaRequest:
+      type: object
+      description: 'Limita los campos relacionados al hogar de la URL: no se puede
+        apuntar a datos de otro hogar (módulo 33).'
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 60
+        padre:
+          type: integer
+          nullable: true
+        color:
+          type: string
+          minLength: 1
+          maxLength: 7
+        icono:
+          type: string
+          maxLength: 40
+        orden:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        es_ingreso:
+          type: boolean
+          title: Es de ingresos
+    PatchedCuentaRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 80
+        tipo:
+          $ref: '#/components/schemas/CuentaTipoEnum'
+        iban:
+          type: string
+          maxLength: 34
+        activa:
+          type: boolean
+    PatchedHogarRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 100
+        moneda:
+          type: string
+          minLength: 1
+          maxLength: 3
+        zona_horaria:
+          type: string
+          minLength: 1
+          maxLength: 50
+    PatchedMiembroRequest:
+      type: object
+      properties:
+        rol:
+          $ref: '#/components/schemas/RolEnum'
+    PatchedMovimientoRequest:
+      type: object
+      description: 'Limita los campos relacionados al hogar de la URL: no se puede
+        apuntar a datos de otro hogar (módulo 33).'
+      properties:
+        fecha:
+          type: string
+          format: date
+        importe:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        concepto:
+          type: string
+          minLength: 1
+          maxLength: 255
+        cuenta:
+          type: integer
+        categoria:
+          type: integer
+          nullable: true
+        etiquetas:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 30
+        notas:
+          type: string
+        revisado:
+          type: boolean
+    PatchedPresupuestoRequest:
+      type: object
+      description: 'Limita los campos relacionados al hogar de la URL: no se puede
+        apuntar a datos de otro hogar (módulo 33).'
+      properties:
+        categoria:
+          type: integer
+        mes:
+          type: string
+          format: date
+        importe:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+    PatchedTareaProgramadaRequest:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          title: Habilitado
+          description: Establece a Falso para deshabilitar la programación
+    PatchedUsuarioRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+          maxLength: 150
+        apellidos:
+          type: string
+          maxLength: 150
+    PatchedUsuarioSoporteRequest:
+      type: object
+      properties:
+        is_active:
+          type: boolean
+    PorEstado:
+      type: object
+      properties:
+        clave:
+          type: string
+        total:
+          type: integer
+      required:
+      - clave
+      - total
+    Presupuesto:
+      type: object
+      description: 'Limita los campos relacionados al hogar de la URL: no se puede
+        apuntar a datos de otro hogar (módulo 33).'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        categoria:
+          type: integer
+        mes:
+          type: string
+          format: date
+        importe:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        gastado:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        porcentaje:
+          type: integer
+          nullable: true
+          readOnly: true
+      required:
+      - categoria
+      - gastado
+      - id
+      - importe
+      - mes
+      - porcentaje
+    PresupuestoDashboard:
+      type: object
+      properties:
+        categoria:
+          type: string
+        importe:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        gastado:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        porcentaje:
+          type: integer
+      required:
+      - categoria
+      - gastado
+      - importe
+      - porcentaje
+    PresupuestoRequest:
+      type: object
+      description: 'Limita los campos relacionados al hogar de la URL: no se puede
+        apuntar a datos de otro hogar (módulo 33).'
+      properties:
+        categoria:
+          type: integer
+        mes:
+          type: string
+          format: date
+        importe:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+      required:
+      - categoria
+      - importe
+      - mes
+    RecategorizarRequest:
+      type: object
+      description: 'Limita los campos relacionados al hogar de la URL: no se puede
+        apuntar a datos de otro hogar (módulo 33).'
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+          maxItems: 1000
+        categoria:
+          type: integer
+      required:
+      - categoria
+      - ids
+    RecategorizarSoporteRequest:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+          maxItems: 1000
+        categoria:
+          type: integer
+      required:
+      - categoria
+      - ids
+    Registro:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        nombre:
+          type: string
+          maxLength: 150
+        apellidos:
+          type: string
+          maxLength: 150
+      required:
+      - email
+    RegistroRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        nombre:
+          type: string
+          maxLength: 150
+        apellidos:
+          type: string
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+    ReordenarRequest:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+      required:
+      - ids
+    ReprocesarTicketRequest:
+      type: object
+      properties:
+        repetir_ocr:
+          type: boolean
+          default: false
+    ResultadoLote:
+      type: object
+      properties:
+        hechos:
+          type: integer
+        omitidos:
+          type: integer
+      required:
+      - hechos
+      - omitidos
+    Resumen:
+      type: object
+      properties:
+        tickets_24h:
+          type: array
+          items:
+            $ref: '#/components/schemas/PorEstado'
+        tickets_atascados:
+          type: integer
+        importaciones_en_curso:
+          type: integer
+        importaciones_con_error_7d:
+          type: integer
+        hogares:
+          type: integer
+        usuarios_activos:
+          type: integer
+      required:
+      - hogares
+      - importaciones_con_error_7d
+      - importaciones_en_curso
+      - tickets_24h
+      - tickets_atascados
+      - usuarios_activos
+    RolEnum:
+      enum:
+      - admin
+      - miembro
+      - lector
+      type: string
+      description: |-
+        * `admin` - Administrador
+        * `miembro` - Miembro
+        * `lector` - Solo lectura
+    SubirImportacionRequest:
+      type: object
+      description: 'Limita los campos relacionados al hogar de la URL: no se puede
+        apuntar a datos de otro hogar (módulo 33).'
+      properties:
+        archivo:
+          type: string
+          format: binary
+        cuenta:
+          type: integer
+      required:
+      - archivo
+      - cuenta
+    SubirTicketRequest:
+      type: object
+      description: 'Limita los campos relacionados al hogar de la URL: no se puede
+        apuntar a datos de otro hogar (módulo 33).'
+      properties:
+        archivo:
+          type: string
+          format: binary
+        cuenta:
+          type: integer
+      required:
+      - archivo
+      - cuenta
+    TareaProgramada:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+          title: Nombre
+          description: Descripción corta para esta tarea
+        task:
+          type: string
+          readOnly: true
+          title: Task Name
+          description: 'Nombre de la tarea Celery que debe ser ejecutada. (Ejemplo:
+            "proj.tasks.import_contacts")'
+        horario:
+          type: string
+          readOnly: true
+        enabled:
+          type: boolean
+          title: Habilitado
+          description: Establece a Falso para deshabilitar la programación
+        last_run_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          title: Fecha de última ejecución
+          description: Fecha en la cual la programación ejecutó la tarea por última
+            vez. Reinicializa a None si enabled está establecido como falso.
+        total_run_count:
+          type: integer
+          readOnly: true
+          title: Contador de ejecuciones totales
+          description: Contador de cuentas veces ha sido ejecutada la tarea
+      required:
+      - horario
+      - id
+      - last_run_at
+      - name
+      - task
+      - total_run_count
+    Ticket:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        estado:
+          allOf:
+          - $ref: '#/components/schemas/EstadoTicketEnum'
+          readOnly: true
+        cuenta:
+          type: integer
+          readOnly: true
+        nombre_original:
+          type: string
+          readOnly: true
+        tipo:
+          type: string
+          readOnly: true
+        confianza:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
+          readOnly: true
+          nullable: true
+        error:
+          type: string
+          readOnly: true
+        datos_ia:
+          readOnly: true
+        intentos:
+          type: integer
+          readOnly: true
+        lineas:
+          type: array
+          items:
+            $ref: '#/components/schemas/LineaTicket'
+          readOnly: true
+        movimiento:
+          allOf:
+          - $ref: '#/components/schemas/MovimientoDeTicket'
+          readOnly: true
+        creado:
+          type: string
+          format: date-time
+          readOnly: true
+        procesado_en:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - confianza
+      - creado
+      - cuenta
+      - datos_ia
+      - error
+      - estado
+      - id
+      - intentos
+      - lineas
+      - movimiento
+      - nombre_original
+      - procesado_en
+      - tipo
+    TicketSoporte:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        hogar:
+          type: integer
+          readOnly: true
+        hogar_nombre:
+          type: string
+          readOnly: true
+        subido_por:
+          type: string
+          format: email
+          readOnly: true
+        estado:
+          allOf:
+          - $ref: '#/components/schemas/EstadoTicketEnum'
+          readOnly: true
+        intentos:
+          type: integer
+          readOnly: true
+        confianza:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,2})?$
+          readOnly: true
+          nullable: true
+        error:
+          type: string
+          readOnly: true
+        nombre_original:
+          type: string
+          readOnly: true
+        creado:
+          type: string
+          format: date-time
+          readOnly: true
+        actualizado:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - actualizado
+      - confianza
+      - creado
+      - error
+      - estado
+      - hogar
+      - hogar_nombre
+      - id
+      - intentos
+      - nombre_original
+      - subido_por
+    TicketWs:
+      type: object
+      properties:
+        ticket:
+          type: string
+        caduca_en:
+          type: integer
+          description: Segundos
+      required:
+      - caduca_en
+      - ticket
+    TokenObtainPairRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+    UrlArchivo:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+      required:
+      - url
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        nombre:
+          type: string
+          maxLength: 150
+        apellidos:
+          type: string
+          maxLength: 150
+        fecha_alta:
+          type: string
+          format: date-time
+          readOnly: true
+        es_personal:
+          type: boolean
+          readOnly: true
+      required:
+      - email
+      - es_personal
+      - fecha_alta
+      - id
+    UsuarioRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+          maxLength: 150
+        apellidos:
+          type: string
+          maxLength: 150
+    UsuarioSoporte:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        nombre:
+          type: string
+          readOnly: true
+        apellidos:
+          type: string
+          readOnly: true
+        is_active:
+          type: boolean
+        is_staff:
+          type: boolean
+          readOnly: true
+        fecha_alta:
+          type: string
+          format: date-time
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          title: Último inicio de sesión
+      required:
+      - apellidos
+      - email
+      - fecha_alta
+      - id
+      - is_staff
+      - last_login
+      - nombre
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

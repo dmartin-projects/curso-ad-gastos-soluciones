@@ -1,0 +1,17 @@
+<div role="radiogroup" [attr.aria-label]="etiqueta()" class="flex flex-wrap gap-2">
+  @for (c of ordenadas(); track c.id) {
+    <button
+      type="button"
+      role="radio"
+      [attr.aria-checked]="c.id === value()"
+      [disabled]="disabled()"
+      (click)="elegir(c.id)"
+      class="flex items-center gap-1 rounded-full border px-3 py-1 text-sm"
+      [class.border-primario]="c.id === value()"
+      [class.bg-superficie-alta]="c.id === value()"
+    >
+      <span class="inline-block size-2.5 rounded-full" [style.background]="c.color"></span>
+      {{ c.padre ? '· ' : '' }}{{ c.nombre }}
+    </button>
+  }
+</div>

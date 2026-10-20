@@ -1,0 +1,133 @@
+<div class="mb-4 flex items-center gap-2">
+  <button mat-icon-button (click)="moverMes(-1)" aria-label="Mes anterior">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+  <h1 class="min-w-40 text-center text-2xl font-medium capitalize">
+    {{ mesActual() + '-01' | date: 'MMMM y' }}
+  </h1>
+  <button mat-icon-button (click)="moverMes(1)" aria-label="Mes siguiente">
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+  @if (resumen.isFetching()) {
+    <mat-progress-bar mode="indeterminate" class="!w-24" />
+  }
+</div>
+
+@if (resumen.data(); as d) {
+  <section class="grid grid-cols-2 gap-3 md:grid-cols-4" aria-label="Resumen">
+    <mat-card class="p-4"
+      ><span class="text-sm text-texto-suave">Gastos</span
+      ><app-importe class="block text-2xl" [valor]="'-' + d.gastos"
+    /></mat-card>
+    <mat-card class="p-4"
+      ><span class="text-sm text-texto-suave">Ingresos</span
+      ><app-importe class="block text-2xl" [valor]="d.ingresos"
+    /></mat-card>
+    <mat-card class="p-4"
+      ><span class="text-sm text-texto-suave">Balance</span
+      ><app-importe class="block text-2xl" [valor]="d.balance"
+    /></mat-card>
+    <mat-card class="p-4">
+      <span class="text-sm text-texto-suave">Frente al mes anterior</span>
+      <span
+        class="block text-2xl tabular-nums"
+        [class.text-gasto]="+(d.variacion ?? 0) > 0"
+        [class.text-ingreso]="+(d.variacion ?? 0) < 0"
+      >
+        {{
+          d.variacion === null
+            ? '—'
+            : (+d.variacion > 0 ? '+' : '') + (d.variacion | number: '1.1-1') + ' %'
+        }}
+      </span>
+    </mat-card>
+  </section>
+
+  @if (d.pendientes_revision) {
+    <a
+      mat-stroked-button
+      class="mt-3"
+      [routerLink]="['..', 'movimientos']"
+      [queryParams]="{ pendientes: true }"
+    >
+      <mat-icon>error</mat-icon> {{ d.pendientes_revision }} movimientos por revisar
+    </a>
+  }
+
+  <section class="mt-6 grid gap-4 lg:grid-cols-2">
+    <mat-card class="p-4">
+      <h2 class="mb-2 font-medium">Por categoría</h2>
+      <!-- @defer: el gráfico (y Chart.js, ~70 kB) solo se descargan cuando la tarjeta entra en pantalla -->
+      @defer (on viewport) {
+        <app-grafico
+          tipo="doughnut"
+          [datos]="porCategoria()"
+          etiqueta="Gasto del mes por categoría"
+          class="h-64"
+        />
+      } @placeholder {
+        <div class="h-64 animate-pulse rounded-lg bg-superficie-alta"></div>
+      }
+    </mat-card>
+    <mat-card class="p-4">
+      <h2 class="mb-2 font-medium">Gasto acumulado del mes</h2>
+      @defer (on viewport) {
+        <app-grafico
+          tipo="line"
+          [datos]="acumulado()"
+          etiqueta="Gasto acumulado día a día"
+          class="h-64"
+        />
+      } @placeholder {
+        <div class="h-64 animate-pulse rounded-lg bg-superficie-alta"></div>
+      }
+    </mat-card>
+    <mat-card class="p-4 lg:col-span-2">
+      <h2 class="mb-2 font-medium">Últimos 12 meses</h2>
+      @defer (on viewport) {
+        <app-grafico
+          tipo="bar"
+          [datos]="evolucion()"
+          etiqueta="Gastos e ingresos de los últimos 12 meses"
+          class="h-72"
+        />
+      } @placeholder {
+        <div class="h-72 animate-pulse rounded-lg bg-superficie-alta"></div>
+      }
+    </mat-card>
+  </section>
+
+  <section class="mt-6 grid gap-4 md:grid-cols-2">
+    <mat-card class="p-4">
+      <h2 class="mb-2 font-medium">Presupuestos</h2>
+      @for (p of d.presupuestos; track p.categoria) {
+        <div class="mb-3">
+          <div class="flex justify-between text-sm">
+            <span>{{ p.categoria }}</span
+            ><span>{{ p.gastado | number: '1.2-2' }} / {{ p.importe | number: '1.2-2' }} €</span>
+          </div>
+          <mat-progress-bar
+            mode="determinate"
+            [value]="p.porcentaje"
+            [class.excedido]="p.porcentaje >= 100"
+          />
+        </div>
+      } @empty {
+        <p class="text-sm text-texto-suave">
+          Sin presupuestos este mes.
+          <a [routerLink]="['..', 'presupuestos']" class="underline">Crear uno</a>
+        </p>
+      }
+    </mat-card>
+    <mat-card class="p-4">
+      <h2 class="mb-2 font-medium">Dónde más gastas</h2>
+      @for (c of d.top_comercios; track c.comercio) {
+        <div class="flex justify-between border-b py-1 text-sm">
+          <span
+            >{{ c.nombre }} <span class="text-texto-suave">×{{ c.veces }}</span></span
+          ><span>{{ c.total | number: '1.2-2' }} €</span>
+        </div>
+      }
+    </mat-card>
+  </section>
+}

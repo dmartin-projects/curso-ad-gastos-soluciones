@@ -1,0 +1,38 @@
+<div class="mb-4 flex items-center justify-between">
+  <h1 class="text-2xl font-medium">Notificaciones</h1>
+  <button mat-button (click)="leerTodas()">
+    <mat-icon>done_all</mat-icon> Marcar todas como leídas
+  </button>
+</div>
+<ul class="divide-y">
+  @for (n of lista(); track n.id) {
+    <li>
+      <button
+        class="flex w-full items-start gap-3 p-3 text-left hover:bg-superficie-alta"
+        (click)="abrir(n)"
+      >
+        <span
+          class="mt-2 inline-block size-2 shrink-0 rounded-full"
+          [class.bg-primario]="!n.leida"
+        ></span>
+        <span class="flex-1">
+          <span class="block" [class.font-medium]="!n.leida">{{ n.titulo }}</span>
+          @if (n.mensaje) {
+            <span class="block text-sm text-texto-suave">{{ n.mensaje }}</span>
+          }
+          <span class="block text-xs text-texto-suave">{{ n.creado | date: 'short' }}</span>
+        </span>
+      </button>
+    </li>
+  }
+</ul>
+@if (consulta.hasNextPage()) {
+  <button
+    mat-button
+    class="mt-2"
+    (click)="consulta.fetchNextPage()"
+    [disabled]="consulta.isFetchingNextPage()"
+  >
+    Ver más
+  </button>
+}

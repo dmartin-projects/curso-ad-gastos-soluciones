@@ -1,0 +1,57 @@
+# Gastos — proyecto final de referencia
+
+El código completo del proyecto final del curso (módulos 70-83), tal como queda al terminar el módulo 83. Úsalo para **comparar** cuando algo no te funcione, no para copiarlo de golpe: el curso explica por qué cada archivo es como es.
+
+Estado comprobado: 134 tests de *backend* (cobertura 92,6 %), 10 de *frontend* (Vitest) y 7 de punta a punta (Playwright), todos en verde.
+
+## Estructura
+
+```
+backend/            Django 6.1 + DRF + Celery + Channels (módulos 71-79)
+frontend/           Angular 22 (módulos 80-81), Playwright en e2e/ (módulo 82)
+infra/              Caddyfile, proxy.Dockerfile, desplegar.sh, backup.sh (módulo 83)
+compose.yaml        infraestructura de desarrollo: PostgreSQL, Redis, RabbitMQ, MinIO, Mailpit
+compose.prod.yaml   producción (módulo 83)
+.github/workflows/  ci.yml (con el job E2E) y release.yml
+```
+
+## Arrancar en local
+
+Requisitos (módulo 00): Docker Desktop, `uv`, Node 24, y para el OCR y los PDF `brew install tesseract tesseract-lang pango`.
+
+```bash
+# 1. Infraestructura
+docker compose up -d
+# MinIO: entra en http://localhost:9001 (minio / minio12345) y crea el bucket "gastos"
+
+# 2. Backend
+cd backend
+cp .env.example .env              # pon tu IA_API_KEY de Gemini si quieres leer tickets con IA
+uv sync
+uv run python manage.py migrate
+uv run python manage.py seed      # demo@example.com / demo12345-demo, con datos de ejemplo
+uv run python manage.py runserver # API en http://localhost:8000/api/docs/
+
+# 3. Procesos en segundo plano (cada uno en su terminal, desde backend/)
+uv run celery -A config worker -l info -Q default,ocr
+uv run celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+uv run python manage.py db_worker --queue-name "*"
+
+# 4. Frontend
+cd ../frontend
+npm ci
+npx ng serve                      # http://localhost:4200 (el proxy envía /api y /ws a Django)
+```
+
+Personal de soporte (el *backoffice* está dentro de la app, no hay Django admin): regístrate o usa el usuario demo y ejecuta `uv run python manage.py personal demo@example.com`.
+
+## Tests
+
+```bash
+cd backend && uv run pytest -n 4 --cov                 # 133 tests
+cd frontend && npx ng test --watch=false                # 10 tests
+# punta a punta (módulo 82): una vez, crea la BD de E2E
+docker compose exec db createdb -U gastos gastos_e2e
+cd backend && DJANGO_SETTINGS_MODULE=config.settings.e2e uv run python manage.py migrate
+cd ../frontend && npx playwright install chromium && npx playwright test
+```

@@ -1,0 +1,3 @@
+.excedido {
+  --mat-progress-bar-active-indicator-color: var(--mat-sys-error);
+}

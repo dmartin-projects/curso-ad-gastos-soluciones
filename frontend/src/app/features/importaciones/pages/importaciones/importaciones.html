@@ -1,0 +1,65 @@
+<h1 class="mb-1 text-2xl font-medium">Importar extracto</h1>
+<p class="mb-4 text-sm text-texto-suave">
+  Descarga el extracto de tu banco en CSV (o PDF) y súbelo: verás qué se va a crear antes de
+  confirmar.
+</p>
+
+@if (store.puedeEditar()) {
+  <div class="flex flex-wrap items-center gap-3 rounded-xl border p-4">
+    <mat-form-field subscriptSizing="dynamic" class="w-48">
+      <mat-label>Cuenta</mat-label>
+      <select
+        matNativeControl
+        [value]="cuenta() ?? ''"
+        (change)="cuenta.set(+$any($event.target).value)"
+      >
+        @for (c of cuentas.data() ?? []; track c.id) {
+          <option [value]="c.id">{{ c.nombre }}</option>
+        }
+      </select>
+    </mat-form-field>
+    <input
+      #selector
+      type="file"
+      accept=".csv,text/csv,application/pdf"
+      hidden
+      (change)="elegir(selector)"
+    />
+    <button mat-flat-button [disabled]="subir.isPending() || !cuenta()" (click)="selector.click()">
+      <mat-icon>upload_file</mat-icon> Elegir archivo
+    </button>
+    @if (subir.isPending()) {
+      <mat-progress-bar mode="indeterminate" class="w-full" />
+    }
+    @if (error()) {
+      <p role="alert" class="w-full text-sm text-error">{{ error() }}</p>
+    }
+  </div>
+}
+
+<ul class="mt-6 grid gap-2">
+  @for (i of importaciones.data()?.results ?? []; track i.id) {
+    <li>
+      <a
+        [routerLink]="[i.id]"
+        class="flex items-center gap-3 rounded-lg border p-3 hover:bg-superficie-alta"
+      >
+        <mat-icon class="text-texto-suave">{{
+          i.formato === 'pdf' ? 'picture_as_pdf' : 'table_view'
+        }}</mat-icon>
+        <span class="min-w-0 flex-1">
+          <span class="block truncate">{{ i.nombre_original }}</span>
+          <span class="block text-xs text-texto-suave"
+            >{{ i.creado | date: 'short' }} · {{ estados[i.estado] }}
+            @if (i.estado === 'completada') {
+              · {{ i.creados }} nuevos, {{ i.conciliados }} conciliados
+            }
+          </span>
+        </span>
+        @if (i.estado === 'importando') {
+          <mat-progress-bar class="!w-24" mode="determinate" [value]="i.progreso" />
+        }
+      </a>
+    </li>
+  }
+</ul>

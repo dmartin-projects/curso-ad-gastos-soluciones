@@ -1,0 +1,34 @@
+<app-buscador
+  placeholder="Nombre, id o email de un miembro"
+  (buscar)="busqueda.set($event); pagina.set(1)"
+/>
+<table mat-table [dataSource]="hogares.data()?.results ?? []" class="mt-2">
+  <ng-container matColumnDef="nombre">
+    <th mat-header-cell *matHeaderCellDef>Hogar</th>
+    <td mat-cell *matCellDef="let h">
+      <a [routerLink]="[h.id]" class="underline">{{ h.nombre }}</a>
+      <span class="text-xs text-texto-suave">#{{ h.id }}</span>
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="miembros">
+    <th mat-header-cell *matHeaderCellDef>Miembros</th>
+    <td mat-cell *matCellDef="let h">{{ h.num_miembros }}</td>
+  </ng-container>
+  <ng-container matColumnDef="movimientos">
+    <th mat-header-cell *matHeaderCellDef>Movimientos</th>
+    <td mat-cell *matCellDef="let h">{{ h.num_movimientos }}</td>
+  </ng-container>
+  <ng-container matColumnDef="creado">
+    <th mat-header-cell *matHeaderCellDef>Alta</th>
+    <td mat-cell *matCellDef="let h">{{ h.creado | date: 'shortDate' }}</td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+  <tr mat-row *matRowDef="let fila; columns: columnas"></tr>
+</table>
+<mat-paginator
+  [length]="hogares.data()?.count ?? 0"
+  [pageSize]="20"
+  [pageIndex]="pagina() - 1"
+  (page)="paginar($event)"
+  hidePageSize
+/>

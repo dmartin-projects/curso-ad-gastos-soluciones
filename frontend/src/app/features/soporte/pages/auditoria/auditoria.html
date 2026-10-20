@@ -1,0 +1,43 @@
+<div class="flex flex-wrap items-center gap-2">
+  <app-buscador
+    class="flex-1"
+    placeholder="Objeto o email de quien lo hizo"
+    (buscar)="q.set($event); pagina.set(1)"
+  />
+  <mat-form-field subscriptSizing="dynamic" class="w-48">
+    <mat-label>Tipo</mat-label>
+    <mat-select [value]="modelo()" (selectionChange)="modelo.set($event.value); pagina.set(1)">
+      @for (m of modelos; track m.valor) {
+        <mat-option [value]="m.valor">{{ m.texto }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+<mat-accordion class="mt-3 block">
+  @for (r of registros.data()?.results ?? []; track r.id) {
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>{{ r.accion }} · {{ r.representacion }}</mat-panel-title>
+        <mat-panel-description
+          >{{ r.fecha | date: 'short' }} · {{ r.usuario ?? 'sistema' }}</mat-panel-description
+        >
+      </mat-expansion-panel-header>
+      <p class="text-xs text-texto-suave">{{ r.modelo }} #{{ r.object_id }}</p>
+      <table class="mt-2 text-sm">
+        @for (c of $any(r.cambios) | keyvalue; track c.key) {
+          <tr>
+            <td class="pr-4 font-medium">{{ c.key }}</td>
+            <td class="text-texto-suave">{{ c.value | json }}</td>
+          </tr>
+        }
+      </table>
+    </mat-expansion-panel>
+  }
+</mat-accordion>
+<mat-paginator
+  [length]="registros.data()?.count ?? 0"
+  [pageSize]="20"
+  [pageIndex]="pagina() - 1"
+  (page)="paginar($event)"
+  hidePageSize
+/>

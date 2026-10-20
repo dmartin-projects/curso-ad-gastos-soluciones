@@ -1,0 +1,33 @@
+<button
+  mat-icon-button
+  [matMenuTriggerFor]="menu"
+  [matBadge]="store.noLeidas() || null"
+  matBadgeColor="warn"
+  [matTooltip]="
+    tiempoReal.estado() === 'conectado'
+      ? 'Notificaciones'
+      : 'Notificaciones (sin conexión en tiempo real)'
+  "
+  [attr.aria-label]="'Notificaciones: ' + store.noLeidas() + ' sin leer'"
+>
+  <mat-icon>{{
+    tiempoReal.estado() === 'conectado' ? 'notifications' : 'notifications_off'
+  }}</mat-icon>
+</button>
+<mat-menu #menu="matMenu" xPosition="before" class="!max-w-sm">
+  @for (n of store.recientes(); track n.id) {
+    <button mat-menu-item (click)="abrir(n.id, n.enlace)">
+      <span class="block font-medium">{{ n.titulo }}</span>
+      <span class="block text-xs text-texto-suave">{{ n.creado | date: 'short' }}</span>
+    </button>
+  } @empty {
+    <p class="px-4 py-2 text-sm text-texto-suave">No hay avisos nuevos.</p>
+  }
+  <mat-divider />
+  <a mat-menu-item routerLink="/notificaciones"><mat-icon>list</mat-icon> Ver todas</a>
+  @if (store.noLeidas()) {
+    <button mat-menu-item (click)="store.leerTodas()">
+      <mat-icon>done_all</mat-icon> Marcar todas como leídas
+    </button>
+  }
+</mat-menu>

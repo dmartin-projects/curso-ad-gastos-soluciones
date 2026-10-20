@@ -1,0 +1,49 @@
+<h1 class="mb-4 text-2xl font-medium">Tickets</h1>
+@if (store.puedeEditar()) {
+  <app-subir-ticket
+    [cuentas]="cuentas.data() ?? []"
+    [progreso]="progreso()"
+    [errorSubida]="errorSubida()"
+    (subir)="subir($event)"
+  />
+}
+
+<mat-chip-listbox
+  class="my-4"
+  aria-label="Filtrar por estado"
+  [value]="estado() ?? ''"
+  (change)="filtrar($event.value)"
+>
+  <mat-chip-option value="">Todos</mat-chip-option>
+  <mat-chip-option value="revisar">Por revisar</mat-chip-option>
+  <mat-chip-option value="error">Con error</mat-chip-option>
+</mat-chip-listbox>
+
+<ul class="grid gap-2">
+  @for (t of tickets.data()?.results ?? []; track t.id) {
+    <li>
+      <a
+        [routerLink]="[t.id]"
+        class="flex items-center gap-3 rounded-lg border p-3 hover:bg-superficie-alta"
+      >
+        <mat-icon class="text-texto-suave">{{
+          t.tipo === 'application/pdf' ? 'picture_as_pdf' : 'receipt'
+        }}</mat-icon>
+        <span class="min-w-0 flex-1">
+          <span class="block truncate">{{ comercio(t) }}</span>
+          <span class="block text-xs text-texto-suave"
+            >{{ t.creado | date: 'short' }} · {{ t.nombre_original }}</span
+          >
+        </span>
+        @if (t.movimiento) {
+          <app-importe [valor]="t.movimiento.importe" />
+        }
+        <app-estado-ticket [estado]="t.estado" />
+      </a>
+    </li>
+  } @empty {
+    @if (tickets.isSuccess()) {
+      <p class="text-texto-suave">No hay tickets.</p>
+    }
+  }
+</ul>

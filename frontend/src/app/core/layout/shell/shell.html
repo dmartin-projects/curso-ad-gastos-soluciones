@@ -1,0 +1,65 @@
+<mat-sidenav-container class="h-full">
+  <mat-sidenav
+    #menu
+    [mode]="movil() ? 'over' : 'side'"
+    [opened]="!movil() && !!hogar()"
+    class="w-64"
+  >
+    @if (hogar(); as h) {
+      <mat-nav-list>
+        @for (s of secciones; track s.ruta) {
+          <a
+            mat-list-item
+            [routerLink]="['/hogares', h.id, s.ruta]"
+            routerLinkActive
+            #activo="routerLinkActive"
+            [activated]="activo.isActive"
+            (click)="movil() && menu.close()"
+          >
+            <mat-icon matListItemIcon>{{ s.icono }}</mat-icon>
+            <span matListItemTitle>{{ s.texto }}</span>
+          </a>
+        }
+      </mat-nav-list>
+    }
+  </mat-sidenav>
+
+  <mat-sidenav-content class="flex flex-col">
+    <mat-toolbar class="sticky top-0 z-10 gap-2">
+      @if (hogar()) {
+        <button mat-icon-button (click)="menu.toggle()" aria-label="Menú">
+          <mat-icon>menu</mat-icon>
+        </button>
+      }
+      <button mat-button [matMenuTriggerFor]="hogares" class="!text-lg">
+        {{ hogar()?.nombre ?? 'Gastos' }} <mat-icon iconPositionEnd>expand_more</mat-icon>
+      </button>
+      <mat-menu #hogares="matMenu">
+        @for (h of store.hogares(); track h.id) {
+          <button mat-menu-item (click)="cambiarHogar(h.id)">{{ h.nombre }}</button>
+        }
+        <a mat-menu-item routerLink="/hogares"><mat-icon>add_home</mat-icon> Mis hogares</a>
+      </mat-menu>
+      <span class="flex-1"></span>
+      <app-campana />
+      <button mat-icon-button [matMenuTriggerFor]="cuenta" aria-label="Mi cuenta">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #cuenta="matMenu">
+        <span class="block px-4 py-2 text-sm text-texto-suave">{{ auth.usuario()?.email }}</span>
+        <a mat-menu-item routerLink="/notificaciones"
+          ><mat-icon>notifications</mat-icon> Notificaciones</a
+        >
+        @if (auth.usuario()?.es_personal) {
+          <a mat-menu-item routerLink="/soporte"><mat-icon>support_agent</mat-icon> Soporte</a>
+        }
+        <button mat-menu-item (click)="auth.logout()">
+          <mat-icon>logout</mat-icon> Cerrar sesión
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+    <main class="mx-auto w-full max-w-5xl flex-1 p-4">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
