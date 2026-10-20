@@ -15,6 +15,23 @@ compose.prod.yaml   producción (módulo 83)
 .github/workflows/  ci.yml (con el job E2E) y release.yml
 ```
 
+## Plan por fases (módulo 70)
+
+| Fase | Módulo | Resultado |
+|---|---|---|
+| 1. Base | 71 | Proyecto, usuario, hogares y roles, infraestructura de desarrollo |
+| 2. Dominio | 72 | Modelos, migraciones, datos por defecto, *seed* |
+| 3. API | 73 | CRUD con permisos por hogar, filtros, paginación, exportación |
+| 4. Tickets | 74 | Subida → OCR → IA → gasto, con revisión |
+| 5. Extractos | 75 | Importación idempotente |
+| 6. Tiempo real | 76 | Notificaciones y alertas de presupuesto |
+| 7. Dashboard | 77 | Agregaciones y caché |
+| 8. Informes | 78 | PDF mensual, email, tareas programadas |
+| 9. *Backoffice* | 79 | API de soporte dentro de la app (sin Django admin) |
+| 10. *Frontend* | 80, 81 | App Angular completa |
+| 11. Calidad | 82 | Tests de todo el *stack* |
+| 12. Producción | 83 | Despliegue gratuito con CI/CD (`docs/runbook.md` para operarlo) |
+
 ## Arrancar en local
 
 Requisitos (módulo 00): Docker Desktop, `uv`, Node 24, y para el OCR y los PDF `brew install tesseract tesseract-lang pango`.
