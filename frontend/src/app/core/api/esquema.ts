@@ -1212,6 +1212,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/notificaciones/preferencias/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Qué tipos NO quiero recibir por email. La notificación en la app llega siempre. */
+        get: operations["notificaciones_preferencias_retrieve"];
+        /** @description Qué tipos NO quiero recibir por email. La notificación en la app llega siempre. */
+        put: operations["notificaciones_preferencias_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/notificaciones/ws-ticket/": {
         parameters: {
             query?: never;
@@ -1655,7 +1673,7 @@ export interface components {
         };
         Notificacion: {
             readonly id: number;
-            readonly tipo: components["schemas"]["NotificacionTipoEnum"];
+            readonly tipo: components["schemas"]["TipoNotificacionEnum"];
             readonly titulo: string;
             readonly mensaje: string;
             readonly enlace: string;
@@ -1665,19 +1683,6 @@ export interface components {
             /** Format: date-time */
             readonly creado: string;
         };
-        /**
-         * @description * `ticket_procesado` - Ticket procesado
-         *     * `ticket_revisar` - Ticket pendiente de revisión
-         *     * `ticket_error` - Error al procesar un ticket
-         *     * `importacion_lista` - Importación lista para revisar
-         *     * `importacion_completada` - Importación completada
-         *     * `importacion_error` - Error en una importación
-         *     * `presupuesto_superado` - Presupuesto superado
-         *     * `informe_listo` - Informe mensual disponible
-         *     * `exportacion_lista` - Exportación lista
-         * @enum {string}
-         */
-        NotificacionTipoEnum: "ticket_procesado" | "ticket_revisar" | "ticket_error" | "importacion_lista" | "importacion_completada" | "importacion_error" | "presupuesto_superado" | "informe_listo" | "exportacion_lista";
         NuevaPasswordRequest: {
             uid: string;
             token: string;
@@ -1991,6 +1996,12 @@ export interface components {
             clave: string;
             total: number;
         };
+        Preferencias: {
+            emails_desactivados: components["schemas"]["TipoNotificacionEnum"][];
+        };
+        PreferenciasRequest: {
+            emails_desactivados: components["schemas"]["TipoNotificacionEnum"][];
+        };
         /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
         Presupuesto: {
             readonly id: number;
@@ -2160,6 +2171,20 @@ export interface components {
             /** @description Segundos */
             caduca_en: number;
         };
+        /**
+         * @description * `ticket_procesado` - Ticket procesado
+         *     * `ticket_revisar` - Ticket pendiente de revisión
+         *     * `ticket_error` - Error al procesar un ticket
+         *     * `importacion_lista` - Importación lista para revisar
+         *     * `importacion_completada` - Importación completada
+         *     * `importacion_error` - Error en una importación
+         *     * `presupuesto_superado` - Presupuesto superado
+         *     * `presupuesto_80` - Presupuesto al 80 %
+         *     * `informe_listo` - Informe mensual disponible
+         *     * `exportacion_lista` - Exportación lista
+         * @enum {string}
+         */
+        TipoNotificacionEnum: "ticket_procesado" | "ticket_revisar" | "ticket_error" | "importacion_lista" | "importacion_completada" | "importacion_error" | "presupuesto_superado" | "presupuesto_80" | "informe_listo" | "exportacion_lista";
         TokenObtainPairRequest: {
             email: string;
             password: string;
@@ -4804,10 +4829,11 @@ export interface operations {
                  *     * `importacion_completada` - Importación completada
                  *     * `importacion_error` - Error en una importación
                  *     * `presupuesto_superado` - Presupuesto superado
+                 *     * `presupuesto_80` - Presupuesto al 80 %
                  *     * `informe_listo` - Informe mensual disponible
                  *     * `exportacion_lista` - Exportación lista
                  */
-                tipo?: "exportacion_lista" | "importacion_completada" | "importacion_error" | "importacion_lista" | "informe_listo" | "presupuesto_superado" | "ticket_error" | "ticket_procesado" | "ticket_revisar";
+                tipo?: "exportacion_lista" | "importacion_completada" | "importacion_error" | "importacion_lista" | "informe_listo" | "presupuesto_80" | "presupuesto_superado" | "ticket_error" | "ticket_procesado" | "ticket_revisar";
             };
             header?: never;
             path?: never;
@@ -4885,6 +4911,49 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Contador"];
+                };
+            };
+        };
+    };
+    notificaciones_preferencias_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Preferencias"];
+                };
+            };
+        };
+    };
+    notificaciones_preferencias_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PreferenciasRequest"];
+                "multipart/form-data": components["schemas"]["PreferenciasRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Preferencias"];
                 };
             };
         };

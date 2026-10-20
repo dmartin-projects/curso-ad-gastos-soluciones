@@ -3339,6 +3339,7 @@ paths:
           - importacion_error
           - importacion_lista
           - informe_listo
+          - presupuesto_80
           - presupuesto_superado
           - ticket_error
           - ticket_procesado
@@ -3351,6 +3352,7 @@ paths:
           * `importacion_completada` - Importación completada
           * `importacion_error` - Error en una importación
           * `presupuesto_superado` - Presupuesto superado
+          * `presupuesto_80` - Presupuesto al 80 %
           * `informe_listo` - Informe mensual disponible
           * `exportacion_lista` - Exportación lista
       tags:
@@ -3425,6 +3427,48 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Contador'
+          description: ''
+  /api/v1/notificaciones/preferencias/:
+    get:
+      operationId: notificaciones_preferencias_retrieve
+      description: Qué tipos NO quiero recibir por email. La notificación en la app
+        llega siempre.
+      tags:
+      - notificaciones
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Preferencias'
+          description: ''
+    put:
+      operationId: notificaciones_preferencias_update
+      description: Qué tipos NO quiero recibir por email. La notificación en la app
+        llega siempre.
+      tags:
+      - notificaciones
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreferenciasRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PreferenciasRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Preferencias'
           description: ''
   /api/v1/notificaciones/ws-ticket/:
     post:
@@ -4588,7 +4632,7 @@ components:
           readOnly: true
         tipo:
           allOf:
-          - $ref: '#/components/schemas/NotificacionTipoEnum'
+          - $ref: '#/components/schemas/TipoNotificacionEnum'
           readOnly: true
         titulo:
           type: string
@@ -4622,28 +4666,6 @@ components:
       - mensaje
       - tipo
       - titulo
-    NotificacionTipoEnum:
-      enum:
-      - ticket_procesado
-      - ticket_revisar
-      - ticket_error
-      - importacion_lista
-      - importacion_completada
-      - importacion_error
-      - presupuesto_superado
-      - informe_listo
-      - exportacion_lista
-      type: string
-      description: |-
-        * `ticket_procesado` - Ticket procesado
-        * `ticket_revisar` - Ticket pendiente de revisión
-        * `ticket_error` - Error al procesar un ticket
-        * `importacion_lista` - Importación lista para revisar
-        * `importacion_completada` - Importación completada
-        * `importacion_error` - Error en una importación
-        * `presupuesto_superado` - Presupuesto superado
-        * `informe_listo` - Informe mensual disponible
-        * `exportacion_lista` - Exportación lista
     NuevaPasswordRequest:
       type: object
       properties:
@@ -5213,6 +5235,26 @@ components:
       required:
       - clave
       - total
+    Preferencias:
+      type: object
+      properties:
+        emails_desactivados:
+          type: array
+          items:
+            $ref: '#/components/schemas/TipoNotificacionEnum'
+          maxItems: 50
+      required:
+      - emails_desactivados
+    PreferenciasRequest:
+      type: object
+      properties:
+        emails_desactivados:
+          type: array
+          items:
+            $ref: '#/components/schemas/TipoNotificacionEnum'
+          maxItems: 50
+      required:
+      - emails_desactivados
     Presupuesto:
       type: object
       description: 'Limita los campos relacionados al hogar de la URL: no se puede
@@ -5625,6 +5667,30 @@ components:
       required:
       - caduca_en
       - ticket
+    TipoNotificacionEnum:
+      enum:
+      - ticket_procesado
+      - ticket_revisar
+      - ticket_error
+      - importacion_lista
+      - importacion_completada
+      - importacion_error
+      - presupuesto_superado
+      - presupuesto_80
+      - informe_listo
+      - exportacion_lista
+      type: string
+      description: |-
+        * `ticket_procesado` - Ticket procesado
+        * `ticket_revisar` - Ticket pendiente de revisión
+        * `ticket_error` - Error al procesar un ticket
+        * `importacion_lista` - Importación lista para revisar
+        * `importacion_completada` - Importación completada
+        * `importacion_error` - Error en una importación
+        * `presupuesto_superado` - Presupuesto superado
+        * `presupuesto_80` - Presupuesto al 80 %
+        * `informe_listo` - Informe mensual disponible
+        * `exportacion_lista` - Exportación lista
     TokenObtainPairRequest:
       type: object
       properties:

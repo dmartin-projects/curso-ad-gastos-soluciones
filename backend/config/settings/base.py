@@ -216,6 +216,7 @@ SPECTACULAR_SETTINGS = {
     "ENUM_NAME_OVERRIDES": {
         "EstadoTicketEnum": "tickets.models.Ticket.Estado",
         "EstadoImportacionEnum": "importaciones.models.Importacion.Estado",
+        "TipoNotificacionEnum": "notificaciones.models.Notificacion.Tipo",
     },
 }
 
