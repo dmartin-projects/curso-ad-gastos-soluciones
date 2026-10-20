@@ -21,3 +21,14 @@ def exportar_movimientos_xlsx(hogar_id: int, usuario_id: int, params: dict[str, 
     hogar = Hogar.objects.get(pk=hogar_id)
     archivo = generar_xlsx(hogar, params)
     exportacion_lista.send(sender=Movimiento, hogar=hogar, usuario_id=usuario_id, archivo=archivo)
+
+
+@shared_task(ignore_result=True)
+def calentar_dashboard(hogar_id: int) -> None:
+    """Recalcula el mes actual tras una invalidación: el primero que entre ya lo encuentra en caché."""
+    from hogares.models import Hogar
+
+    from . import dashboard
+
+    if hogar := Hogar.objects.filter(pk=hogar_id).first():  # puede haberse borrado entretanto
+        dashboard.obtener(hogar, dashboard.mes_actual(hogar))

@@ -1324,6 +1324,13 @@ export interface components {
         ComercioRequest: {
             nombre: string;
         };
+        ComparativaDia: {
+            dia: number;
+            /** Format: decimal */
+            este_mes: string | null;
+            /** Format: decimal */
+            mes_anterior: string | null;
+        };
         ConfirmarImportacionRequest: {
             separar?: number[];
         };
@@ -1377,6 +1384,8 @@ export interface components {
             variacion: string | null;
             por_categoria: components["schemas"]["CategoriaDashboard"][];
             acumulado: components["schemas"]["DiaDashboard"][];
+            comparativa: components["schemas"]["ComparativaDia"][];
+            ranking: components["schemas"]["Ranking"][];
             evolucion: components["schemas"]["MesDashboard"][];
             top_comercios: components["schemas"]["ComercioDashboard"][];
             presupuestos: components["schemas"]["PresupuestoDashboard"][];
@@ -2029,6 +2038,14 @@ export interface components {
             mes: string;
             /** Format: decimal */
             importe: string;
+        };
+        Ranking: {
+            categoria: number;
+            nombre: string;
+            /** @description 1 = el mes de más gasto en esa categoría */
+            posicion: number;
+            /** @description Meses con gasto en esa categoría (hasta 13) */
+            de: number;
         };
         /** @description Limita los campos relacionados al hogar de la URL: no se puede apuntar a datos de otro hogar (módulo 33). */
         RecategorizarRequest: {

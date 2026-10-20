@@ -153,6 +153,19 @@ class PresupuestoDashboardSerializer(serializers.Serializer):
     porcentaje = serializers.IntegerField()
 
 
+class ComparativaDiaSerializer(serializers.Serializer):
+    dia = serializers.IntegerField()
+    este_mes = serializers.DecimalField(max_digits=12, decimal_places=2, allow_null=True)
+    mes_anterior = serializers.DecimalField(max_digits=12, decimal_places=2, allow_null=True)
+
+
+class RankingSerializer(serializers.Serializer):
+    categoria = serializers.IntegerField()
+    nombre = serializers.CharField()
+    posicion = serializers.IntegerField(help_text="1 = el mes de más gasto en esa categoría")
+    de = serializers.IntegerField(help_text="Meses con gasto en esa categoría (hasta 13)")
+
+
 class DashboardSerializer(serializers.Serializer):
     mes = serializers.DateField(format="%Y-%m")
     gastos = serializers.DecimalField(max_digits=12, decimal_places=2)
@@ -163,6 +176,8 @@ class DashboardSerializer(serializers.Serializer):
     variacion = serializers.DecimalField(max_digits=7, decimal_places=1, allow_null=True)
     por_categoria = CategoriaDashboardSerializer(many=True)
     acumulado = DiaDashboardSerializer(many=True)
+    comparativa = ComparativaDiaSerializer(many=True)
+    ranking = RankingSerializer(many=True)
     evolucion = MesDashboardSerializer(many=True)
     top_comercios = ComercioDashboardSerializer(many=True)
     presupuestos = PresupuestoDashboardSerializer(many=True)

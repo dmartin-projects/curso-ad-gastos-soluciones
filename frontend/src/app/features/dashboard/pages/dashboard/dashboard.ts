@@ -59,15 +59,18 @@ export default class Dashboard {
     };
   });
 
+  /** Dos líneas, día 1 con día 1 (módulo 77, ejercicio 1). `null` corta la línea (días que no han llegado). */
   protected readonly acumulado = computed<ChartData<'line'>>(() => {
-    const dias = this.resumen.data()?.acumulado ?? [];
+    const dias = this.resumen.data()?.comparativa ?? [];
+    const numero = (v: string | null) => (v === null ? null : Number(v));
     return {
-      labels: dias.map((d) => Number(d.fecha.slice(8))),
+      labels: dias.map((d) => d.dia),
       datasets: [
+        { label: 'Este mes', data: dias.map((d) => numero(d.este_mes)), fill: true, tension: 0.2 },
         {
-          label: 'Acumulado (€)',
-          data: dias.map((d) => Number(d.acumulado)),
-          fill: true,
+          label: 'Mes anterior',
+          data: dias.map((d) => numero(d.mes_anterior)),
+          borderDash: [6, 4],
           tension: 0.2,
         },
       ],

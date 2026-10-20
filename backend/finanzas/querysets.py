@@ -1,8 +1,8 @@
 from datetime import date
 
 from django.db import models
-from django.db.models import DecimalField, OuterRef, Q, Subquery, Sum, Value
-from django.db.models.functions import Coalesce, TruncMonth
+from django.db.models import DateField, DecimalField, Func, OuterRef, Q, Subquery, Sum, Value
+from django.db.models.functions import Coalesce
 
 
 def rango_mes(mes: date) -> tuple[date, date]:
@@ -10,6 +10,13 @@ def rango_mes(mes: date) -> tuple[date, date]:
     inicio = mes.replace(day=1)
     fin = date(inicio.year + (inicio.month == 12), inicio.month % 12 + 1, 1)
     return inicio, fin
+
+
+class MesSiguiente(Func):
+    """`mes + 1 mes` calculado en PostgreSQL, para filtrar por RANGO dentro de una Subquery."""
+
+    template = "(%(expressions)s + interval '1 month')::date"
+    output_field = DateField()
 
 
 class MovimientoQuerySet(models.QuerySet):
@@ -56,8 +63,9 @@ class PresupuestoQuerySet(models.QuerySet):
             Movimiento.objects.gastos()
             .filter(hogar=OuterRef("hogar"))
             .filter(Q(categoria=OuterRef("categoria")) | Q(categoria__padre=OuterRef("categoria")))
-            .annotate(m=TruncMonth("fecha"))
-            .filter(m=OuterRef("mes"))
+            # Rango, no TruncMonth("fecha") = mes: una función sobre la columna impide usar el índice y
+            # PostgreSQL leería TODOS los movimientos del hogar por cada presupuesto (medido en el módulo 77)
+            .filter(fecha__gte=OuterRef("mes"), fecha__lt=MesSiguiente(OuterRef("mes")))
             .values("hogar")
             .annotate(t=Sum("importe"))
             .values("t")

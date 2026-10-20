@@ -70,12 +70,12 @@
       }
     </mat-card>
     <mat-card class="p-4">
-      <h2 class="mb-2 font-medium">Gasto acumulado del mes</h2>
+      <h2 class="mb-2 font-medium">Gasto acumulado frente al mes anterior</h2>
       @defer (on viewport) {
         <app-grafico
           tipo="line"
           [datos]="acumulado()"
-          etiqueta="Gasto acumulado día a día"
+          etiqueta="Gasto acumulado día a día, este mes y el anterior"
           class="h-64"
         />
       } @placeholder {
@@ -117,6 +117,23 @@
           Sin presupuestos este mes.
           <a [routerLink]="['..', 'presupuestos']" class="underline">Crear uno</a>
         </p>
+      }
+    </mat-card>
+    <mat-card class="p-4">
+      <h2 class="mb-2 font-medium">Comparado con el último año</h2>
+      @for (r of d.ranking; track r.categoria) {
+        <div class="flex justify-between border-b py-1 text-sm">
+          <span>{{ r.nombre }}</span>
+          <span [class.text-gasto]="r.posicion === 1 && r.de > 1">
+            @if (r.de === 1) {
+              Primer mes con gasto
+            } @else {
+              {{ r.posicion }}.º mes de más gasto de {{ r.de }}
+            }
+          </span>
+        </div>
+      } @empty {
+        <p class="text-sm text-texto-suave">Sin gastos este mes.</p>
       }
     </mat-card>
     <mat-card class="p-4">

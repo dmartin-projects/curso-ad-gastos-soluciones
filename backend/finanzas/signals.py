@@ -47,10 +47,18 @@ def revisar_presupuestos(sender, hogar_id, meses, **kwargs):
 @receiver(movimientos_cambiados, dispatch_uid="finanzas_invalidar_dashboard")
 def invalidar_dashboard(sender, hogar_id, **kwargs):
     dashboard.invalidar(hogar_id)  # O(1): sube la versión del hogar (módulo 77)
+    calentar(hogar_id)
+
+
+def calentar(hogar_id: int) -> None:
+    from .tasks import calentar_dashboard
+
+    # agrupado: una importación de 500 filas o 20 ediciones seguidas → UN recálculo al final de la ventana
+    agrupar(f"calentar-dashboard:{hogar_id}", 5, calentar_dashboard, hogar_id)
 
 
 @receiver([post_save, post_delete], sender=Categoria, dispatch_uid="finanzas_categoria_cambiada")
 def al_cambiar_categoria(sender, instance, **kwargs):
     # nombre, color o jerarquía cambian el dashboard aunque no cambie ningún movimiento
     hogar_id = instance.hogar_id
-    transaction.on_commit(lambda: dashboard.invalidar(hogar_id))
+    transaction.on_commit(lambda: (dashboard.invalidar(hogar_id), calentar(hogar_id)))

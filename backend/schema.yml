@@ -3686,6 +3686,25 @@ components:
           maxLength: 120
       required:
       - nombre
+    ComparativaDia:
+      type: object
+      properties:
+        dia:
+          type: integer
+        este_mes:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        mes_anterior:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+      required:
+      - dia
+      - este_mes
+      - mes_anterior
     ConfirmarImportacionRequest:
       type: object
       properties:
@@ -3812,6 +3831,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DiaDashboard'
+        comparativa:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComparativaDia'
+        ranking:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ranking'
         evolucion:
           type: array
           items:
@@ -3829,6 +3856,7 @@ components:
       required:
       - acumulado
       - balance
+      - comparativa
       - evolucion
       - gastos
       - gastos_mes_anterior
@@ -3838,6 +3866,7 @@ components:
       - pendientes_revision
       - por_categoria
       - presupuestos
+      - ranking
       - top_comercios
       - variacion
     Detalle:
@@ -5326,6 +5355,24 @@ components:
       - categoria
       - importe
       - mes
+    Ranking:
+      type: object
+      properties:
+        categoria:
+          type: integer
+        nombre:
+          type: string
+        posicion:
+          type: integer
+          description: 1 = el mes de más gasto en esa categoría
+        de:
+          type: integer
+          description: Meses con gasto en esa categoría (hasta 13)
+      required:
+      - categoria
+      - de
+      - nombre
+      - posicion
     RecategorizarRequest:
       type: object
       description: 'Limita los campos relacionados al hogar de la URL: no se puede
