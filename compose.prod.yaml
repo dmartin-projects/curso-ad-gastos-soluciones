@@ -1,4 +1,5 @@
 # compose.prod.yaml — producción en una sola VM (módulos 64, 68 y 83)
+name: gastos # nombre del proyecto: contenedores gastos-web-1…, volúmenes gastos_pgdata… (distinto de gastos-dev)
 x-backend: &backend
   image: ghcr.io/${GHCR_OWNER}/gastos-backend:${VERSION:-latest}
   env_file: .env
@@ -102,7 +103,7 @@ services:
     volumes: [redisdata:/data]
 
   rabbitmq: # el broker de Celery
-    image: rabbitmq:4-alpine
+    image: rabbitmq:4.2-alpine
     restart: unless-stopped
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}

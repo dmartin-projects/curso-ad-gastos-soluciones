@@ -47,14 +47,14 @@ def test_resumen_con_la_salud_de_celery(cliente, monkeypatch):
     assert len(llamadas) == 1  # cacheado 30 s: tres visitas, una pregunta al broker
 
 
-def test_broker_caido_no_tumba_el_resumen(settings):
+def test_broker_caido_no_tumba_el_resumen(monkeypatch):
     from config.celery import app
 
-    app.conf.broker_url = "amqp://nadie:nada@127.0.0.1:1//"  # puerto cerrado
-    try:
-        datos = salud.calcular(timeout=0.5)
-    finally:
-        app.conf.broker_url = settings.CELERY_BROKER_URL
+    # Cambiar app.conf.broker_url aquí no sirve: la app ya está configurada y seguiría usando el broker
+    # real (el test pasaría solo con RabbitMQ parado). Se le da la URL a la conexión que abre calcular().
+    original = app.connection_for_write
+    monkeypatch.setattr(app, "connection_for_write", lambda: original(url="amqp://nadie:nada@127.0.0.1:1//"))  # puerto cerrado
+    datos = salud.calcular(timeout=0.5)
     assert datos == {"workers": 0, "colas": [], "error": "No se puede contactar con el broker."}
 
 

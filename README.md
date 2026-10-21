@@ -10,7 +10,7 @@ Estado comprobado: 275 tests de *backend* (cobertura 94 %), 32 de *frontend* (Vi
 backend/            Django 6.1 + DRF + Celery + Channels (módulos 71-79)
 frontend/           Angular 22 (módulos 80-81), Playwright en e2e/ (módulo 82)
 infra/              Caddyfile, proxy.Dockerfile, desplegar.sh, backup.sh (módulo 83)
-compose.yaml        infraestructura de desarrollo: PostgreSQL, Redis, RabbitMQ, MinIO, Mailpit
+compose.yaml        infraestructura de desarrollo: PostgreSQL, Redis, RabbitMQ, S3 (RustFS), Mailpit
 compose.prod.yaml   producción (módulo 83)
 .github/workflows/  ci.yml (con el job E2E) y release.yml
 ```
@@ -39,7 +39,8 @@ Requisitos (módulo 00): Docker Desktop, `uv`, Node 24, y para el OCR y los PDF 
 ```bash
 # 1. Infraestructura
 docker compose up -d
-# MinIO: entra en http://localhost:9001 (minio / minio12345) y crea el bucket "gastos"
+# bucket "gastos" en el S3 local (o créalo en la consola: http://localhost:9001/rustfs/console/, rustfs / rustfs12345)
+(cd backend && uv run python -c "import boto3; boto3.client('s3', endpoint_url='http://localhost:9000', aws_access_key_id='rustfs', aws_secret_access_key='rustfs12345', region_name='us-east-1').create_bucket(Bucket='gastos')")
 
 # 2. Backend
 cd backend

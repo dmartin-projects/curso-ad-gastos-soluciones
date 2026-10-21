@@ -47,6 +47,7 @@ STORAGES = {
             "access_key": env("S3_ACCESS_KEY"),
             "secret_key": env("S3_SECRET_KEY"),
             "region_name": env("S3_REGION", default="auto"),  # R2 usa "auto"
+            "signature_version": "s3v4",  # sin esto, en AWS las URLs firmadas salen con la firma v2 (obsoleta)
             "default_acl": None,
             "querystring_auth": True,  # los tickets y los extractos son privados
             "querystring_expire": 300,

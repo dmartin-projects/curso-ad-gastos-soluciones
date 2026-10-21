@@ -3,16 +3,17 @@
 # Añade dobles de los servicios externos; todo lo demás (imágenes, Caddy, RabbitMQ, ajustes) es el de producción.
 services:
   s3:
-    build: { context: infra/ci, dockerfile: dobles.Dockerfile }
-    image: gastos-dobles:ci
-    command: ["python", "-m", "moto.server", "-H", "0.0.0.0", "-p", "9000"]
+    image: rustfs/rustfs:1.0.0 # un S3 de verdad (el de desarrollo) en lugar de R2
+    environment:
+      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY}
+      RUSTFS_SECRET_KEY: ${S3_SECRET_KEY}
     # las URLs firmadas apuntan a http://s3:9000: el navegador del test las resuelve con /etc/hosts
     ports: ["9000:9000"]
   smtp:
+    build: { context: infra/ci, dockerfile: dobles.Dockerfile }
     image: gastos-dobles:ci
-    depends_on: [s3] # misma imagen: que la construya s3 una sola vez
     command: ["python", "-m", "aiosmtpd", "-n", "-l", "0.0.0.0:1025"]
   ia:
     image: gastos-dobles:ci
-    depends_on: [s3]
+    depends_on: [smtp] # misma imagen: que la construya smtp una sola vez
     command: ["python", "/ia_falsa.py"]

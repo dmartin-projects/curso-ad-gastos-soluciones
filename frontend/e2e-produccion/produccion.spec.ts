@@ -52,7 +52,7 @@ test('producción: estilos con CSP, caché, ticket por RabbitMQ y un solo WebSoc
   await ticket.click();
   // la foto, con URL firmada: con firma se descarga, sin firma no
   const foto = await page.getByRole('img', { name: 'Foto del ticket' }).getAttribute('src');
-  expect(foto).toMatch(/[?&](X-Amz-)?Signature=/); // SigV4 en R2; SigV2 con el doble (moto)
+  expect(foto).toContain('X-Amz-Signature='); // firma v4 (signature_version s3v4), igual que en R2
   expect((await request.get(foto!)).ok()).toBe(true);
   expect((await request.get(foto!.split('?')[0])).ok()).toBe(false);
 
