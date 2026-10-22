@@ -1,4 +1,4 @@
-// infra/csp.mjs — genera la cabecera CSP de Caddy a partir del index.html del build (módulo 83, ejercicio 2)
+// infra/csp.mjs — genera la cabecera CSP de Caddy a partir del index.html del build (módulo 83)
 // Con "autoCsp", Angular calcula el hash de cada <script> en línea de index.html (el cargador de main.js y el
 // que activa la hoja de estilos tras el CSS crítico) y los pone en un <meta>. Una CSP en <meta> no basta:
 // la cabecera del proxy también se aplica, y la política efectiva es la intersección de las dos.
@@ -15,7 +15,7 @@ if (!scriptSrc?.includes("'sha256-")) {
 const politica = [
   "default-src 'self'",
   `script-src ${scriptSrc}`, // 'strict-dynamic' + hashes: lo que cargue el cargador hereda la confianza
-  "worker-src 'self'", // el service worker (sw-gastos.js) no se rige por 'strict-dynamic'
+  "worker-src 'self'", // el service worker no se rige por 'strict-dynamic'
   "img-src 'self' data: blob: https:", // https: para las URLs firmadas de R2 (fotos de tickets)
   "style-src 'self' 'unsafe-inline'", // Angular Material y el CSS crítico usan estilos en línea
   "font-src 'self'",

@@ -51,7 +51,7 @@ export default class Importaciones {
     const archivo = input.files?.[0];
     input.value = ''; // permite volver a elegir el mismo archivo
     if (!archivo) return;
-    // las cuentas llegan de la API: hasta entonces no hay cuenta elegida (el E2E lo pilló, módulo 82)
+    // las cuentas llegan de la API: si el archivo se elige antes, aún no hay cuenta y no se puede subir
     if (!this.cuenta()) return this.error.set('Elige primero la cuenta.');
     this.subir.mutate(archivo);
   }
