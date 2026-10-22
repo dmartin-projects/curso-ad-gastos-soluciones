@@ -2,16 +2,18 @@
 
 El proyecto de referencia (`gastos-referencia.zip`) **más las soluciones de todos los ejercicios de la Parte 5** (módulos 71-83), un commit por módulo: `git log --oneline` para verlos y `git show <commit>` para ver qué cambia cada solución. Inténtalos antes de mirar.
 
-Estado comprobado: 275 tests de *backend* (cobertura 94 %), 32 de *frontend* (Vitest), 16 de punta a punta (Playwright, también con `E2E_WORKERS=2`) y el recorrido contra producción (`playwright.produccion.config.ts`, módulo 83), todos en verde.
+Estado comprobado: 306 tests de *backend* (cobertura 93,9 %), 32 de *frontend* (Vitest), 16 de punta a punta (Playwright, también con `E2E_WORKERS=2`) y el recorrido contra producción (`playwright.produccion.config.ts`, módulo 83), todos en verde.
 
 ## Estructura
 
 ```
 backend/            Django 6.1 + DRF + Celery + Channels (módulos 71-79)
 frontend/           Angular 22 (módulos 80-81), Playwright en e2e/ (módulo 82)
-infra/              Caddyfile, proxy.Dockerfile, desplegar.sh, backup.sh (módulo 83)
+infra/              Caddyfile, proxy.Dockerfile, csp.mjs, desplegar.sh, rotar-web.sh, backup.sh, ci/ (módulo 83)
 compose.yaml        infraestructura de desarrollo: PostgreSQL, Redis, RabbitMQ, S3 (RustFS), Mailpit
 compose.prod.yaml   producción (módulo 83)
+compose.ci.yaml     dobles de S3, SMTP e IA para probar compose.prod.yaml (módulo 83, ejercicio 4)
+docs/               runbook.md (operar producción, módulo 83) y decisiones.md (ADR, módulo 70)
 .github/workflows/  ci.yml (con el job E2E) y release.yml
 ```
 
@@ -66,7 +68,7 @@ Personal de soporte (el *backoffice* está dentro de la app, no hay Django admin
 ## Tests
 
 ```bash
-cd backend && uv run pytest -n 4 --cov                 # 273 tests
+cd backend && uv run pytest -n 4 --cov                 # 304 tests
 cd frontend && npx ng test --watch=false                # 32 tests
 # punta a punta (módulo 82): una vez, crea la BD de E2E
 docker compose exec db createdb -U gastos gastos_e2e

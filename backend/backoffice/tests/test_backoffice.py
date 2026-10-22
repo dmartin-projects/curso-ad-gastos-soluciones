@@ -140,6 +140,26 @@ def test_pausar_una_tarea_programada(soporte, superusuario):
     assert superusuario.patch(URL + f"tareas/{tarea.pk}/", {"enabled": False}).data["enabled"] is False
 
 
+def test_si_falla_la_auditoria_no_se_guarda_el_cambio(superusuario, monkeypatch):
+    usuario = UsuarioFactory()
+    tarea = PeriodicTask.objects.create(
+        name="informes-mensuales",
+        task="informes.tasks.generar_informes_mensuales",
+        crontab=CrontabSchedule.objects.create(minute="0", hour="7", day_of_month="1"),
+    )
+
+    def auditoria_caida(*args, **kwargs):
+        raise RuntimeError("auditoría caída")
+
+    monkeypatch.setattr("backoffice.api.views.registrar", auditoria_caida)
+    assert superusuario.patch(URL + f"usuarios/{usuario.pk}/", {"is_active": False}).status_code == 500
+    assert superusuario.patch(URL + f"tareas/{tarea.pk}/", {"enabled": False}).status_code == 500
+    # los dos perform_update son atómicos: sin su registro de auditoría, el cambio no queda
+    usuario.refresh_from_db()
+    tarea.refresh_from_db()
+    assert usuario.is_active and tarea.enabled
+
+
 def test_me_dice_si_es_personal(soporte, cliente):
     assert soporte.get("/api/v1/auth/me/").data["es_personal"] is True
     assert cliente(UsuarioFactory()).get("/api/v1/auth/me/").data["es_personal"] is False

@@ -224,6 +224,7 @@ class UsuarioSoporteViewSet(mixins.UpdateModelMixin, viewsets.ReadOnlyModelViewS
         caduca = int(SUPLANTACION.total_seconds())
         return Response({"access": str(token), "caduca_en": caduca}, status=status.HTTP_201_CREATED)
 
+    @transaction.atomic  # el cambio y su registro de auditoría, o los dos o ninguno (como en el módulo 73)
     def perform_update(self, serializer):
         if serializer.instance == self.request.user:
             raise ValidationError({"is_active": ["No puedes desactivar tu propia cuenta."]})
@@ -336,6 +337,7 @@ class TareaProgramadaViewSet(mixins.UpdateModelMixin, viewsets.ReadOnlyModelView
     queryset = PeriodicTask.objects.select_related("crontab").order_by("name")
     pagination_class = None
 
+    @transaction.atomic
     def perform_update(self, serializer):
         antes = model_to_dict(serializer.instance, fields=["enabled"])
         tarea = serializer.save()  # PeriodicTask.save avisa a Beat de que la programación cambió
