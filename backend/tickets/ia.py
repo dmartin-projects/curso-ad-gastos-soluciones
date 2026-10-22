@@ -6,6 +6,7 @@ IA_BASE_URL, IA_MODELO e IA_API_KEY. El resto del proyecto solo conoce `extraer_
 """
 
 import base64
+import functools
 import json
 from decimal import ROUND_HALF_UP, Decimal
 
@@ -111,8 +112,9 @@ def validar(datos) -> dict:
 
 
 class ClienteIA:
-    def __init__(self, *, base_url: str, api_key: str, modelo: str, timeout: float = 30.0):
+    def __init__(self, *, base_url: str, api_key: str, modelo: str, timeout: float = 30.0, compartido=False):
         self.modelo = modelo
+        self._compartido = compartido
         self._http = httpx.Client(
             base_url=base_url,
             headers={"Authorization": f"Bearer {api_key}"},
@@ -121,18 +123,21 @@ class ClienteIA:
 
     @classmethod
     def desde_settings(cls) -> "ClienteIA":
-        return cls(
-            base_url=settings.IA_BASE_URL,
-            api_key=settings.IA_API_KEY,
-            modelo=settings.IA_MODELO,
-            timeout=settings.IA_TIMEOUT,
-        )
+        """El cliente del proceso: se crea una vez y lo reutilizan todos los tickets.
+
+        Crear un httpx.Client no es gratis (carga los certificados y prepara el contexto TLS: decenas de ms),
+        y reutilizarlo mantiene la conexión abierta (keep-alive): con la IA real, por HTTPS, cada llamada se
+        ahorra además el saludo TLS. Se crea en el primer uso, ya dentro del proceso hijo de Celery: una
+        conexión abierta antes del fork quedaría compartida entre procesos.
+        """
+        return _cliente_del_proceso(settings.IA_BASE_URL, settings.IA_API_KEY, settings.IA_MODELO, settings.IA_TIMEOUT)
 
     def __enter__(self):
         return self
 
     def __exit__(self, *exc):
-        self._http.close()
+        if not self._compartido:  # el del proceso vive mientras viva el proceso
+            self._http.close()
 
     def extraer_ticket(self, texto: str, categorias: list[str], imagen_png: bytes | None = None) -> dict:
         contenido: list[dict] = [
@@ -172,3 +177,8 @@ class ClienteIA:
             raise ErrorRespuestaIA("La respuesta no contiene un JSON válido") from e
         uso = respuesta.get("usage") or {}  # opcional en algunos proveedores compatibles
         return contenido, {"entrada": uso.get("prompt_tokens", 0), "salida": uso.get("completion_tokens", 0)}
+
+
+@functools.lru_cache(maxsize=4)  # uno por configuración (en los tests, settings cambia entre pruebas)
+def _cliente_del_proceso(base_url: str, api_key: str, modelo: str, timeout: float) -> ClienteIA:
+    return ClienteIA(base_url=base_url, api_key=api_key, modelo=modelo, timeout=timeout, compartido=True)

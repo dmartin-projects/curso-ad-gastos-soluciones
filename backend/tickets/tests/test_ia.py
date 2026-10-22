@@ -82,3 +82,11 @@ def test_circuit_breaker_deja_de_llamar_tras_el_umbral():
     with pytest.raises(CircuitoAbierto):
         breaker.llamar(falla)
     assert len(llamadas) == 3
+
+
+def test_el_cliente_de_la_ia_se_reutiliza_en_el_proceso():
+    with ClienteIA.desde_settings() as primero:
+        pass
+    with ClienteIA.desde_settings() as segundo:
+        assert segundo is primero  # el mismo httpx.Client: sus conexiones abiertas se reutilizan
+        assert not segundo._http.is_closed  # salir del with no cierra el del proceso
