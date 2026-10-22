@@ -2,7 +2,7 @@ import csv
 
 from django.core.files.storage import default_storage
 from django.db import transaction
-from django.db.models import Count, DecimalField, ProtectedError, Sum, Value
+from django.db.models import Count, DecimalField, RestrictedError, Sum, Value
 from django.db.models.functions import Coalesce
 from django.forms.models import model_to_dict
 from django.http import FileResponse, Http404, StreamingHttpResponse
@@ -86,7 +86,7 @@ class CuentaViewSet(DelHogarViewSet):
     def perform_destroy(self, instance):
         try:
             instance.delete()
-        except ProtectedError:  # Movimiento.cuenta es PROTECT: el historial no se borra con la cuenta
+        except RestrictedError:  # Movimiento.cuenta es RESTRICT: el historial no se borra con la cuenta
             raise CuentaConMovimientos() from None
 
 
@@ -164,7 +164,10 @@ class MovimientoViewSet(DelHogarViewSet):
         with transaction.atomic():
             seleccion = self.get_queryset().filter(pk__in=datos.validated_data["ids"])
             meses = set(seleccion.dates("fecha", "month"))
+            antes = {m.pk: model_to_dict(m) for m in seleccion}
             n = seleccion.update(categoria=datos.validated_data["categoria"], revisado=True)
+            for mov in Movimiento.objects.filter(pk__in=antes):  # auditado uno a uno, como en el backoffice
+                registrar(mov, RegistroAuditoria.Accion.MODIFICAR, request.user, antes=antes[mov.pk])
             # update() no emite post_save: se avisa a mano (dashboard y presupuestos, módulos 76 y 77)
             transaction.on_commit(
                 lambda: movimientos_cambiados.send(sender=Movimiento, hogar_id=self.hogar.pk, meses=meses)

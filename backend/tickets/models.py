@@ -26,7 +26,7 @@ class Ticket(ModeloConFechas):
         ERROR = "error", _("Error")
 
     hogar = models.ForeignKey(Hogar, on_delete=models.CASCADE, related_name="tickets")
-    cuenta = models.ForeignKey(Cuenta, on_delete=models.PROTECT, related_name="tickets")
+    cuenta = models.ForeignKey(Cuenta, on_delete=models.RESTRICT, related_name="tickets")
     subido_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="+")
     archivo = models.FileField(_("archivo"), upload_to=ruta_ticket)
     nombre_original = models.CharField(max_length=200)

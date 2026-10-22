@@ -154,6 +154,8 @@ def test_recategorizar_en_bloque_solo_del_hogar(cliente, escenario):
     assert r.json() == {"actualizados": 3}
     ajeno.refresh_from_db()
     assert ajeno.categoria_id is None
+    auditados = RegistroAuditoria.objects.filter(accion="modificar", usuario=roles["miembro"])
+    assert sorted(int(r.object_id) for r in auditados) == sorted(m.pk for m in mios)
 
 
 def test_exportar_csv(cliente, escenario):
@@ -259,6 +261,14 @@ def test_borrar_una_cuenta_con_movimientos(cliente, escenario):
     assert r.json()["type"] == "cuenta_con_movimientos" and r.json()["title"].startswith("La cuenta tiene movimientos")
     vacia = CuentaFactory(hogar=hogar, nombre="Vacía")
     assert c.delete(f"{url(hogar, 'cuentas')}{vacia.pk}/").status_code == 204
+
+
+def test_borrar_un_hogar_con_movimientos(cliente, escenario):
+    hogar, roles, cuenta, *_ = escenario
+    MovimientoFactory(cuenta=cuenta)
+    # RESTRICT (y no PROTECT): la cuenta no se borra sola, pero sí con su hogar, que se lleva también sus movimientos
+    assert cliente(roles["admin"]).delete(f"/api/v1/hogares/{hogar.pk}/").status_code == 204
+    assert not Movimiento.objects.filter(hogar_id=hogar.pk).exists()
 
 
 def test_jerarquia_de_categorias_de_dos_niveles(cliente, escenario):

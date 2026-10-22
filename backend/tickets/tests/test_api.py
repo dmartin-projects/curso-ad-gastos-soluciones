@@ -73,6 +73,17 @@ def test_la_categoria_habitual_del_hogar_gana_a_la_de_la_ia(escenario, subir, re
     assert mov.categoria == comida
 
 
+def test_a_igualdad_de_veces_la_categoria_sugerida_es_siempre_la_misma(escenario):
+    from finanzas.servicios_comercios import sugerir_categoria
+
+    hogar, _, cuenta, _ = escenario
+    antigua, nueva = CategoriaFactory(hogar=hogar, nombre="Comida"), CategoriaFactory(hogar=hogar, nombre="Hogar")
+    mercadona = Comercio.objects.create(nombre="Mercadona")
+    MovimientoFactory(cuenta=cuenta, comercio=mercadona, categoria=nueva)
+    MovimientoFactory(cuenta=cuenta, comercio=mercadona, categoria=antigua)
+    assert sugerir_categoria(hogar, mercadona) == antigua  # empate a una: desempata el id, no el azar
+
+
 def test_con_dudas_va_a_revision_y_el_usuario_confirma(escenario, subir, cliente, respx_mock):
     hogar, roles, cuenta, super_ = escenario
     respx_mock.post(URL_IA).mock(return_value=respuesta_ia(datos_ia(confianza=0.55, total=5.85)))
@@ -108,6 +119,23 @@ def test_sin_total_no_hay_gasto_hasta_confirmar(escenario, subir, cliente, respx
 
     assert r.status_code == 200
     assert Movimiento.objects.get(pk=r.data["movimiento"]["id"]).importe == Decimal("-12.40")
+
+
+def test_confirmar_no_da_de_alta_comercios_con_el_texto_del_usuario(escenario, subir, cliente, respx_mock):
+    hogar, roles, cuenta, _ = escenario
+    respx_mock.post(URL_IA).mock(return_value=respuesta_ia(datos_ia(total=None, lineas=[])))
+    ticket = Ticket.objects.get(pk=subir(hogar, roles["miembro"], cuenta).data["id"])
+    comercios = set(Comercio.objects.values_list("nombre", flat=True))
+
+    r = cliente(roles["miembro"]).post(
+        url(hogar, f"{ticket.pk}/confirmar/"),
+        {"fecha": "2026-10-12", "total": "3.10", "concepto": "La frutería de Ana"},
+    )
+
+    assert r.status_code == 200
+    # El catálogo de comercios es global (autocompletado de todos los hogares): el texto libre solo se reconoce
+    assert set(Comercio.objects.values_list("nombre", flat=True)) == comercios
+    assert Movimiento.objects.get(pk=r.data["movimiento"]["id"]).comercio is None
 
 
 def test_respuesta_inservible_de_la_ia_pasa_a_revision_sin_reintentar(escenario, subir, respx_mock):
@@ -149,6 +177,8 @@ def test_reprocesar_un_ticket_con_error(escenario, cliente, respx_mock, django_c
     assert r.status_code == 202
     ticket.refresh_from_db()
     assert ticket.estado == E.PROCESADO and ticket.movimiento is not None
+    registro = RegistroAuditoria.objects.get(object_id=str(ticket.pk), usuario=roles["miembro"])
+    assert registro.cambios["estado"] == ["error", "pendiente"]  # auditado, como desde el backoffice
 
 
 def test_una_entrega_duplicada_de_la_tarea_no_crea_otro_gasto(escenario, subir, respx_mock):
@@ -179,6 +209,29 @@ def test_el_mismo_archivo_no_se_sube_dos_veces(escenario, subir, respx_mock):
 
     assert r.status_code == 400
     assert f"ticket {primero.data['id']}" in r.data["errors"]["archivo"][0]
+
+
+def test_dos_subidas_simultaneas_del_mismo_archivo(escenario, subir, monkeypatch):
+    from tickets import services
+
+    hogar, roles, cuenta, _ = escenario
+    original = services.subir
+
+    def otra_subida_a_la_vez(**datos):
+        # la otra request pasó la misma validación e inserta antes: aquí salta la constraint
+        Ticket.objects.create(
+            hogar=datos["hogar"],
+            cuenta=datos["cuenta"],
+            archivo="tickets/otro.jpg",
+            nombre_original="otro.jpg",
+            tipo=datos["tipo"],
+            huella_archivo=datos["huella_archivo"],
+        )
+        return original(**datos)
+
+    monkeypatch.setattr(services, "subir", otra_subida_a_la_vez)
+    r = subir(hogar, roles["miembro"], cuenta)
+    assert r.status_code == 400 and r.json()["errors"]["archivo"] == ["Este ticket ya se subió."]  # no un 500
 
 
 @pytest.mark.parametrize(

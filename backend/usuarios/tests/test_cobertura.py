@@ -84,7 +84,7 @@ def test_token_caducado(api, con_enlace, settings, time_machine):
     # interpreta las fechas con zona en UTC; con el margen, la diferencia de 1-2 h no importa.
     time_machine.move_to(timezone.now() + timedelta(seconds=settings.PASSWORD_RESET_TIMEOUT) + timedelta(days=1))
     r = api.post(A + "recuperar-password/confirmar/", enlace | {"password": "la-nueva-larga-456"})
-    assert r.status_code == 400 and "caducado" in r.json()["detail"]
+    assert r.status_code == 400 and "caducado" in r.json()["title"]
 
 
 def test_password_nueva_debil_no_se_acepta(api, con_enlace):

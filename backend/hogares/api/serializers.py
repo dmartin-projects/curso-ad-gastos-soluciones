@@ -1,3 +1,5 @@
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
 from rest_framework import serializers
 
 from hogares.models import Hogar, Invitacion, Membresia
@@ -11,6 +13,14 @@ class HogarSerializer(serializers.ModelSerializer):
         model = Hogar
         fields = ["id", "nombre", "moneda", "zona_horaria", "mi_rol", "num_miembros", "creado"]
         read_only_fields = ["creado"]
+
+    def validate_zona_horaria(self, valor):
+        # El dashboard y los informes hacen ZoneInfo(hogar.zona_horaria): una zona inexistente sería un 500
+        try:
+            ZoneInfo(valor)
+        except (ZoneInfoNotFoundError, ValueError):
+            raise serializers.ValidationError("Zona horaria desconocida (p. ej. Europe/Madrid).") from None
+        return valor
 
 
 class MiembroSerializer(serializers.ModelSerializer):

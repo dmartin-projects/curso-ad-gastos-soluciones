@@ -1,10 +1,13 @@
-from django.db import transaction
+from django.db import IntegrityError, transaction
+from django.forms.models import model_to_dict
 from drf_spectacular.utils import OpenApiParameter, extend_schema
-from rest_framework import mixins, status, viewsets
+from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from core.auditoria import registrar
+from core.models import RegistroAuditoria
 from finanzas.api.views import DelHogarViewSet
 from hogares.models import Membresia
 from hogares.permissions import HogarDesdeUrlMixin, RolEnHogar
@@ -49,8 +52,14 @@ class ImportacionViewSet(DelHogarViewSet):
     def create(self, request, *args, **kwargs):
         entrada = self.get_serializer(data=request.data)
         entrada.is_valid(raise_exception=True)
-        with transaction.atomic():
-            importacion = services.subir(hogar=self.hogar, usuario=request.user, **entrada.validated_data)
+        try:
+            with transaction.atomic():
+                importacion = services.subir(hogar=self.hogar, usuario=request.user, **entrada.validated_data)
+        except IntegrityError as error:
+            # Dos subidas simultáneas del mismo archivo pasan las dos la validación: decide la constraint
+            if "importacion_archivo_unico_activo" not in str(error):
+                raise
+            raise serializers.ValidationError({"archivo": "Este extracto ya se importó."}) from None
         return self._respuesta(importacion, status.HTTP_202_ACCEPTED)
 
     @extend_schema(parameters=[OpenApiParameter("accion", enum=FilaImportacion.Accion.values)])
@@ -74,7 +83,12 @@ class ImportacionViewSet(DelHogarViewSet):
     @extend_schema(request=None, responses={200: ImportacionSerializer})
     @action(detail=True, methods=["post"])
     def deshacer(self, request, *args, **kwargs):
-        return self._respuesta(services.deshacer(self.get_object()))
+        importacion = self.get_object()
+        antes = model_to_dict(importacion)
+        with transaction.atomic():  # se audita igual que desde el backoffice (módulo 79)
+            importacion = services.deshacer(importacion)
+            registrar(importacion, RegistroAuditoria.Accion.MODIFICAR, request.user, antes=antes)
+        return self._respuesta(importacion)
 
 
 class FilaImportacionViewSet(HogarDesdeUrlMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):

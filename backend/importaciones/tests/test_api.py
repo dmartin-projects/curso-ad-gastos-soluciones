@@ -4,6 +4,7 @@ from decimal import Decimal
 import pytest
 
 from conftest import CategoriaFactory, MovimientoFactory
+from core.models import RegistroAuditoria
 from finanzas.models import Comercio, Movimiento
 from finanzas.signals import movimientos_cambiados
 from importaciones import services
@@ -99,6 +100,7 @@ def test_deshacer_solo_admin_y_deja_todo_como_estaba(escenario, subir, cliente, 
 
     assert r.status_code == 200 and r.data["estado"] == E.DESHECHA
     assert list(Movimiento.objects.all()) == [a_mano]
+    assert RegistroAuditoria.objects.filter(accion="modificar", object_id=str(imp_id), usuario=roles["admin"]).exists()
     a_mano.refresh_from_db()
     assert a_mano.huella == ""
     # deshecha: el mismo archivo se puede volver a subir
@@ -110,6 +112,39 @@ def test_el_mismo_extracto_no_se_sube_dos_veces(escenario, subir):
     subir(hogar, roles["miembro"], cuenta)
     r = subir(hogar, roles["miembro"], cuenta, nombre="copia.csv")
     assert r.status_code == 400 and "ya se importó" in r.data["errors"]["archivo"][0]
+
+
+def test_dos_subidas_simultaneas_del_mismo_extracto(escenario, subir, monkeypatch):
+    hogar, roles, cuenta = escenario
+    original = services.subir
+
+    def otra_subida_a_la_vez(**datos):
+        Importacion.objects.create(
+            hogar=datos["hogar"],
+            cuenta=datos["cuenta"],
+            archivo="importaciones/otro.csv",
+            nombre_original="otro.csv",
+            formato=datos["formato"],
+            huella_archivo=datos["huella_archivo"],
+        )
+        return original(**datos)
+
+    monkeypatch.setattr(services, "subir", otra_subida_a_la_vez)
+    r = subir(hogar, roles["miembro"], cuenta)
+    assert r.status_code == 400 and r.json()["errors"]["archivo"] == ["Este extracto ya se importó."]
+
+
+def test_borrar_un_hogar_con_importaciones_y_tickets(escenario, subir, cliente):
+    from tickets.models import Ticket
+
+    hogar, roles, cuenta = escenario
+    subir(hogar, roles["miembro"], cuenta)
+    Ticket.objects.create(
+        hogar=hogar, cuenta=cuenta, archivo="tickets/x.jpg", nombre_original="x.jpg", tipo="image/jpeg"
+    )
+    # Importacion.cuenta y Ticket.cuenta son RESTRICT: borrar el hogar entero sí puede (y no da un 500)
+    assert cliente(roles["admin"]).delete(f"/api/v1/hogares/{hogar.pk}/").status_code == 204
+    assert not Importacion.objects.filter(hogar=hogar).exists() and not Ticket.objects.filter(hogar=hogar).exists()
 
 
 def test_archivo_binario_se_rechaza_y_csv_ilegible_acaba_en_error(escenario, subir):

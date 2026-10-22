@@ -87,7 +87,7 @@ class Movimiento(ModeloConFechas):
         EXTRACTO = "extracto", _("Extracto bancario")
 
     hogar = models.ForeignKey(Hogar, on_delete=models.CASCADE, related_name="movimientos")
-    cuenta = models.ForeignKey(Cuenta, on_delete=models.PROTECT, related_name="movimientos")
+    cuenta = models.ForeignKey(Cuenta, on_delete=models.RESTRICT, related_name="movimientos")
     fecha = models.DateField(_("fecha"))
     importe = models.DecimalField(_("importe"), max_digits=12, decimal_places=2)  # < 0 gasto, > 0 ingreso
     concepto = models.CharField(_("concepto"), max_length=255)

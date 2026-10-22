@@ -58,3 +58,18 @@ def test_el_email_no_distingue_mayusculas():
     assert r.status_code == 200 and "access" in r.json()  # get_by_natural_key del manager
     with pytest.raises(IntegrityError), transaction.atomic():  # y la BD no admite otra "Ana@…"
         Usuario.objects.create_user("Ana@Example.com", "otra-clave-larga-99")
+
+
+def test_enlaces_y_contrasenas_con_el_formato_de_error(api):
+    from conftest import UsuarioFactory
+    from usuarios.services import generar_enlace
+
+    falso = {"uid": "MQ", "token": "falso"}
+    for ruta in ("verificar-email/", "recuperar-password/confirmar/"):
+        r = api.post(A + ruta, falso | {"password": "una-clave-muy-larga-77"})
+        assert r.status_code == 400 and r.json()["type"] == "enlace_no_valido"
+        assert r.json()["title"] == "Enlace no válido o caducado."
+    enlace = generar_enlace(UsuarioFactory(), "nueva-password")
+    uid, token = re.search(r"uid=(\S+)&token=(\S+)", enlace).groups()
+    r = api.post(A + "recuperar-password/confirmar/", {"uid": uid, "token": token, "password": "123"})
+    assert r.status_code == 400 and set(r.json()["errors"]) == {"password"}  # todos los motivos, en su campo

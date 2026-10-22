@@ -19,7 +19,12 @@ from django.utils import timezone
 from core.auditoria import registrar
 from core.models import RegistroAuditoria
 from finanzas.models import Movimiento
-from finanzas.servicios_comercios import aprender_categoria, reconocer_o_crear_comercio, sugerir_categoria
+from finanzas.servicios_comercios import (
+    aprender_categoria,
+    reconocer_comercio,
+    reconocer_o_crear_comercio,
+    sugerir_categoria,
+)
 
 from . import imagenes, ocr
 from .exceptions import EstadoNoPermitido
@@ -212,7 +217,7 @@ def confirmar(ticket: Ticket, *, datos: dict, usuario) -> Ticket:
             cuenta_id=ticket.cuenta_id,
             origen=Movimiento.Origen.TICKET,
             creado_por=usuario,
-            comercio=reconocer_o_crear_comercio(datos["concepto"]),
+            comercio=reconocer_comercio(datos["concepto"]),  # texto libre: solo reconocer, nunca dar de alta
             **campos,
         )
         registrar(mov, RegistroAuditoria.Accion.CREAR, usuario)

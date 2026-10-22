@@ -1,9 +1,11 @@
 from django.contrib.auth import get_user_model, password_validation
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 from rest_framework import generics, permissions, serializers
 from rest_framework.response import Response
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 
+from usuarios.exceptions import EnlaceNoValido
 from usuarios.services import generar_enlace, usuario_desde_enlace
 from usuarios.tasks import enviar_email_recuperacion, enviar_email_verificacion
 
@@ -29,7 +31,7 @@ class VerificarEmail(VistaPublicaAuth):  # base de la sección 4
     def post(self, request, **kwargs):
         usuario = usuario_desde_enlace(request.data.get("uid", ""), request.data.get("token", ""))
         if usuario is None:
-            return Response({"detail": "Enlace no válido o caducado."}, status=400)
+            raise EnlaceNoValido()  # formato de error del módulo 38: type "enlace_no_valido"
         usuario.is_active = True
         usuario.save(update_fields=["is_active"])
         return Response(status=204)
@@ -87,9 +89,12 @@ class ConfirmarRecuperacion(VistaPublicaAuth):  # base de la sección 4
     def post(self, request, **kwargs):
         usuario = usuario_desde_enlace(request.data.get("uid", ""), request.data.get("token", ""))
         if usuario is None:
-            return Response({"detail": "Enlace no válido o caducado."}, status=400)
+            raise EnlaceNoValido()  # formato de error del módulo 38: type "enlace_no_valido"
         password = request.data.get("password", "")
-        password_validation.validate_password(password, user=usuario)  # ValidationError de Django → 400
+        try:
+            password_validation.validate_password(password, user=usuario)
+        except DjangoValidationError as error:  # los motivos, en el campo password (como en el registro)
+            raise serializers.ValidationError({"password": list(error.messages)}) from error
         usuario.set_password(password)
         usuario.save(update_fields=["password"])  # cambia el hash → el enlace deja de valer
         return Response(status=204)

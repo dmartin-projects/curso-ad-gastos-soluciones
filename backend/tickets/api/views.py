@@ -1,9 +1,12 @@
-from django.db import transaction
+from django.db import IntegrityError, transaction
+from django.forms.models import model_to_dict
 from drf_spectacular.utils import extend_schema
-from rest_framework import status
+from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from core.auditoria import registrar
+from core.models import RegistroAuditoria
 from finanzas.api.views import DelHogarViewSet
 from tickets import services
 from tickets.models import Ticket
@@ -50,8 +53,14 @@ class TicketViewSet(DelHogarViewSet):
     def create(self, request, *args, **kwargs):
         entrada = self.get_serializer(data=request.data)
         entrada.is_valid(raise_exception=True)
-        with transaction.atomic():
-            ticket = services.subir(hogar=self.hogar, usuario=request.user, **entrada.validated_data)
+        try:
+            with transaction.atomic():
+                ticket = services.subir(hogar=self.hogar, usuario=request.user, **entrada.validated_data)
+        except IntegrityError as error:
+            # Dos subidas simultáneas del mismo archivo pasan las dos la validación: decide la constraint
+            if "ticket_archivo_unico_por_hogar" not in str(error):
+                raise
+            raise serializers.ValidationError({"archivo": "Este ticket ya se subió."}) from None
         return self._respuesta(ticket, status.HTTP_202_ACCEPTED)
 
     def perform_destroy(self, instance):
@@ -71,7 +80,11 @@ class TicketViewSet(DelHogarViewSet):
     def reprocesar(self, request, *args, **kwargs):
         entrada = self.get_serializer(data=request.data)
         entrada.is_valid(raise_exception=True)
-        ticket = services.reprocesar(self.get_object(), **entrada.validated_data)
+        ticket = self.get_object()
+        antes = model_to_dict(ticket)
+        with transaction.atomic():  # se audita igual que desde el backoffice (módulo 79)
+            ticket = services.reprocesar(ticket, **entrada.validated_data)
+            registrar(ticket, RegistroAuditoria.Accion.MODIFICAR, request.user, antes=antes)
         return self._respuesta(ticket, status.HTTP_202_ACCEPTED)
 
     @extend_schema(responses={200: UrlArchivoSerializer})

@@ -71,3 +71,11 @@ def test_solo_admin_edita_el_hogar(cliente, hogar_con_roles):
     assert cliente(roles["miembro"]).patch(f"{URL}{hogar.pk}/", {"nombre": "x"}).status_code == 403
     assert cliente(roles["admin"]).patch(f"{URL}{hogar.pk}/", {"nombre": "x"}).status_code == 200
     assert cliente(roles["ajeno"]).get(f"{URL}{hogar.pk}/").status_code == 404
+
+
+def test_zona_horaria_del_hogar_validada(cliente, hogar_con_roles):
+    hogar, roles = hogar_con_roles
+    c = cliente(roles["admin"])
+    r = c.patch(f"{URL}{hogar.pk}/", {"zona_horaria": "Europe/Narnia"})
+    assert r.status_code == 400 and "zona_horaria" in r.json()["errors"]
+    assert c.patch(f"{URL}{hogar.pk}/", {"zona_horaria": "America/Mexico_City"}).status_code == 200

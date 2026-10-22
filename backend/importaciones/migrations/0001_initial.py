@@ -71,7 +71,7 @@ class Migration(migrations.Migration):
                 (
                     "cuenta",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.PROTECT,
+                        on_delete=django.db.models.deletion.RESTRICT,
                         related_name="importaciones",
                         to="finanzas.cuenta",
                     ),

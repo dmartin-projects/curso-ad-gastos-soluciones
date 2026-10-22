@@ -45,7 +45,7 @@ def sugerir_categoria(hogar, comercio: Comercio | None, nombre_sugerido: str = "
             Movimiento.objects.filter(hogar=hogar, comercio=comercio, categoria__isnull=False, revisado=True)
             .values("categoria")
             .annotate(veces=Count("id"))
-            .order_by("-veces")
+            .order_by("-veces", "categoria")  # a igualdad de veces, siempre la misma (la más antigua)
             .first()
         )
         if habitual:

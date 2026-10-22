@@ -62,7 +62,7 @@ class Importacion(ModeloConFechas):
         XLSX = "xlsx", "Excel"
 
     hogar = models.ForeignKey(Hogar, on_delete=models.CASCADE, related_name="importaciones")
-    cuenta = models.ForeignKey(Cuenta, on_delete=models.PROTECT, related_name="importaciones")
+    cuenta = models.ForeignKey(Cuenta, on_delete=models.RESTRICT, related_name="importaciones")
     subido_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="+")
     archivo = models.FileField(upload_to=ruta_importacion)
     nombre_original = models.CharField(max_length=200)
