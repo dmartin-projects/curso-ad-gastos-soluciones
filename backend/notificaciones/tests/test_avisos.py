@@ -88,6 +88,22 @@ def test_recategorizar_en_bloque_tambien_avisa(escenario, cliente, django_captur
     assert recibidos[-1]["meses"] == {date(2026, 9, 1)}
 
 
+def test_cambiar_la_fecha_a_otro_mes_rearma_la_alerta_del_mes_de_antes(
+    escenario, cliente, django_capture_on_commit_callbacks
+):
+    hogar, roles, cuenta, super_ = escenario
+    p = Presupuesto.objects.create(hogar=hogar, categoria=super_, mes=date(2026, 10, 1), importe=Decimal("100"))
+    gasto = MovimientoFactory(cuenta=cuenta, categoria=super_, fecha=HOY, importe=Decimal("-150"))
+    comprobar_presupuestos(hogar.pk, [date(2026, 10, 1)])  # octubre: superado y avisado
+    with django_capture_on_commit_callbacks(execute=True):
+        r = cliente(roles["miembro"]).patch(
+            f"/api/v1/hogares/{hogar.pk}/movimientos/{gasto.pk}/", {"fecha": "2026-09-28"}
+        )
+    assert r.status_code == 200
+    p.refresh_from_db()
+    assert p.alerta_enviada is False  # octubre ya no está superado: si se vuelve a superar, se avisará otra vez
+
+
 def test_api_de_notificaciones(cliente):
     yo, otro = UsuarioFactory(), UsuarioFactory()
     mias = [Notificacion.objects.create(usuario=yo, tipo=T.TICKET_PROCESADO, titulo=f"n{i}") for i in range(3)]

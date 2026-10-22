@@ -53,7 +53,8 @@ def test_broker_caido_no_tumba_el_resumen(monkeypatch):
     # Cambiar app.conf.broker_url aquí no sirve: la app ya está configurada y seguiría usando el broker
     # real (el test pasaría solo con RabbitMQ parado). Se le da la URL a la conexión que abre calcular().
     original = app.connection_for_write
-    monkeypatch.setattr(app, "connection_for_write", lambda: original(url="amqp://nadie:nada@127.0.0.1:1//"))  # puerto cerrado
+    cerrado = "amqp://nadie:nada@127.0.0.1:1//"  # puerto cerrado
+    monkeypatch.setattr(app, "connection_for_write", lambda: original(url=cerrado))
     datos = salud.calcular(timeout=0.5)
     assert datos == {"workers": 0, "colas": [], "error": "No se puede contactar con el broker."}
 

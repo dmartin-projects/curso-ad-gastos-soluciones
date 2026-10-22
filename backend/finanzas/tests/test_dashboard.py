@@ -115,3 +115,13 @@ def test_renombrar_una_categoria_invalida(datos, cliente, django_capture_on_comm
         c.patch(f"/api/v1/hogares/{hogar.pk}/categorias/{comida.pk}/", {"nombre": "Alimentación"})
     nombres = [x["nombre"] for x in c.get(url(hogar), {"mes": "2026-10"}).data["por_categoria"]]
     assert "Alimentación" in nombres
+
+
+def test_borrar_un_presupuesto_invalida(datos, cliente, django_capture_on_commit_callbacks):
+    hogar, roles, comida, _ = datos
+    c = cliente(roles["admin"])
+    assert len(c.get(url(hogar), {"mes": "2026-10"}).data["presupuestos"]) == 1
+    presupuesto = Presupuesto.objects.get(hogar=hogar, categoria=comida)
+    with django_capture_on_commit_callbacks(execute=True):
+        assert c.delete(f"/api/v1/hogares/{hogar.pk}/presupuestos/{presupuesto.pk}/").status_code == 204
+    assert c.get(url(hogar), {"mes": "2026-10"}).data["presupuestos"] == []

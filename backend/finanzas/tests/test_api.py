@@ -179,3 +179,94 @@ def test_saldo_de_cuentas_y_reordenar_categorias(cliente, escenario):
     super_.refresh_from_db()
     assert super_.orden == 0
     assert Movimiento.objects.count() == 2
+
+
+def errores(r) -> dict:
+    assert r.status_code == 400, r.content
+    return r.json()["errors"]
+
+
+def test_presupuesto_con_importe_mayor_que_cero(cliente, escenario):
+    hogar, roles, _, comida, _ = escenario
+    r = cliente(roles["admin"]).post(
+        url(hogar, "presupuestos"), {"categoria": comida.pk, "mes": "2026-10-01", "importe": "0"}
+    )
+    assert errores(r) == {"importe": ["El importe debe ser mayor que cero."]}
+
+
+def test_un_presupuesto_por_categoria_y_mes(cliente, escenario):
+    hogar, roles, _, comida, super_ = escenario
+    Presupuesto.objects.create(hogar=hogar, categoria=comida, mes=date(2026, 10, 1), importe=Decimal("10"))
+    c = cliente(roles["admin"])
+    r = c.post(url(hogar, "presupuestos"), {"categoria": comida.pk, "mes": "2026-10-15", "importe": "20"})
+    assert errores(r) == {"categoria": ["Ya hay un presupuesto de esta categoría para ese mes."]}
+    otro = Presupuesto.objects.create(hogar=hogar, categoria=super_, mes=date(2026, 10, 1), importe=Decimal("5"))
+    assert "categoria" in errores(c.patch(f"{url(hogar, 'presupuestos')}{otro.pk}/", {"categoria": comida.pk}))
+    assert c.patch(f"{url(hogar, 'presupuestos')}{otro.pk}/", {"importe": "6"}).status_code == 200  # él mismo no cuenta
+
+
+def test_nombre_de_cuenta_unico_en_el_hogar(cliente, escenario):
+    hogar, roles, cuenta, *_ = escenario
+    CuentaFactory(hogar=HogarFactory(), nombre="Tarjeta")  # en otro hogar no choca
+    c = cliente(roles["admin"])
+    assert errores(c.post(url(hogar, "cuentas"), {"nombre": "Común"})) == {
+        "nombre": ["Ya hay una cuenta con ese nombre."]
+    }
+    assert c.post(url(hogar, "cuentas"), {"nombre": "Tarjeta"}).status_code == 201
+    assert c.patch(f"{url(hogar, 'cuentas')}{cuenta.pk}/", {"nombre": "Común"}).status_code == 200
+
+
+def test_nombre_de_categoria_unico_en_su_nivel(cliente, escenario):
+    hogar, roles, _, comida, _ = escenario
+    c = cliente(roles["miembro"])
+    assert errores(c.post(url(hogar, "categorias"), {"nombre": "Comida"})) == {
+        "nombre": ["Ya hay una categoría con ese nombre en este nivel."]
+    }
+    assert "nombre" in errores(c.post(url(hogar, "categorias"), {"nombre": "Súper", "padre": comida.pk}))
+    assert c.post(url(hogar, "categorias"), {"nombre": "Súper"}).status_code == 201  # en la raíz no hay otra
+
+
+def test_color_de_categoria_en_formato_hexadecimal(cliente, escenario):
+    hogar, roles, _, comida, _ = escenario
+    c = cliente(roles["miembro"])
+    r = c.post(url(hogar, "categorias"), {"nombre": "Ropa", "color": "rojo"})
+    assert errores(r) == {"color": ["El color debe tener el formato #rrggbb."]}
+    assert c.patch(f"{url(hogar, 'categorias')}{comida.pk}/", {"color": "#FF9800"}).status_code == 200
+
+
+def test_borrar_una_cuenta_con_movimientos(cliente, escenario):
+    hogar, roles, cuenta, *_ = escenario
+    MovimientoFactory(cuenta=cuenta)
+    c = cliente(roles["admin"])
+    r = c.delete(f"{url(hogar, 'cuentas')}{cuenta.pk}/")
+    assert r.status_code == 409
+    assert r.json()["type"] == "cuenta_con_movimientos" and r.json()["title"].startswith("La cuenta tiene movimientos")
+    vacia = CuentaFactory(hogar=hogar, nombre="Vacía")
+    assert c.delete(f"{url(hogar, 'cuentas')}{vacia.pk}/").status_code == 204
+
+
+def test_jerarquia_de_categorias_de_dos_niveles(cliente, escenario):
+    hogar, roles, _, comida, super_ = escenario
+    ocio = CategoriaFactory(hogar=hogar, nombre="Ocio")
+    c = cliente(roles["miembro"])
+    cats = url(hogar, "categorias")
+    assert errores(c.patch(f"{cats}{ocio.pk}/", {"padre": ocio.pk})) == {
+        "padre": ["Una categoría no puede ser su propia madre."]
+    }
+    assert errores(c.patch(f"{cats}{comida.pk}/", {"padre": ocio.pk})) == {  # Ocio › Comida › Súper
+        "padre": ["Una categoría con subcategorías no puede colgar de otra."]
+    }
+    assert errores(c.post(cats, {"nombre": "Fruta", "padre": super_.pk})) == {
+        "padre": ["Solo se permiten dos niveles de categorías."]
+    }
+    assert c.patch(f"{cats}{super_.pk}/", {"padre": ocio.pk}).status_code == 200  # una hoja sí cambia de madre
+
+
+def test_crear_un_presupuesto_devuelve_lo_gastado(cliente, escenario):
+    hogar, roles, cuenta, comida, super_ = escenario
+    MovimientoFactory(cuenta=cuenta, categoria=super_, fecha=date(2026, 10, 3), importe=Decimal("-25"))
+    r = cliente(roles["admin"]).post(
+        url(hogar, "presupuestos"), {"categoria": comida.pk, "mes": "2026-10-20", "importe": "100"}
+    )
+    assert r.status_code == 201
+    assert (r.json()["mes"], r.json()["gastado"], r.json()["porcentaje"]) == ("2026-10-01", "-25.00", 25)

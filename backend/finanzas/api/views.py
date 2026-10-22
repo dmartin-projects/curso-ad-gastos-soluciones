@@ -2,7 +2,7 @@ import csv
 
 from django.core.files.storage import default_storage
 from django.db import transaction
-from django.db.models import Count, DecimalField, Sum, Value
+from django.db.models import Count, DecimalField, ProtectedError, Sum, Value
 from django.db.models.functions import Coalesce
 from django.forms.models import model_to_dict
 from django.http import FileResponse, Http404, StreamingHttpResponse
@@ -20,6 +20,7 @@ from core.auditoria import registrar
 from core.hojas_de_calculo import texto_csv
 from core.models import RegistroAuditoria
 from finanzas import dashboard, exportacion
+from finanzas.exceptions import CuentaConMovimientos
 from finanzas.models import Categoria, Comercio, Cuenta, Movimiento, Presupuesto
 from finanzas.servicios_comercios import reconocer_comercio
 from finanzas.signals import movimientos_cambiados
@@ -81,6 +82,12 @@ class CuentaViewSet(DelHogarViewSet):
             .annotate(saldo=Coalesce(Sum("movimientos__importe"), Value(0), output_field=DecimalField()))
             .order_by("nombre")
         )
+
+    def perform_destroy(self, instance):
+        try:
+            instance.delete()
+        except ProtectedError:  # Movimiento.cuenta es PROTECT: el historial no se borra con la cuenta
+            raise CuentaConMovimientos() from None
 
 
 class CategoriaViewSet(DelHogarViewSet):
@@ -265,6 +272,18 @@ class PresupuestoViewSet(DelHogarViewSet):
         if not self.es_esquema() and (mes := self.request.query_params.get("mes")):
             qs = qs.filter(mes=f"{mes}-01")
         return qs.con_gastado().order_by("categoria__orden")  # Subquery correlacionada (módulos 07 y 76)
+
+    def perform_create(self, serializer):
+        super().perform_create(serializer)
+        self._con_gastado(serializer)
+
+    def perform_update(self, serializer):
+        super().perform_update(serializer)
+        self._con_gastado(serializer)
+
+    def _con_gastado(self, serializer):
+        # La instancia recién guardada no lleva la anotación `gastado`: sin releerla, la response no lo incluiría
+        serializer.instance = self.get_queryset().get(pk=serializer.instance.pk)
 
 
 class ComercioViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

@@ -1,3 +1,4 @@
+import re
 from decimal import Decimal
 
 from django.utils import timezone
@@ -19,12 +20,29 @@ class DelHogarMixin:
                 self.fields[campo].queryset = modelo.objects.filter(hogar=hogar)
 
 
+def repetido(serializer, modelo, **campos) -> bool:
+    """¿Hay otro objeto del hogar con estos valores? Lo que comprueba una UniqueConstraint que incluye `hogar`.
+
+    DRF no la valida porque `hogar` no es un campo del serializer: sin esto, el duplicado llegaría a la base
+    de datos y sería un IntegrityError (500) en vez de un error del campo (400).
+    """
+    otros = modelo.objects.filter(hogar=serializer.context["hogar"], **campos)
+    if serializer.instance is not None:
+        otros = otros.exclude(pk=serializer.instance.pk)  # al editar, el propio objeto no cuenta
+    return otros.exists()
+
+
 class CuentaSerializer(serializers.ModelSerializer):
     saldo = serializers.DecimalField(max_digits=14, decimal_places=2, read_only=True)
 
     class Meta:
         model = Cuenta
         fields = ["id", "nombre", "tipo", "iban", "activa", "saldo"]
+
+    def validate_nombre(self, valor):
+        if repetido(self, Cuenta, nombre=valor):
+            raise serializers.ValidationError("Ya hay una cuenta con ese nombre.")
+        return valor
 
 
 class CategoriaSerializer(DelHogarMixin, serializers.ModelSerializer):
@@ -34,10 +52,24 @@ class CategoriaSerializer(DelHogarMixin, serializers.ModelSerializer):
         model = Categoria
         fields = ["id", "nombre", "padre", "color", "icono", "orden", "es_ingreso"]
 
+    def validate_color(self, valor):
+        if not re.fullmatch(r"#[0-9a-fA-F]{6}", valor):
+            raise serializers.ValidationError("El color debe tener el formato #rrggbb.")
+        return valor
+
     def validate(self, datos):
-        padre = datos.get("padre")
-        if padre and padre.padre_id:
-            raise serializers.ValidationError({"padre": "Solo se permiten dos niveles de categorías."})
+        # En un PATCH, lo que no llega se queda como estaba
+        padre = datos["padre"] if "padre" in datos else getattr(self.instance, "padre", None)
+        nombre = datos.get("nombre", getattr(self.instance, "nombre", None))
+        if padre:
+            if self.instance is not None and padre.pk == self.instance.pk:
+                raise serializers.ValidationError({"padre": "Una categoría no puede ser su propia madre."})
+            if padre.padre_id:
+                raise serializers.ValidationError({"padre": "Solo se permiten dos niveles de categorías."})
+            if self.instance is not None and self.instance.hijas.exists():
+                raise serializers.ValidationError({"padre": "Una categoría con subcategorías no puede colgar de otra."})
+        if repetido(self, Categoria, padre=padre, nombre=nombre):
+            raise serializers.ValidationError({"nombre": "Ya hay una categoría con ese nombre en este nivel."})
         return datos
 
 
@@ -114,8 +146,20 @@ class PresupuestoSerializer(DelHogarMixin, serializers.ModelSerializer):
         gastado = getattr(p, "gastado", None)
         return None if gastado is None else int(abs(gastado) / p.importe * 100)
 
+    def validate_importe(self, valor: Decimal) -> Decimal:
+        if valor <= 0:
+            raise serializers.ValidationError("El importe debe ser mayor que cero.")
+        return valor
+
     def validate_mes(self, valor):
         return valor.replace(day=1)
+
+    def validate(self, datos):
+        categoria = datos.get("categoria", getattr(self.instance, "categoria", None))
+        mes = datos.get("mes", getattr(self.instance, "mes", None))
+        if repetido(self, Presupuesto, categoria=categoria, mes=mes):
+            raise serializers.ValidationError({"categoria": "Ya hay un presupuesto de esta categoría para ese mes."})
+        return datos
 
 
 # ── Dashboard (módulo 77): solo salida; documenta la forma en OpenAPI y formatea Decimal y fechas ──

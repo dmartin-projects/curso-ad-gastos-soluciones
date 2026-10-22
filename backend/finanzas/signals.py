@@ -30,8 +30,8 @@ def al_cambiar_movimiento(sender, instance, **kwargs):
     transaction.on_commit(lambda: movimientos_cambiados.send(sender=Movimiento, hogar_id=hogar_id, meses=meses))
 
 
-@receiver(post_save, sender=Presupuesto, dispatch_uid="finanzas_presupuesto_guardado")
-def al_guardar_presupuesto(sender, instance, **kwargs):
+@receiver([post_save, post_delete], sender=Presupuesto, dispatch_uid="finanzas_presupuesto_cambiado")
+def al_cambiar_presupuesto(sender, instance, **kwargs):
     hogar_id, meses = instance.hogar_id, {instance.mes}
     transaction.on_commit(lambda: movimientos_cambiados.send(sender=Presupuesto, hogar_id=hogar_id, meses=meses))
 
