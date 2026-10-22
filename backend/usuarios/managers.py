@@ -14,6 +14,11 @@ class UsuarioManager(BaseUserManager):
         usuario.save(using=self._db)
         return usuario
 
+    def get_by_natural_key(self, email):
+        # Lo usa el login (ModelBackend): "Ana@Example.com" entra en la cuenta "ana@example.com".
+        # Hay como mucho una: la constraint usuario_email_unico_sin_mayusculas lo garantiza.
+        return self.get(email__iexact=email)
+
     def create_user(self, email, password=None, **extra):
         extra.setdefault("is_staff", False)
         extra.setdefault("is_superuser", False)

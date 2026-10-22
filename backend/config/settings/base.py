@@ -123,8 +123,7 @@ CACHES = {
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
-        # socket_timeout > 5: redis-py 8 lee con 5 s por defecto, lo mismo que espera el BZPOPMIN de channels_redis,
-        # y un WebSocket sin mensajes se caía cada 5 s con "Timeout reading from…" (módulo 83)
+        # socket_timeout > 5: con redis-py 8 un WebSocket sin mensajes se cae cada 5 s (ver nota)
         "CONFIG": {
             "hosts": [{"address": env("REDIS_CHANNELS_URL", default="redis://localhost:6379/2"), "socket_timeout": 10}]
         },
@@ -138,6 +137,7 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_ACKS_LATE = True
 CELERY_TASK_REJECT_ON_WORKER_LOST = True
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+CELERY_WORKER_HIJACK_ROOT_LOGGER = False  # el worker usa nuestro LOGGING (con request_id)
 CELERY_TASK_TIME_LIMIT = 300
 CELERY_TASK_SOFT_TIME_LIMIT = 270
 CELERY_TASK_DEFAULT_QUEUE = "default"

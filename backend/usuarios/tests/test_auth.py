@@ -3,7 +3,10 @@ import re
 import pytest
 from django.core import mail
 from django.core.cache import cache
+from django.db import IntegrityError, transaction
 from rest_framework.test import APIClient
+
+from usuarios.models import Usuario
 
 pytestmark = pytest.mark.django_db
 A = "/api/v1/auth/"
@@ -45,3 +48,13 @@ def test_cambiar_password_cierra_otras_sesiones():
         == 204
     )
     assert c.post(A + "refresh/").status_code == 401
+
+
+def test_el_email_no_distingue_mayusculas():
+    from conftest import UsuarioFactory
+
+    UsuarioFactory(email="ana@example.com")
+    r = APIClient().post(A + "login/", {"email": "ANA@Example.com", "password": "clave-segura-123"})
+    assert r.status_code == 200 and "access" in r.json()  # get_by_natural_key del manager
+    with pytest.raises(IntegrityError), transaction.atomic():  # y la BD no admite otra "Ana@…"
+        Usuario.objects.create_user("Ana@Example.com", "otra-clave-larga-99")

@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models.functions import Lower
 from django.utils import timezone
 
 from .managers import UsuarioManager
@@ -31,6 +32,10 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         verbose_name = "usuario"
+        constraints = [
+            # Un email, una cuenta, sin importar las mayúsculas: "Ana@x.com" y "ana@x.com" son la misma persona
+            models.UniqueConstraint(Lower("email"), name="usuario_email_unico_sin_mayusculas"),
+        ]
         # No va en ningún grupo: solo un superusuario, o quien lo reciba a mano, puede suplantar (módulo 79)
         permissions = [("suplantar_usuario", "Puede ver la app como otro usuario (solo lectura, 5 min)")]
 

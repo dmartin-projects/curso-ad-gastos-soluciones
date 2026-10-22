@@ -58,6 +58,14 @@ def test_no_se_puede_quitar_el_ultimo_admin(cliente, hogar_con_roles):
     assert r.status_code == 409 and r.json()["type"] == "ultimo_administrador"
 
 
+def test_el_unico_admin_no_puede_expulsarse(cliente, hogar_con_roles):
+    hogar, roles = hogar_con_roles
+    m = Membresia.objects.get(hogar=hogar, usuario=roles["admin"])
+    r = cliente(roles["admin"]).delete(f"{URL}{hogar.pk}/miembros/{m.pk}/")
+    assert r.status_code == 409 and r.json()["type"] == "ultimo_administrador"
+    assert Membresia.objects.filter(pk=m.pk).exists()
+
+
 def test_solo_admin_edita_el_hogar(cliente, hogar_con_roles):
     hogar, roles = hogar_con_roles
     assert cliente(roles["miembro"]).patch(f"{URL}{hogar.pk}/", {"nombre": "x"}).status_code == 403
