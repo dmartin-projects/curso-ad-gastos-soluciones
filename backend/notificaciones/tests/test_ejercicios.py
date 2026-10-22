@@ -3,12 +3,13 @@ from decimal import Decimal
 
 import pytest
 from django.core import mail
+from django.core.cache import cache
 from django.utils import timezone
 
 from conftest import CategoriaFactory, CuentaFactory, MovimientoFactory, UsuarioFactory
 from finanzas.models import Movimiento, Presupuesto
 from finanzas.servicios_presupuestos import comprobar_presupuestos
-from finanzas.signals import movimientos_cambiados
+from finanzas.tasks import comprobar_presupuestos_tarea
 from notificaciones.models import Notificacion
 from notificaciones.services import limpiar_leidas, notificar
 from notificaciones.tasks import limpiar_notificaciones_leidas
@@ -123,51 +124,42 @@ def test_limpieza_esta_en_beat(settings):
     assert limpiar_notificaciones_leidas() == 0
 
 
-# ── 4. Cambio de mes ──
+# ── 4. Un aviso por ventana (debounce) ──
 @pytest.fixture
-def senales():
-    recibidas = []
-
-    def receptor(sender, hogar_id, meses, **kwargs):
-        recibidas.append(meses)
-
-    movimientos_cambiados.connect(receptor, dispatch_uid="test-meses")
-    yield recibidas
-    movimientos_cambiados.disconnect(dispatch_uid="test-meses")
-
-
-def test_mover_un_gasto_de_mes_avisa_de_los_dos(escenario, cliente, senales, django_capture_on_commit_callbacks):
-    hogar, roles, cuenta, _ = escenario
-    m = MovimientoFactory(cuenta=cuenta, fecha=date(2026, 10, 3))
-    senales.clear()
-    with django_capture_on_commit_callbacks(execute=True):
-        r = cliente(roles["miembro"]).patch(f"/api/v1/hogares/{hogar.pk}/movimientos/{m.pk}/", {"fecha": "2026-09-28"})
-    assert r.status_code == 200
-    assert senales == [{OCTUBRE, SEPTIEMBRE}]
+def encoladas(monkeypatch):
+    """La tarea, sustituida por una lista: qué comprobaciones se encolan y con qué espera (countdown)."""
+    cache.clear()  # LocMemCache: las ventanas abiertas por otros tests no cuentan
+    llamadas = []
+    monkeypatch.setattr(
+        comprobar_presupuestos_tarea, "apply_async", lambda args, countdown: llamadas.append((args, countdown))
+    )
+    return llamadas
 
 
-def test_presupuesto_del_mes_anterior_se_rearma_al_sacar_el_gasto(escenario, django_capture_on_commit_callbacks):
+def test_300_borrados_encolan_una_comprobacion_por_mes(escenario, encoladas, django_capture_on_commit_callbacks):
     hogar, _, cuenta, super_ = escenario
-    p = Presupuesto.objects.create(hogar=hogar, categoria=super_, mes=OCTUBRE, importe=Decimal("100"))
-    m = MovimientoFactory(cuenta=cuenta, categoria=super_, fecha=date(2026, 10, 3), importe=Decimal("-150"))
-    comprobar_presupuestos(hogar.pk, [OCTUBRE])
-    m = Movimiento.objects.get(pk=m.pk)  # cargado desde la BD: from_db guarda la fecha
-    m.fecha = date(2026, 9, 28)
-    with django_capture_on_commit_callbacks(execute=True):
-        m.save()  # señal → comprobar presupuestos (agrupado) de AMBOS meses
-    p.refresh_from_db()
-    assert p.alerta_enviada is False  # sin el mes original, octubre se quedaría "superado" para siempre
+    MovimientoFactory.create_batch(200, cuenta=cuenta, categoria=super_, fecha=date(2026, 10, 3))
+    MovimientoFactory.create_batch(100, cuenta=cuenta, categoria=super_, fecha=date(2026, 9, 3))
+    with django_capture_on_commit_callbacks(execute=True) as avisos:
+        Movimiento.objects.filter(hogar=hogar).delete()  # como deshacer una importación: 300 post_delete
+    assert len(avisos) == 300  # un movimientos_cambiados por movimiento…
+    assert sorted(encoladas) == [  # …pero una comprobación por mes, al final de la ventana de 10 s
+        ((hogar.pk, ["2026-09-01"]), 10),
+        ((hogar.pk, ["2026-10-01"]), 10),
+    ]
 
 
-def test_dos_saves_seguidos_y_carga_sin_fecha(escenario, senales, django_capture_on_commit_callbacks):
-    hogar, _, cuenta, _ = escenario
-    MovimientoFactory(cuenta=cuenta, fecha=date(2026, 10, 3))
-    m = Movimiento.objects.get()
+def test_pasada_la_ventana_se_vuelve_a_encolar(escenario, encoladas, time_machine, django_capture_on_commit_callbacks):
+    hogar, _, cuenta, super_ = escenario
+    time_machine.move_to(timezone.now(), tick=False)  # el reloj quieto: LocMemCache caduca con time.time()
     with django_capture_on_commit_callbacks(execute=True):
-        m.fecha = date(2026, 9, 1)
-        m.save()
-        m.notas = "solo cambian las notas"
-        m.save()  # ya no es octubre: solo septiembre
-    assert senales[-2:] == [{OCTUBRE, SEPTIEMBRE}, {SEPTIEMBRE}]
-    sin_fecha = Movimiento.objects.only("id", "hogar", "notas").get()
-    assert sin_fecha.meses_afectados() == {SEPTIEMBRE}  # la fecha diferida se carga al pedirla; no rompe
+        MovimientoFactory(cuenta=cuenta, categoria=super_, fecha=date(2026, 10, 3))
+        MovimientoFactory(cuenta=cuenta, categoria=super_, fecha=date(2026, 10, 4))  # misma ventana: se descarta
+    time_machine.shift(9)
+    with django_capture_on_commit_callbacks(execute=True):
+        MovimientoFactory(cuenta=cuenta, categoria=super_, fecha=date(2026, 10, 5))  # aún dentro
+    assert len(encoladas) == 1
+    time_machine.shift(2)  # 11 s: la clave de agrupar ha caducado
+    with django_capture_on_commit_callbacks(execute=True):
+        MovimientoFactory(cuenta=cuenta, categoria=super_, fecha=date(2026, 10, 6))
+    assert len(encoladas) == 2

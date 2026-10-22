@@ -6,7 +6,7 @@ from django.core import mail
 from django.core.cache import cache
 
 from conftest import CategoriaFactory, CuentaFactory, MovimientoFactory, UsuarioFactory
-from finanzas.models import Presupuesto
+from finanzas.models import Movimiento, Presupuesto
 from finanzas.servicios_presupuestos import comprobar_presupuestos
 from finanzas.signals import movimientos_cambiados
 from notificaciones.models import Notificacion
@@ -102,6 +102,59 @@ def test_cambiar_la_fecha_a_otro_mes_rearma_la_alerta_del_mes_de_antes(
     assert r.status_code == 200
     p.refresh_from_db()
     assert p.alerta_enviada is False  # octubre ya no está superado: si se vuelve a superar, se avisará otra vez
+
+
+def test_cualquier_save_avisa_tambien_del_mes_de_antes(escenario, django_capture_on_commit_callbacks):
+    hogar, _, cuenta, super_ = escenario
+    p = Presupuesto.objects.create(hogar=hogar, categoria=super_, mes=date(2026, 10, 1), importe=Decimal("100"))
+    m = MovimientoFactory(cuenta=cuenta, categoria=super_, fecha=HOY, importe=Decimal("-150"))
+    comprobar_presupuestos(hogar.pk, [date(2026, 10, 1)])
+    m = Movimiento.objects.get(pk=m.pk)  # cargado desde la BD: from_db guarda la fecha
+    m.fecha = date(2026, 9, 28)
+    with django_capture_on_commit_callbacks(execute=True):
+        m.save()  # sin pasar por la API (backoffice, un comando…): el receiver avisa de AMBOS meses
+    p.refresh_from_db()
+    assert p.alerta_enviada is False
+
+
+@pytest.fixture
+def senales():
+    recibidas = []
+
+    def receptor(sender, hogar_id, meses, **kwargs):
+        recibidas.append(meses)
+
+    movimientos_cambiados.connect(receptor, dispatch_uid="test-meses")
+    yield recibidas
+    movimientos_cambiados.disconnect(dispatch_uid="test-meses")
+
+
+def test_dos_saves_seguidos_y_carga_sin_fecha(escenario, senales, django_capture_on_commit_callbacks):
+    hogar, _, cuenta, _ = escenario
+    octubre, septiembre = date(2026, 10, 1), date(2026, 9, 1)
+    MovimientoFactory(cuenta=cuenta, fecha=date(2026, 10, 3))
+    m = Movimiento.objects.get()
+    with django_capture_on_commit_callbacks(execute=True):
+        m.fecha = date(2026, 9, 1)
+        m.save()
+        m.notas = "solo cambian las notas"
+        m.save()  # ya no es octubre: solo septiembre
+    assert senales[-2:] == [{octubre, septiembre}, {septiembre}]
+    sin_fecha = Movimiento.objects.only("id", "hogar", "notas").get()
+    assert sin_fecha.meses_afectados() == {septiembre}  # la fecha diferida se carga al pedirla; no rompe
+
+
+def test_borrar_una_subcategoria_rearma_la_alerta_de_la_madre(escenario, cliente, django_capture_on_commit_callbacks):
+    hogar, roles, cuenta, super_ = escenario
+    fruta = CategoriaFactory(hogar=hogar, nombre="Fruta", padre=super_)
+    p = Presupuesto.objects.create(hogar=hogar, categoria=super_, mes=date(2026, 10, 1), importe=Decimal("100"))
+    MovimientoFactory(cuenta=cuenta, categoria=fruta, fecha=HOY, importe=Decimal("-150"))
+    assert comprobar_presupuestos(hogar.pk, [date(2026, 10, 1)]) == [p]  # Súper, superado por su subcategoría
+    with django_capture_on_commit_callbacks(execute=True):
+        r = cliente(roles["admin"]).delete(f"/api/v1/hogares/{hogar.pk}/categorias/{fruta.pk}/")
+    assert r.status_code == 204
+    p.refresh_from_db()
+    assert p.alerta_enviada is False  # el gasto se queda sin categoría (SET_NULL): Súper ya no está superado
 
 
 def test_api_de_notificaciones(cliente):

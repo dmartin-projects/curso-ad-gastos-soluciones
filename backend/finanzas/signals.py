@@ -1,5 +1,5 @@
 from django.db import transaction
-from django.db.models.signals import post_delete, post_save
+from django.db.models.signals import post_delete, post_save, pre_delete
 from django.dispatch import Signal, receiver
 
 from core.agrupar import agrupar
@@ -34,6 +34,21 @@ def al_cambiar_movimiento(sender, instance, **kwargs):
 def al_cambiar_presupuesto(sender, instance, **kwargs):
     hogar_id, meses = instance.hogar_id, {instance.mes}
     transaction.on_commit(lambda: movimientos_cambiados.send(sender=Presupuesto, hogar_id=hogar_id, meses=meses))
+
+
+# Borrar una categoría deja sus movimientos sin categoría (on_delete=SET_NULL) con un UPDATE en bloque, sin
+# post_save: pre_delete apunta sus meses (después del UPDATE ya no se sabe qué movimientos eran suyos) y
+# post_delete avisa. Las subcategorías, borradas en cascada, pasan también por aquí.
+@receiver(pre_delete, sender=Categoria, dispatch_uid="finanzas_categoria_va_a_borrarse")
+def antes_de_borrar_categoria(sender, instance, **kwargs):
+    instance._meses_afectados = set(instance.movimientos.dates("fecha", "month"))
+
+
+@receiver(post_delete, sender=Categoria, dispatch_uid="finanzas_categoria_borrada")
+def al_borrar_categoria(sender, instance, **kwargs):
+    if meses := getattr(instance, "_meses_afectados", None):
+        hogar_id = instance.hogar_id
+        transaction.on_commit(lambda: movimientos_cambiados.send(sender=Categoria, hogar_id=hogar_id, meses=meses))
 
 
 @receiver(movimientos_cambiados, dispatch_uid="finanzas_comprobar_presupuestos")
