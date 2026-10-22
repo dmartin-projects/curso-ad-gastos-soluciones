@@ -26,10 +26,12 @@ export class Grafico {
   private readonly lienzo = viewChild.required<ElementRef<HTMLCanvasElement>>('lienzo');
   private grafico?: Chart;
   private readonly locale = inject(LOCALE_ID);
+  private destruido = false;
 
   constructor() {
     afterNextRender(async () => {
       const { Chart, registerables } = await import('chart.js');
+      if (this.destruido) return; // el usuario se fue mientras se descargaba (módulo 61 §7)
       Chart.register(...registerables);
       Chart.defaults.locale = this.locale; // 2.500 y no 2,500 en los ejes
       const config: ChartConfiguration = {
@@ -46,6 +48,9 @@ export class Grafico {
         this.grafico.update();
       }
     });
-    inject(DestroyRef).onDestroy(() => this.grafico?.destroy());
+    inject(DestroyRef).onDestroy(() => {
+      this.destruido = true;
+      this.grafico?.destroy();
+    });
   }
 }

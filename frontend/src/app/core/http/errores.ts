@@ -5,7 +5,7 @@ import { catchError, throwError } from 'rxjs';
 import { Avisos } from './avisos';
 import { SIN_AVISO_ERROR } from './contexto';
 
-/** Formato de error de la API (módulo 32): {type, title, status, detail, errors, request_id}. */
+/** Formato de error de la API (módulo 38): {type, title, status, detail, errors, request_id}. */
 interface Problema {
   type: string;
   title: string;

@@ -1,9 +1,12 @@
 # core/logging.py
 import logging
+import re
 import uuid
 from contextvars import ContextVar
 
 request_id_var: ContextVar[str] = ContextVar("request_id", default="-")
+# Lo envía el cliente o el proxy: solo se acepta con forma de id (un "\n" inyectaría líneas falsas en los logs)
+ID_VALIDO = re.compile(r"[A-Za-z0-9-]{1,64}")
 
 
 class RequestIdFilter(logging.Filter):
@@ -14,7 +17,8 @@ class RequestIdFilter(logging.Filter):
 
 def request_id_middleware(get_response):
     def middleware(request):
-        rid = request.headers.get("X-Request-ID") or uuid.uuid4().hex  # el proxy puede enviarlo
+        recibido = request.headers.get("X-Request-ID", "")  # el proxy o Angular pueden enviarlo
+        rid = recibido if ID_VALIDO.fullmatch(recibido) else uuid.uuid4().hex
         token = request_id_var.set(rid)
         try:
             response = get_response(request)
