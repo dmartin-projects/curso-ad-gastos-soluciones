@@ -133,15 +133,18 @@ class MovimientoViewSet(DelHogarViewSet):
             self._paginator = PaginacionEstandar() if ordenado else PaginacionCursor()
         return self._paginator
 
+    @transaction.atomic  # el movimiento y su registro de auditoría, o los dos o ninguno
     def perform_create(self, serializer):
         mov = serializer.save(hogar=self.hogar, creado_por=self.request.user, comercio=self._comercio(serializer))
         registrar(mov, RegistroAuditoria.Accion.CREAR, self.request.user)
 
+    @transaction.atomic
     def perform_update(self, serializer):
         antes = model_to_dict(serializer.instance)
         mov = serializer.save()
         registrar(mov, RegistroAuditoria.Accion.MODIFICAR, self.request.user, antes=antes)
 
+    @transaction.atomic
     def perform_destroy(self, instance):
         registrar(instance, RegistroAuditoria.Accion.BORRAR, self.request.user)
         instance.delete()
@@ -170,6 +173,7 @@ class MovimientoViewSet(DelHogarViewSet):
 
     @extend_schema(request=None, responses={201: MovimientoSerializer})
     @action(detail=True, methods=["post"])
+    @transaction.atomic  # la copia y su auditoría, juntas (como perform_create)
     def duplicar(self, request, *args, **kwargs):
         """Copia con fecha de hoy (en la zona del hogar): la compra de cada semana sin volver a teclearla."""
         original = self.get_object()

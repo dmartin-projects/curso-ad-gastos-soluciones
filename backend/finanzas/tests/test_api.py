@@ -89,6 +89,22 @@ def test_crear_reconoce_comercio_y_audita(cliente, escenario):
     assert RegistroAuditoria.objects.filter(accion="crear", usuario=roles["miembro"]).count() == 1
 
 
+def test_si_falla_la_auditoria_no_se_guarda_el_cambio(cliente, escenario, monkeypatch):
+    hogar, roles, cuenta, *_ = escenario
+    pan = MovimientoFactory(cuenta=cuenta, concepto="Pan")
+
+    def auditoria_caida(*args, **kwargs):
+        raise RuntimeError("auditoría caída")
+
+    monkeypatch.setattr("finanzas.api.views.registrar", auditoria_caida)
+    c = cliente(roles["miembro"])
+    nuevo = {"fecha": "2026-10-01", "importe": "-5", "concepto": "Leche", "cuenta": cuenta.pk}
+    assert c.post(url(hogar), nuevo).status_code == 500
+    assert c.patch(f"{url(hogar)}{pan.pk}/", {"concepto": "Pan integral"}).status_code == 500
+    # perform_create y perform_update son atómicos: sin su registro de auditoría, el cambio no queda
+    assert list(Movimiento.objects.values_list("concepto", flat=True)) == ["Pan"]
+
+
 def test_filtros_categoria_padre_incluye_hijas_y_tipo(cliente, escenario):
     hogar, roles, cuenta, comida, super_ = escenario
     MovimientoFactory(cuenta=cuenta, categoria=comida, importe=Decimal("-1"))
@@ -119,7 +135,7 @@ def test_listado_consultas_constantes(cliente, escenario, django_assert_num_quer
     c = cliente(roles["lector"])
     MovimientoFactory.create_batch(3, cuenta=cuenta, categoria=comida)
     # La primera petición del proceso consulta además el ContentType de Movimiento (para los adjuntos) y lo
-    # guarda en la caché de ContentType: sin calentarla, el test pasaba o fallaba según qué test corriera antes.
+    # guarda en la caché de ContentType: se hace antes de medir, para que la cuenta no dependa del orden de los tests.
     c.get(url(hogar))
     with django_assert_num_queries(2) as capturadas:  # membresía + movimientos
         c.get(url(hogar))
