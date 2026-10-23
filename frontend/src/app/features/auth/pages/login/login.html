@@ -24,6 +24,10 @@
         }
         <button mat-flat-button type="submit" [disabled]="f().submitting()">Entrar</button>
       </form>
+      <p class="mt-4 flex flex-wrap justify-between gap-2 text-sm">
+        <a routerLink="/recuperar" class="underline">¿Has olvidado tu contraseña?</a>
+        <a routerLink="/registro" class="underline">Crear cuenta</a>
+      </p>
     </mat-card-content>
   </mat-card>
 </div>

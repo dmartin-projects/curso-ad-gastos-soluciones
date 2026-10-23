@@ -7,7 +7,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from . import auth, views
 
 Access = inline_serializer("Access", {"access": serializers.CharField()})
-EnlaceToken = inline_serializer("EnlaceToken", {"uid": serializers.CharField(), "token": serializers.CharField()})
 NuevaPassword = inline_serializer(
     "NuevaPassword",
     {"uid": serializers.CharField(), "token": serializers.CharField(), "password": serializers.CharField()},
@@ -18,6 +17,7 @@ Detalle = inline_serializer("Detalle", {"detail": serializers.CharField()})
 extend_schema_view(post=extend_schema(request=TokenObtainPairSerializer, responses=Access))(auth.Login)
 extend_schema_view(post=extend_schema(request=None, responses=Access))(auth.Refresh)
 extend_schema_view(post=extend_schema(request=None, responses={204: None}))(auth.Logout)
-extend_schema_view(post=extend_schema(request=EnlaceToken, responses={204: None}))(views.VerificarEmail)
+extend_schema_view(post=extend_schema(responses={202: Detalle}))(views.Registro)
+extend_schema_view(post=extend_schema(request=NuevaPassword, responses={204: None}))(views.CompletarRegistro)
 extend_schema_view(post=extend_schema(request=Email, responses=Detalle))(views.SolicitarRecuperacion)
 extend_schema_view(post=extend_schema(request=NuevaPassword, responses={204: None}))(views.ConfirmarRecuperacion)

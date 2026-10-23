@@ -1,37 +1,21 @@
 # usuarios/api/serializers.py
-from django.contrib.auth import get_user_model, password_validation
-from django.core.exceptions import ValidationError as DjangoValidationError
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 Usuario = get_user_model()
 
 
-class RegistroSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, style={"input_type": "password"})
+class RegistroSerializer(serializers.Serializer):
+    """Solo datos que no son secretos: la contraseña se elige al completar el registro."""
 
-    class Meta:
-        model = Usuario
-        fields = ["email", "nombre", "apellidos", "password"]
+    email = serializers.EmailField(max_length=254)
+    nombre = serializers.CharField(max_length=150, required=False, allow_blank=True)
+    apellidos = serializers.CharField(max_length=150, required=False, allow_blank=True)
 
     def validate_email(self, email):
-        email = Usuario.objects.normalize_email(email).lower()
-        # El UniqueValidator del campo compara ANTES de pasar a minúsculas: "Ana@x.com" no choca con
-        # "ana@x.com" y el INSERT acabaría en IntegrityError (500). Igual que en el módulo 35.
-        if Usuario.objects.filter(email__iexact=email).exists():
-            raise serializers.ValidationError("Ya hay una cuenta con ese email.")
-        return email
-
-    def validate(self, datos):
-        # los AUTH_PASSWORD_VALIDATORS de Django (longitud, comunes, parecida al email…), en el campo password
-        sin_password = {k: v for k, v in datos.items() if k != "password"}
-        try:
-            password_validation.validate_password(datos["password"], user=Usuario(**sin_password))
-        except DjangoValidationError as error:
-            raise serializers.ValidationError({"password": list(error.messages)}) from error
-        return datos
-
-    def create(self, validated_data):
-        return Usuario.objects.create_user(**validated_data, is_active=False)  # activo tras verificar
+        # Sin comprobar si ya existe: la respuesta es la misma para un email nuevo o registrado. Un ModelSerializer
+        # añadiría el UniqueValidator del campo, y su 400 "ya existe" diría qué emails tienen cuenta.
+        return Usuario.objects.normalize_email(email).lower()
 
 
 class UsuarioSerializer(serializers.ModelSerializer):

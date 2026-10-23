@@ -20,6 +20,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/completar-registro/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Base para login/refresh/registro: no autentica la petición, pero responde 401 (no 403). */
+        post: operations["auth_completar_registro_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/login/": {
         parameters: {
             query?: never;
@@ -131,23 +148,6 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["auth_registro_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/verificar-email/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** @description Base para login/refresh/registro: no autentica la petición, pero responde 401 (no 403). */
-        post: operations["auth_verificar_email_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1505,10 +1505,6 @@ export interface components {
             /** Format: email */
             email: string;
         };
-        EnlaceTokenRequest: {
-            uid: string;
-            token: string;
-        };
         /**
          * @description * `pendiente` - Pendiente
          *     * `analizando` - Analizando
@@ -2187,18 +2183,12 @@ export interface components {
             ids: number[];
             categoria: number;
         };
-        Registro: {
-            /** Format: email */
-            email: string;
-            nombre?: string;
-            apellidos?: string;
-        };
+        /** @description Solo datos que no son secretos: la contraseña se elige al completar el registro. */
         RegistroRequest: {
             /** Format: email */
             email: string;
             nombre?: string;
             apellidos?: string;
-            password: string;
         };
         ReordenarRequest: {
             ids: number[];
@@ -2428,6 +2418,29 @@ export interface operations {
             };
         };
     };
+    auth_completar_registro_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NuevaPasswordRequest"];
+                "multipart/form-data": components["schemas"]["NuevaPasswordRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     auth_login_create: {
         parameters: {
             query?: never;
@@ -2617,36 +2630,13 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            202: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Registro"];
+                    "application/json": components["schemas"]["Detalle"];
                 };
-            };
-        };
-    };
-    auth_verificar_email_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["EnlaceTokenRequest"];
-                "multipart/form-data": components["schemas"]["EnlaceTokenRequest"];
-            };
-        };
-        responses: {
-            /** @description No response body */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };

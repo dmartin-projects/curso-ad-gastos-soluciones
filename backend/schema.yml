@@ -23,6 +23,27 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/v1/auth/completar-registro/:
+    post:
+      operationId: auth_completar_registro_create
+      description: 'Base para login/refresh/registro: no autentica la petición, pero
+        responde 401 (no 403).'
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NuevaPasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NuevaPasswordRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '204':
+          description: No response body
   /api/v1/auth/login/:
     post:
       operationId: auth_login_create
@@ -198,33 +219,12 @@ paths:
       security:
       - {}
       responses:
-        '201':
+        '202':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Registro'
+                $ref: '#/components/schemas/Detalle'
           description: ''
-  /api/v1/auth/verificar-email/:
-    post:
-      operationId: auth_verificar_email_create
-      description: 'Base para login/refresh/registro: no autentica la petición, pero
-        responde 401 (no 403).'
-      tags:
-      - auth
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EnlaceTokenRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/EnlaceTokenRequest'
-        required: true
-      security:
-      - {}
-      responses:
-        '204':
-          description: No response body
   /api/v1/backoffice/auditoria/:
     get:
       operationId: backoffice_auditoria_list
@@ -4095,18 +4095,6 @@ components:
           minLength: 1
       required:
       - email
-    EnlaceTokenRequest:
-      type: object
-      properties:
-        uid:
-          type: string
-          minLength: 1
-        token:
-          type: string
-          minLength: 1
-      required:
-      - token
-      - uid
     EstadoImportacionEnum:
       enum:
       - pendiente
@@ -5668,23 +5656,10 @@ components:
       required:
       - categoria
       - ids
-    Registro:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-          maxLength: 254
-        nombre:
-          type: string
-          maxLength: 150
-        apellidos:
-          type: string
-          maxLength: 150
-      required:
-      - email
     RegistroRequest:
       type: object
+      description: 'Solo datos que no son secretos: la contraseña se elige al completar
+        el registro.'
       properties:
         email:
           type: string
@@ -5697,13 +5672,8 @@ components:
         apellidos:
           type: string
           maxLength: 150
-        password:
-          type: string
-          writeOnly: true
-          minLength: 1
       required:
       - email
-      - password
     ReordenarRequest:
       type: object
       properties:

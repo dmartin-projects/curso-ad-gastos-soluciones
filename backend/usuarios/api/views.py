@@ -1,39 +1,52 @@
-from django.contrib.auth import get_user_model, password_validation
+from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.db import transaction
 from rest_framework import generics, permissions, serializers
 from rest_framework.response import Response
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 
 from usuarios.exceptions import EnlaceNoValido
-from usuarios.services import generar_enlace, usuario_desde_enlace
-from usuarios.tasks import enviar_email_recuperacion, enviar_email_verificacion
+from usuarios.services import (
+    completar_registro,
+    registro_pendiente,
+    solicitar_recuperacion,
+    solicitar_registro,
+    usuario_desde_enlace,
+)
 
 from .auth import VistaPublicaAuth
 from .serializers import RegistroSerializer, UsuarioSerializer
 
-Usuario = get_user_model()
+
+def validar_password(password: str, usuario) -> None:
+    """Los AUTH_PASSWORD_VALIDATORS de Django; todos los motivos, en el campo password (400, nunca 500)."""
+    try:
+        password_validation.validate_password(password, user=usuario)
+    except DjangoValidationError as error:
+        raise serializers.ValidationError({"password": list(error.messages)}) from error
 
 
-class Registro(generics.CreateAPIView):
+class Registro(generics.GenericAPIView):
     serializer_class = RegistroSerializer
     permission_classes = [permissions.AllowAny]
     authentication_classes = []
     throttle_scope = "registro"
 
-    def perform_create(self, serializer):
-        usuario = serializer.save()
-        enlace = generar_enlace(usuario, "verificar-email")
-        transaction.on_commit(lambda: enviar_email_verificacion.enqueue(usuario.pk, enlace))  # módulo 26
+    def post(self, request, **kwargs):
+        s = self.get_serializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        solicitar_registro(**s.validated_data)
+        # 🔐 misma respuesta para un email nuevo, pendiente o con cuenta: no revela cuáles existen
+        return Response({"detail": "Revisa tu email: te hemos enviado un enlace para continuar."}, status=202)
 
 
-class VerificarEmail(VistaPublicaAuth):  # base de la sección 4
+class CompletarRegistro(VistaPublicaAuth):  # base de la sección 4
     def post(self, request, **kwargs):
         usuario = usuario_desde_enlace(request.data.get("uid", ""), request.data.get("token", ""))
-        if usuario is None:
+        if usuario is None or not registro_pendiente(usuario):  # solo completa registros pendientes
             raise EnlaceNoValido()  # formato de error del módulo 38: type "enlace_no_valido"
-        usuario.is_active = True
-        usuario.save(update_fields=["is_active"])
+        password = request.data.get("password", "")
+        validar_password(password, usuario)  # una contraseña débil no gasta el enlace: aún no se ha guardado nada
+        completar_registro(usuario, password)  # contraseña + activa, a la vez
         return Response(status=204)
 
 
@@ -76,11 +89,7 @@ class SolicitarRecuperacion(VistaPublicaAuth):  # base de la sección 4
     throttle_scope = "recuperar"
 
     def post(self, request, **kwargs):
-        email = request.data.get("email", "")
-        usuario = Usuario.objects.filter(email__iexact=email, is_active=True).first()
-        if usuario:
-            enlace = generar_enlace(usuario, "nueva-password")
-            transaction.on_commit(lambda: enviar_email_recuperacion.enqueue(usuario.pk, enlace))
+        solicitar_recuperacion(request.data.get("email", ""))
         # 🔐 misma respuesta exista o no: no reveles qué emails están registrados
         return Response({"detail": "Si el email existe, te hemos enviado un enlace."})
 
@@ -88,13 +97,10 @@ class SolicitarRecuperacion(VistaPublicaAuth):  # base de la sección 4
 class ConfirmarRecuperacion(VistaPublicaAuth):  # base de la sección 4
     def post(self, request, **kwargs):
         usuario = usuario_desde_enlace(request.data.get("uid", ""), request.data.get("token", ""))
-        if usuario is None:
+        if usuario is None or not usuario.is_active:  # un registro pendiente se completa en completar-registro/
             raise EnlaceNoValido()  # formato de error del módulo 38: type "enlace_no_valido"
         password = request.data.get("password", "")
-        try:
-            password_validation.validate_password(password, user=usuario)
-        except DjangoValidationError as error:  # los motivos, en el campo password (como en el registro)
-            raise serializers.ValidationError({"password": list(error.messages)}) from error
+        validar_password(password, usuario)
         usuario.set_password(password)
         usuario.save(update_fields=["password"])  # cambia el hash → el enlace deja de valer
         return Response(status=204)

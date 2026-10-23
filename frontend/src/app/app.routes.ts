@@ -9,6 +9,31 @@ export const routes: Routes = [
     canMatch: [sinSesion],
     loadComponent: () => import('./features/auth/pages/login/login'),
   },
+  // Crear la cuenta y recuperar la contraseña: se pide un enlace por email y, desde él, se elige la contraseña
+  {
+    path: 'registro',
+    canMatch: [sinSesion],
+    loadComponent: () => import('./features/auth/pages/pedir-enlace/pedir-enlace'),
+    data: { para: 'registro' },
+  },
+  {
+    path: 'completar-registro', // el enlace del email: ?uid=…&token=…
+    canMatch: [sinSesion],
+    loadComponent: () => import('./features/auth/pages/elegir-password/elegir-password'),
+    data: { para: 'registro' },
+  },
+  {
+    path: 'recuperar',
+    canMatch: [sinSesion],
+    loadComponent: () => import('./features/auth/pages/pedir-enlace/pedir-enlace'),
+    data: { para: 'recuperar' },
+  },
+  {
+    path: 'nueva-password',
+    canMatch: [sinSesion],
+    loadComponent: () => import('./features/auth/pages/elegir-password/elegir-password'),
+    data: { para: 'recuperar' },
+  },
   // pública, con o sin sesión: llega desde el pie de un email (módulo 78)
   {
     path: 'baja-informes',

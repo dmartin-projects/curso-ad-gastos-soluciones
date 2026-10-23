@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
 import { AuthStore } from '../../../../core/auth/auth-store';
@@ -19,6 +19,7 @@ import { ErrorApi } from '../../../../core/http/errores';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    RouterLink,
   ],
   templateUrl: './login.html',
 })

@@ -1,0 +1,33 @@
+<div class="grid min-h-full place-items-center p-4">
+  <mat-card class="w-full max-w-sm">
+    <mat-card-header>
+      <mat-card-title>{{ enviado() ? 'Revisa tu email' : textos().titulo }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @if (enviado(); as mensaje) {
+        <p role="status" class="mt-4">{{ mensaje }}</p>
+        <p class="mt-2 text-sm text-texto-suave">
+          Si no llega en unos minutos, mira en la carpeta de spam. El enlace sirve una sola vez.
+        </p>
+      } @else {
+        <p class="mt-4 mb-2 text-sm">{{ textos().explicacion }}</p>
+        <form [formRoot]="f" class="flex flex-col gap-2">
+          <mat-form-field>
+            <mat-label>Email</mat-label>
+            <input matInput type="email" autocomplete="email" [formField]="f.email" />
+            @for (e of f.email().errors(); track e.kind) {
+              <mat-error>{{ e.message }}</mat-error>
+            }
+          </mat-form-field>
+          @for (e of f().errors(); track $index) {
+            <p role="alert" class="text-sm text-error">{{ e.message }}</p>
+          }
+          <button mat-flat-button type="submit" [disabled]="f().submitting()">
+            {{ textos().boton }}
+          </button>
+        </form>
+      }
+      <p class="mt-4 text-sm"><a routerLink="/login" class="underline">Volver a entrar</a></p>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -8,6 +8,9 @@ import type { components } from './esquema';
 type S = components['schemas'];
 
 export type Usuario = S['Usuario'];
+export type RegistroNuevo = S['RegistroRequest']; // crear la cuenta y elegir la contraseña
+export type NuevaPassword = S['NuevaPasswordRequest'];
+export type Detalle = S['Detalle'];
 export type Hogar = S['Hogar'];
 export type HogarNuevo = S['HogarRequest'];
 export type Cuenta = S['Cuenta'];

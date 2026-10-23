@@ -2,6 +2,7 @@ import json
 
 from django.conf import settings
 from django.conf.urls.static import static
+from django.core import mail
 from django.http import JsonResponse
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
@@ -25,9 +26,20 @@ def ia_falsa(request):
     return JsonResponse({"choices": [{"message": {"role": "assistant", "content": json.dumps(datos)}}]})
 
 
+def correos(request):
+    """Los correos que ha "enviado" este proceso (backend de email en memoria): el E2E lee el enlace como la persona.
+
+    GET /e2e/correos?para=ana@example.com → {"correos": [{"asunto": …, "cuerpo": …}, …]}, del más antiguo al último.
+    """
+    para = request.GET.get("para", "")
+    enviados = getattr(mail, "outbox", [])  # la lista la crea el backend locmem con el primer envío
+    return JsonResponse({"correos": [{"asunto": m.subject, "cuerpo": m.body} for m in enviados if para in m.to]})
+
+
 # en E2E los archivos están en disco (en producción, URLs firmadas de S3/R2): Django los sirve con DEBUG
 urlpatterns = [
     path("e2e/ia/chat/completions", ia_falsa),
+    path("e2e/correos", correos),
     *urls_normales,
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]

@@ -1,4 +1,4 @@
-"""Módulo 82, ejercicio 1: usuarios/api/views.py por encima del 90 %."""
+"""Módulo 82, ejercicio 1: lo que falta por probar de usuarios/api/views.py y usuarios/services.py."""
 
 import re
 from datetime import timedelta
@@ -21,26 +21,30 @@ def enlace_del_email() -> dict:
 
 
 # ── Registro ──
-def test_registro_con_email_duplicado_sin_distinguir_mayusculas(api):
+def test_registro_con_el_email_de_una_cuenta_en_otras_mayusculas(api, django_capture_on_commit_callbacks):
     UsuarioFactory(email="ana@example.com")
-    r = api.post(A + "registro/", {"email": "ANA@Example.com", "nombre": "Ana", "password": "una-clave-larga-123"})
-    assert r.status_code == 400 and "email" in r.json()["errors"]
+    with django_capture_on_commit_callbacks(execute=True):
+        r = api.post(A + "registro/", {"email": "ANA@Example.com", "nombre": "Ana"})
+    assert r.status_code == 202  # la misma respuesta que con un email nuevo
     assert Usuario.objects.filter(email__iexact="ana@example.com").count() == 1
+    assert (mail.outbox[-1].to, mail.outbox[-1].subject) == (["ana@example.com"], "Ya tienes una cuenta")
 
 
 @pytest.mark.parametrize(
     "password, motivo",
     [("123", "corta"), ("password123", "común"), ("ana@example.com", "parecida al email"), ("12345678901", "numérica")],
 )
-def test_registro_con_password_debil(api, password, motivo):
-    r = api.post(A + "registro/", {"email": "ana@example.com", "nombre": "Ana", "password": password})
+def test_completar_registro_con_password_debil(api, django_capture_on_commit_callbacks, password, motivo):
+    with django_capture_on_commit_callbacks(execute=True):
+        api.post(A + "registro/", {"email": "ana@example.com", "nombre": "Ana"})
+    r = api.post(A + "completar-registro/", enlace_del_email() | {"password": password})
     assert r.status_code == 400 and "password" in r.json()["errors"], motivo
-    assert not Usuario.objects.exists()
+    assert not Usuario.objects.get().is_active
 
 
-def test_verificar_email_con_enlace_falso(api):
-    assert api.post(A + "verificar-email/", {"uid": "MQ", "token": "falso"}).status_code == 400
-    assert api.post(A + "verificar-email/", {"uid": "%%%", "token": "x"}).status_code == 400  # uid ilegible
+def test_completar_registro_con_enlace_falso(api):
+    assert api.post(A + "completar-registro/", {"uid": "MQ", "token": "falso"}).status_code == 400
+    assert api.post(A + "completar-registro/", {"uid": "%%%", "token": "x"}).status_code == 400  # uid ilegible
 
 
 # ── Restablecer la contraseña ──
